@@ -43,7 +43,7 @@ CREATE TYPE ai_provider AS ENUM (
 -- 2. AI CONVERSATIONS (Thread header — 1 conversation per context)
 -- ---------------------------------------------------------------------------
 CREATE TABLE ai_conversations (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id         UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
     context_type    ai_conversation_context NOT NULL,
     context_ref_id  UUID,                        -- อ้างอิง ID ของสิ่งที่เกี่ยวข้อง
@@ -70,7 +70,7 @@ CREATE INDEX idx_aiconv_created ON ai_conversations (created_at DESC);
 -- 3. AI MESSAGES (Individual messages within a conversation)
 -- ---------------------------------------------------------------------------
 CREATE TABLE ai_messages (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     conversation_id UUID NOT NULL REFERENCES ai_conversations (id) ON DELETE CASCADE,
     role            ai_message_role NOT NULL,
     content         TEXT NOT NULL,
@@ -89,7 +89,7 @@ CREATE INDEX idx_aimsg_created ON ai_messages (conversation_id, created_at);
 -- 4. ESSAY PROMPTS (GED RLA Writing prompts bank)
 -- ---------------------------------------------------------------------------
 CREATE TABLE essay_prompts (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     subject_id      UUID NOT NULL REFERENCES subjects (id) ON DELETE CASCADE,
     title           VARCHAR(500) NOT NULL,
     passage_text    TEXT NOT NULL,                -- เนื้อหาบทความที่ให้อ่าน
@@ -116,7 +116,7 @@ CREATE INDEX idx_essayprompts_tags ON essay_prompts USING GIN (tags);
 -- 5. ESSAY SUBMISSIONS (Student essay submissions)
 -- ---------------------------------------------------------------------------
 CREATE TABLE essay_submissions (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id         UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
     prompt_id       UUID NOT NULL REFERENCES essay_prompts (id) ON DELETE CASCADE,
     mongo_essay_id  VARCHAR(24) NOT NULL,         -- Essay full text + draft history → MongoDB
@@ -163,7 +163,7 @@ CREATE INDEX idx_essays_mongo ON essay_submissions (mongo_essay_id);
 --   4. Language/Conventions (ไวยากรณ์, การสะกด, ความหลากหลายของประโยค)
 --   5. Development/Reasoning (การพัฒนา argument ลึกซึ้งแค่ไหน)
 CREATE TABLE essay_grading_details (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     submission_id   UUID NOT NULL REFERENCES essay_submissions (id) ON DELETE CASCADE,
     dimension       VARCHAR(50) NOT NULL,
                     -- 'claim', 'evidence', 'organization', 'language', 'reasoning'
@@ -197,7 +197,7 @@ CREATE INDEX idx_egd_dimension ON essay_grading_details (dimension);
 --   - Recency factor (คะแนนเก่าถูกลดน้ำหนัก)
 --   - Consistency factor (standard deviation ของคะแนน — มาก = ยังไม่พร้อม)
 CREATE TABLE readiness_scores (
-    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id             UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
     subject_id          UUID NOT NULL REFERENCES subjects (id) ON DELETE CASCADE,
     predicted_ged_score SMALLINT NOT NULL CHECK (predicted_ged_score BETWEEN 100 AND 200),
@@ -239,7 +239,7 @@ CREATE INDEX idx_readiness_calculated ON readiness_scores (calculated_at DESC);
 -- 8. READINESS HISTORY (Track readiness score changes over time)
 -- ---------------------------------------------------------------------------
 CREATE TABLE readiness_history (
-    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id             UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
     subject_id          UUID NOT NULL REFERENCES subjects (id) ON DELETE CASCADE,
     predicted_ged_score SMALLINT NOT NULL,

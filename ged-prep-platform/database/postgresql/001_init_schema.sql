@@ -9,8 +9,8 @@ BEGIN;
 -- ---------------------------------------------------------------------------
 -- 1. EXTENSIONS
 -- ---------------------------------------------------------------------------
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+-- uuid-ossp not needed: gen_random_uuid() is built-in since PG 13
 
 -- ---------------------------------------------------------------------------
 -- 2. ENUM TYPES
@@ -34,7 +34,7 @@ CREATE TYPE sr_status AS ENUM ('new', 'learning', 'review', 'mastered');
 -- 3. USERS
 -- ---------------------------------------------------------------------------
 CREATE TABLE users (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email           VARCHAR(255) NOT NULL,
     password_hash   VARCHAR(255) NOT NULL,
     first_name      VARCHAR(100) NOT NULL,
@@ -60,7 +60,7 @@ CREATE INDEX idx_users_email ON users (email);
 -- 4. SUBJECTS (4 GED Subjects)
 -- ---------------------------------------------------------------------------
 CREATE TABLE subjects (
-    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     code        VARCHAR(20) NOT NULL,          -- e.g. 'math', 'science', 'rla', 'ss'
     title       VARCHAR(255) NOT NULL,
     description TEXT,
@@ -81,7 +81,7 @@ CREATE INDEX idx_subjects_sort ON subjects (sort_order);
 -- 5. MODULES (Group of Topics within a Subject)
 -- ---------------------------------------------------------------------------
 CREATE TABLE modules (
-    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     subject_id  UUID NOT NULL REFERENCES subjects (id) ON DELETE CASCADE,
     title       VARCHAR(255) NOT NULL,
     description TEXT,
@@ -100,7 +100,7 @@ CREATE INDEX idx_modules_status ON modules (status);
 -- 6. TOPICS (Group of Lessons within a Module)
 -- ---------------------------------------------------------------------------
 CREATE TABLE topics (
-    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     module_id   UUID NOT NULL REFERENCES modules (id) ON DELETE CASCADE,
     title       VARCHAR(255) NOT NULL,
     description TEXT,
@@ -118,7 +118,7 @@ CREATE INDEX idx_topics_status ON topics (status);
 -- 7. LESSONS (Smallest unit of learning — references MongoDB for body_content)
 -- ---------------------------------------------------------------------------
 CREATE TABLE lessons (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     topic_id        UUID NOT NULL REFERENCES topics (id) ON DELETE CASCADE,
     title           VARCHAR(255) NOT NULL,
     slug            VARCHAR(255) NOT NULL,
@@ -146,7 +146,7 @@ CREATE INDEX idx_lessons_content_type ON lessons (content_type);
 -- 8. QUESTIONS (Question bank — can belong to a Lesson or be standalone for exams)
 -- ---------------------------------------------------------------------------
 CREATE TABLE questions (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     lesson_id       UUID REFERENCES lessons (id) ON DELETE SET NULL,
     subject_id      UUID NOT NULL REFERENCES subjects (id) ON DELETE CASCADE,
     question_type   question_type NOT NULL,
@@ -172,7 +172,7 @@ CREATE INDEX idx_questions_tags ON questions USING GIN (tags);
 -- 9. ANSWERS (Options for each question)
 -- ---------------------------------------------------------------------------
 CREATE TABLE answers (
-    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     question_id UUID NOT NULL REFERENCES questions (id) ON DELETE CASCADE,
     content     TEXT NOT NULL,
     is_correct  BOOLEAN NOT NULL DEFAULT FALSE,
@@ -194,7 +194,7 @@ CREATE INDEX idx_answers_correct ON answers (question_id, is_correct);
 -- 10. QUIZ_ATTEMPTS (Records each quiz/exam attempt by a user)
 -- ---------------------------------------------------------------------------
 CREATE TABLE quiz_attempts (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id         UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
     subject_id      UUID NOT NULL REFERENCES subjects (id) ON DELETE CASCADE,
     lesson_id       UUID REFERENCES lessons (id) ON DELETE SET NULL,
@@ -223,7 +223,7 @@ CREATE INDEX idx_quiz_attempts_completed ON quiz_attempts (completed_at DESC);
 -- 11. QUIZ_ATTEMPT_ANSWERS (Individual answer records per attempt)
 -- ---------------------------------------------------------------------------
 CREATE TABLE quiz_attempt_answers (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     attempt_id      UUID NOT NULL REFERENCES quiz_attempts (id) ON DELETE CASCADE,
     question_id     UUID NOT NULL REFERENCES questions (id) ON DELETE CASCADE,
     selected_answer_ids UUID[] NOT NULL DEFAULT '{}',
@@ -243,7 +243,7 @@ CREATE INDEX idx_qaa_correct ON quiz_attempt_answers (attempt_id, is_correct);
 -- 12. SPACED_REPETITION (Flashcard SRS tracking per user per question)
 -- ---------------------------------------------------------------------------
 CREATE TABLE spaced_repetition (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id         UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
     question_id     UUID NOT NULL REFERENCES questions (id) ON DELETE CASCADE,
     sr_status       sr_status NOT NULL DEFAULT 'new',
@@ -272,7 +272,7 @@ CREATE INDEX idx_sr_due_cards ON spaced_repetition (next_review_at)
 -- 13. LESSON_PROGRESS (Tracks per-user lesson completion)
 -- ---------------------------------------------------------------------------
 CREATE TABLE lesson_progress (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id         UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
     lesson_id       UUID NOT NULL REFERENCES lessons (id) ON DELETE CASCADE,
     is_completed    BOOLEAN NOT NULL DEFAULT FALSE,
