@@ -9,6 +9,7 @@ const requestLogger = require('./logger');
 const rateLimiter = require('./rateLimiter');
 const validate = require('./validate');
 const { errorHandler, notFoundHandler } = require('./errorHandler');
+const { authenticate, authorize, optionalAuth } = require('./auth');
 
 module.exports = {
   corsMiddleware,
@@ -17,4 +18,7 @@ module.exports = {
   validate,
   errorHandler,
   notFoundHandler,
+  authenticate,
+  authorize,
+  optionalAuth,
 };
