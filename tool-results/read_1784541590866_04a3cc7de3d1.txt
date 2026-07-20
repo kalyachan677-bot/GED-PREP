@@ -1,0 +1,1464 @@
+     1→import { PrismaClient } from "@prisma/client";
+     2→
+     3→const prisma = new PrismaClient();
+     4→
+     5→const SUBJECTS = [
+     6→  {
+     7→    code: "math",
+     8→    title: "Mathematical Reasoning",
+     9→    description:
+    10→      "Algebraic problem solving, quantitative reasoning, data analysis, and geometry concepts tested on the GED.",
+    11→    iconUrl: "/icons/math.svg",
+    12→    colorHex: "#EF4444",
+    13→    sortOrder: 0,
+    14→    modules: [
+    15→      {
+    16→        title: "Algebraic Foundations",
+    17→        description: "Linear equations, inequalities, and algebraic expressions.",
+    18→        estimatedHours: 8.5,
+    19→        sortOrder: 0,
+    20→        topics: [
+    21→          {
+    22→            title: "Solving Linear Equations",
+    23→            description:
+    24→              "Master one-variable linear equations and systems of equations.",
+    25→            sortOrder: 0,
+    26→            lessons: [
+    27→              {
+    28→                title: "What is a Linear Equation?",
+    29→                slug: "what-is-linear-equation",
+    30→                contentType: "mixed",
+    31→                durationMinutes: 12,
+    32→                sortOrder: 0,
+    33→                bodyContent: JSON.stringify([
+    34→                  {
+    35→                    id: "blk_001",
+    36→                    block_type: "heading",
+    37→                    content: "What is a Linear Equation?",
+    38→                    level: 2,
+    39→                  },
+    40→                  {
+    41→                    id: "blk_002",
+    42→                    block_type: "paragraph",
+    43→                    content:
+    44→                      "A <strong>linear equation</strong> is an algebraic equation of degree one. The highest power of any variable is 1. The general form is <strong>ax + b = c</strong>, where a, b, and c are constants.",
+    45→                  },
+    46→                  {
+    47→                    id: "blk_003",
+    48→                    block_type: "callout",
+    49→                    callout: {
+    50→                      variant: "formula",
+    51→                      title: "Standard Form",
+    52→                      body: "ax + b = c  \u2192  x = (c \u2212 b) / a",
+    53→                    },
+    54→                  },
+    55→                  {
+    56→                    id: "blk_004",
+    57→                    block_type: "numbered_list",
+    58→                    items: [
+    59→                      "<strong>Isolate the variable term</strong> \u2014 Move all terms with x to one side.",
+    60→                      "<strong>Isolate the constant</strong> \u2014 Move constants to the other side.",
+    61→                      "<strong>Solve for x</strong> \u2014 Divide both sides by the coefficient of x.",
+    62→                      "<strong>Check your answer</strong> \u2014 Substitute back into the original equation.",
+    63→                    ],
+    64→                  },
+    65→                  {
+    66→                    id: "blk_005",
+    67→                    block_type: "callout",
+    68→                    callout: {
+    69→                      variant: "tip",
+    70→                      title: "GED Tip",
+    71→                      body: "Always check your answer by plugging it back into the original equation. This catches sign errors and arithmetic mistakes.",
+    72→                    },
+    73→                  },
+    74→                ]),
+    75→                questions: [
+    76→                  {
+    77→                    questionType: "multiple_choice",
+    78→                    difficulty: "easy",
+    79→                    explanation:
+    80→                      "Subtract 7 from both sides to get 3x = 15, then divide by 3.",
+    81→                    hintText: "Isolate x on one side of the equation.",
+    82→                    tags: JSON.stringify([
+    83→                      "algebra",
+    84→                      "linear-equation",
+    85→                      "solving",
+    86→                    ]),
+    87→                    answers: [
+    88→                      {
+    89→                        content: "5",
+    90→                        isCorrect: true,
+    91→                        sortOrder: 0,
+    92→                      },
+    93→                      { content: "4", isCorrect: false, sortOrder: 1 },
+    94→                      { content: "6", isCorrect: false, sortOrder: 2 },
+    95→                      { content: "7", isCorrect: false, sortOrder: 3 },
+    96→                    ],
+    97→                  },
+    98→                  {
+    99→                    questionType: "multiple_choice",
+   100→                    difficulty: "medium",
+   101→                    explanation:
+   102→                      "Subtract 4: 2(x+4) = 18 \u2192 x+4 = 9 \u2192 x = 5.",
+   103→                    hintText: "First distribute or divide both sides by 2.",
+   104→                    tags: JSON.stringify([
+   105→                      "algebra",
+   106→                      "distributive-property",
+   107→                    ]),
+   108→                    answers: [
+   109→                      { content: "3", isCorrect: false, sortOrder: 0 },
+   110→                      {
+   111→                        content: "5",
+   112→                        isCorrect: true,
+   113→                        sortOrder: 1,
+   114→                      },
+   115→                      { content: "7", isCorrect: false, sortOrder: 2 },
+   116→                      { content: "9", isCorrect: false, sortOrder: 3 },
+   117→                    ],
+   118→                  },
+   119→                ],
+   120→              },
+   121→              {
+   122→                title: "Solving Inequalities",
+   123→                slug: "solving-inequalities",
+   124→                contentType: "text",
+   125→                durationMinutes: 15,
+   126→                sortOrder: 1,
+   127→                bodyContent: JSON.stringify([
+   128→                  {
+   129→                    id: "blk_001",
+   130→                    block_type: "heading",
+   131→                    content: "Solving Inequalities",
+   132→                    level: 2,
+   133→                  },
+   134→                  {
+   135→                    id: "blk_002",
+   136→                    block_type: "paragraph",
+   137→                    content:
+   138→                      "Inequalities use symbols like &lt;, &gt;, \u2264, \u2265 instead of =. Solving them is similar to equations, but <strong>flip the inequality sign when multiplying or dividing by a negative number</strong>.",
+   139→                  },
+   140→                  {
+   141→                    id: "blk_003",
+   142→                    block_type: "callout",
+   143→                    callout: {
+   144→                      variant: "warning",
+   145→                      title: "Common Mistake",
+   146→                      body: "Forgetting to flip the sign when dividing by a negative: \u22122x > 6 becomes x < \u22123, NOT x > \u22123.",
+   147→                    },
+   148→                  },
+   149→                ]),
+   150→                questions: [
+   151→                  {
+   152→                    questionType: "multiple_choice",
+   153→                    difficulty: "easy",
+   154→                    explanation:
+   155→                      "Divide both sides by -2 and flip the sign: x < 5.",
+   156→                    tags: JSON.stringify(["inequality", "flip-sign"]),
+   157→                    answers: [
+   158→                      { content: "x > 5", isCorrect: false, sortOrder: 0 },
+   159→                      {
+   160→                        content: "x < 5",
+   161→                        isCorrect: true,
+   162→                        sortOrder: 1,
+   163→                      },
+   164→                      {
+   165→                        content: "x < -5",
+   166→                        isCorrect: false,
+   167→                        sortOrder: 2,
+   168→                      },
+   169→                      { content: "x > -5", isCorrect: false, sortOrder: 3 },
+   170→                    ],
+   171→                  },
+   172→                  {
+   173→                    questionType: "multiple_choice",
+   174→                    difficulty: "medium",
+   175→                    explanation:
+   176→                      "Add 3 to both sides: 3x \u2264 12, then divide by 3: x \u2264 4.",
+   177→                    tags: JSON.stringify([
+   178→                      "inequality",
+   179→                      "compound-inequality",
+   180→                    ]),
+   181→                    answers: [
+   182→                      {
+   183→                        content: "x \u2264 4",
+   184→                        isCorrect: true,
+   185→                        sortOrder: 0,
+   186→                      },
+   187→                      {
+   188→                        content: "x \u2265 4",
+   189→                        isCorrect: false,
+   190→                        sortOrder: 1,
+   191→                      },
+   192→                      {
+   193→                        content: "x < 4",
+   194→                        isCorrect: false,
+   195→                        sortOrder: 2,
+   196→                      },
+   197→                      {
+   198→                        content: "x > 4",
+   199→                        isCorrect: false,
+   200→                        sortOrder: 3,
+   201→                      },
+   202→                    ],
+   203→                  },
+   204→                ],
+   205→              },
+   206→            ],
+   207→          },
+   208→          {
+   209→            title: "Systems of Equations",
+   210→            description:
+   211→              "Solve pairs of linear equations using substitution and elimination.",
+   212→            sortOrder: 1,
+   213→            lessons: [
+   214→              {
+   215→                title: "Substitution Method",
+   216→                slug: "substitution-method",
+   217→                contentType: "text",
+   218→                durationMinutes: 18,
+   219→                sortOrder: 0,
+   220→                bodyContent: JSON.stringify([
+   221→                  {
+   222→                    id: "blk_001",
+   223→                    block_type: "heading",
+   224→                    content: "The Substitution Method",
+   225→                    level: 2,
+   226→                  },
+   227→                  {
+   228→                    id: "blk_002",
+   229→                    block_type: "paragraph",
+   230→                    content:
+   231→                      "Substitution solves one equation for a variable, then substitutes into the other equation. This is especially useful when one equation already has a variable isolated.",
+   232→                  },
+   233→                  {
+   234→                    id: "blk_003",
+   235→                    block_type: "callout",
+   236→                    callout: {
+   237→                      variant: "example",
+   238→                      title: "Example: y = 2x + 1 and x + y = 10",
+   239→                      body: "Substitute: x + (2x+1) = 10 \u2192 3x = 9 \u2192 x = 3, y = 7",
+   240→                    },
+   241→                  },
+   242→                ]),
+   243→                questions: [
+   244→                  {
+   245→                    questionType: "multiple_choice",
+   246→                    difficulty: "medium",
+   247→                    explanation:
+   248→                      "Substitute x=3 into y=2x+1: y=7. Check: 3+7=10.",
+   249→                    tags: JSON.stringify(["systems", "substitution"]),
+   250→                    answers: [
+   251→                      { content: "(2, 5)", isCorrect: false, sortOrder: 0 },
+   252→                      {
+   253→                        content: "(3, 7)",
+   254→                        isCorrect: true,
+   255→                        sortOrder: 1,
+   256→                      },
+   257→                      {
+   258→                        content: "(4, 6)",
+   259→                        isCorrect: false,
+   260→                        sortOrder: 2,
+   261→                      },
+   262→                      {
+   263→                        content: "(1, 9)",
+   264→                        isCorrect: false,
+   265→                        sortOrder: 3,
+   266→                      },
+   267→                    ],
+   268→                  },
+   269→                  {
+   270→                    questionType: "multiple_choice",
+   271→                    difficulty: "hard",
+   272→                    explanation:
+   273→                      "3(3) + 2y = 13 \u2192 9 + 2y = 13 \u2192 y = 2.",
+   274→                    tags: JSON.stringify([
+   275→                      "systems",
+   276→                      "substitution",
+   277→                      "fractions",
+   278→                    ]),
+   279→                    answers: [
+   280→                      { content: "y = 1", isCorrect: false, sortOrder: 0 },
+   281→                      {
+   282→                        content: "y = 2",
+   283→                        isCorrect: true,
+   284→                        sortOrder: 1,
+   285→                      },
+   286→                      { content: "y = 3", isCorrect: false, sortOrder: 2 },
+   287→                      { content: "y = 4", isCorrect: false, sortOrder: 3 },
+   288→                    ],
+   289→                  },
+   290→                ],
+   291→              },
+   292→              {
+   293→                title: "Elimination Method",
+   294→                slug: "elimination-method",
+   295→                contentType: "text",
+   296→                durationMinutes: 18,
+   297→                sortOrder: 1,
+   298→                bodyContent: JSON.stringify([
+   299→                  {
+   300→                    id: "blk_001",
+   301→                    block_type: "heading",
+   302→                    content: "The Elimination Method",
+   303→                    level: 2,
+   304→                  },
+   305→                  {
+   306→                    id: "blk_002",
+   307→                    block_type: "paragraph",
+   308→                    content:
+   309→                      "Elimination adds or subtracts equations to cancel out one variable, making it easy to solve for the remaining variable.",
+   310→                  },
+   311→                ]),
+   312→                questions: [
+   313→                  {
+   314→                    questionType: "multiple_choice",
+   315→                    difficulty: "medium",
+   316→                    tags: JSON.stringify(["systems", "elimination"]),
+   317→                    answers: [
+   318→                      { content: "(3, 1)", isCorrect: true, sortOrder: 0 },
+   319→                      { content: "(1, 3)", isCorrect: false, sortOrder: 1 },
+   320→                      { content: "(2, 2)", isCorrect: false, sortOrder: 2 },
+   321→                      { content: "(4, 0)", isCorrect: false, sortOrder: 3 },
+   322→                    ],
+   323→                  },
+   324→                  {
+   325→                    questionType: "multiple_choice",
+   326→                    difficulty: "hard",
+   327→                    tags: JSON.stringify(["systems", "no-solution"]),
+   328→                    answers: [
+   329→                      { content: "One solution", isCorrect: false, sortOrder: 0 },
+   330→                      { content: "No solution", isCorrect: true, sortOrder: 1 },
+   331→                      { content: "Infinite solutions", isCorrect: false, sortOrder: 2 },
+   332→                      { content: "Two solutions", isCorrect: false, sortOrder: 3 },
+   333→                    ],
+   334→                  },
+   335→                ],
+   336→              },
+   337→            ],
+   338→          },
+   339→        ],
+   340→      },
+   341→      {
+   342→        title: "Geometry and Measurement",
+   343→        description:
+   344→          "Area, perimeter, volume, angles, and the Pythagorean theorem.",
+   345→        estimatedHours: 7.0,
+   346→        sortOrder: 1,
+   347→        topics: [
+   348→          {
+   349→            title: "Perimeter and Area",
+   350→            description: "Calculate perimeter and area of 2D shapes.",
+   351→            sortOrder: 0,
+   352→            lessons: [
+   353→              {
+   354→                title: "Rectangle and Triangle Basics",
+   355→                slug: "rectangle-triangle-basics",
+   356→                contentType: "text",
+   357→                durationMinutes: 14,
+   358→                sortOrder: 0,
+   359→                bodyContent: JSON.stringify([
+   360→                  {
+   361→                    id: "blk_001",
+   362→                    block_type: "heading",
+   363→                    content: "Rectangle and Triangle Basics",
+   364→                    level: 2,
+   365→                  },
+   366→                  {
+   367→                    id: "blk_002",
+   368→                    block_type: "paragraph",
+   369→                    content:
+   370→                      "A rectangle has perimeter = 2(l+w) and area = l\u00d7w. A triangle has area = \u00bd \u00d7 base \u00d7 height.",
+   371→                  },
+   372→                  {
+   373→                    id: "blk_003",
+   374→                    block_type: "callout",
+   375→                    callout: {
+   376→                      variant: "formula",
+   377→                      title: "Key Formulas",
+   378→                      body: "Rectangle: P = 2(l+w), A = lw\nTriangle: A = \u00bdbh\nCircle: C = 2\u03c0r, A = \u03c0r\u00b2",
+   379→                    },
+   380→                  },
+   381→                ]),
+   382→                questions: [
+   383→                  {
+   384→                    questionType: "multiple_choice",
+   385→                    difficulty: "easy",
+   386→                    tags: JSON.stringify([
+   387→                      "geometry",
+   388→                      "rectangle",
+   389→                      "area",
+   390→                    ]),
+   391→                    answers: [
+   392→                      { content: "30", isCorrect: true, sortOrder: 0 },
+   393→                      { content: "35", isCorrect: false, sortOrder: 1 },
+   394→                      { content: "40", isCorrect: false, sortOrder: 2 },
+   395→                      { content: "50", isCorrect: false, sortOrder: 3 },
+   396→                    ],
+   397→                  },
+   398→                  {
+   399→                    questionType: "multiple_choice",
+   400→                    difficulty: "easy",
+   401→                    tags: JSON.stringify([
+   402→                      "geometry",
+   403→                      "triangle",
+   404→                      "area",
+   405→                    ]),
+   406→                    answers: [
+   407→                      { content: "12", isCorrect: true, sortOrder: 0 },
+   408→                      { content: "24", isCorrect: false, sortOrder: 1 },
+   409→                      { content: "10", isCorrect: false, sortOrder: 2 },
+   410→                      { content: "6", isCorrect: false, sortOrder: 3 },
+   411→                    ],
+   412→                  },
+   413→                ],
+   414→              },
+   415→              {
+   416→                title: "Circles and Composite Shapes",
+   417→                slug: "circles-composite-shapes",
+   418→                contentType: "text",
+   419→                durationMinutes: 16,
+   420→                sortOrder: 1,
+   421→                bodyContent: JSON.stringify([
+   422→                  {
+   423→                    id: "blk_001",
+   424→                    block_type: "heading",
+   425→                    content: "Circles and Composite Shapes",
+   426→                    level: 2,
+   427→                  },
+   428→                  {
+   429→                    id: "blk_002",
+   430→                    block_type: "paragraph",
+   431→                    content:
+   432→                      "A circle has circumference C = 2\u03c0r and area A = \u03c0r\u00b2. Composite shapes can be broken into simpler shapes.",
+   433→                  },
+   434→                ]),
+   435→                questions: [
+   436→                  {
+   437→                    questionType: "multiple_choice",
+   438→                    difficulty: "medium",
+   439→                    tags: JSON.stringify(["geometry", "circle", "circumference"]),
+   440→                    answers: [
+   441→                      { content: "10\u03c0", isCorrect: true, sortOrder: 0 },
+   442→                      { content: "20\u03c0", isCorrect: false, sortOrder: 1 },
+   443→                      { content: "5\u03c0", isCorrect: false, sortOrder: 2 },
+   444→                      { content: "25\u03c0", isCorrect: false, sortOrder: 3 },
+   445→                    ],
+   446→                  },
+   447→                  {
+   448→                    questionType: "multiple_choice",
+   449→                    difficulty: "medium",
+   450→                    tags: JSON.stringify(["geometry", "circle", "area"]),
+   451→                    answers: [
+   452→                      { content: "16\u03c0", isCorrect: true, sortOrder: 0 },
+   453→                      { content: "8\u03c0", isCorrect: false, sortOrder: 1 },
+   454→                      { content: "4\u03c0", isCorrect: false, sortOrder: 2 },
+   455→                      { content: "32\u03c0", isCorrect: false, sortOrder: 3 },
+   456→                    ],
+   457→                  },
+   458→                ],
+   459→              },
+   460→            ],
+   461→          },
+   462→          {
+   463→            title: "The Pythagorean Theorem",
+   464→            description: "Apply a\u00b2 + b\u00b2 = c\u00b2 to right triangles.",
+   465→            sortOrder: 1,
+   466→            lessons: [
+   467→              {
+   468→                title: "Understanding the Theorem",
+   469→                slug: "pythagorean-theorem-intro",
+   470→                contentType: "mixed",
+   471→                durationMinutes: 15,
+   472→                sortOrder: 0,
+   473→                bodyContent: JSON.stringify([
+   474→                  {
+   475→                    id: "blk_001",
+   476→                    block_type: "heading",
+   477→                    content: "The Pythagorean Theorem",
+   478→                    level: 2,
+   479→                  },
+   480→                  {
+   481→                    id: "blk_002",
+   482→                    block_type: "paragraph",
+   483→                    content:
+   484→                      'In a right triangle, the square of the hypotenuse equals the sum of the squares of the other two sides: <strong>a\u00b2 + b\u00b2 = c\u00b2</strong>, where c is the hypotenuse (longest side, opposite the right angle).',
+   485→                  },
+   486→                  {
+   487→                    id: "blk_003",
+   488→                    block_type: "callout",
+   489→                    callout: {
+   490→                      variant: "remember",
+   491→                      title: "Key Fact",
+   492→                      body: "The theorem ONLY works for right triangles. Common Pythagorean triples: (3,4,5), (5,12,13), (8,15,17).",
+   493→                    },
+   494→                  },
+   495→                ]),
+   496→                questions: [
+   497→                  {
+   498→                    questionType: "multiple_choice",
+   499→                    difficulty: "easy",
+   500→                    tags: JSON.stringify([
+   501→                      "geometry",
+   502→                      "pythagorean",
+   503→                      "right-triangle",
+   504→                    ]),
+   505→                    answers: [
+   506→                      { content: "13", isCorrect: true, sortOrder: 0 },
+   507→                      { content: "12", isCorrect: false, sortOrder: 1 },
+   508→                      { content: "14", isCorrect: false, sortOrder: 2 },
+   509→                      { content: "15", isCorrect: false, sortOrder: 3 },
+   510→                    ],
+   511→                  },
+   512→                  {
+   513→                    questionType: "multiple_choice",
+   514→                    difficulty: "medium",
+   515→                    tags: JSON.stringify([
+   516→                      "geometry",
+   517→                      "pythagorean",
+   518→                      "find-leg",
+   519→                    ]),
+   520→                    answers: [
+   521→                      { content: "8", isCorrect: false, sortOrder: 0 },
+   522→                      { content: "9", isCorrect: true, sortOrder: 1 },
+   523→                      { content: "12", isCorrect: false, sortOrder: 2 },
+   524→                      { content: "15", isCorrect: false, sortOrder: 3 },
+   525→                    ],
+   526→                  },
+   527→                ],
+   528→              },
+   529→              {
+   530→                title: "Applications and Word Problems",
+   531→                slug: "pythagorean-applications",
+   532→                contentType: "text",
+   533→                durationMinutes: 20,
+   534→                sortOrder: 1,
+   535→                bodyContent: JSON.stringify([
+   536→                  {
+   537→                    id: "blk_001",
+   538→                    block_type: "heading",
+   539→                    content: "Real-World Applications",
+   540→                    level: 2,
+   541→                  },
+   542→                  {
+   543→                    id: "blk_002",
+   544→                    block_type: "paragraph",
+   545→                    content:
+   546→                      "The Pythagorean theorem is used in construction, navigation, and many real-world measurement problems. On the GED, you will often see it in word problem format.",
+   547→                  },
+   548→                ]),
+   549→                questions: [
+   550→                  {
+   551→                    questionType: "multiple_choice",
+   552→                    difficulty: "hard",
+   553→                    tags: JSON.stringify([
+   554→                      "geometry",
+   555→                      "pythagorean",
+   556→                      "word-problem",
+   557→                    ]),
+   558→                    answers: [
+   559→                      { content: "17 feet", isCorrect: true, sortOrder: 0 },
+   560→                      { content: "20 feet", isCorrect: false, sortOrder: 1 },
+   561→                      { content: "15 feet", isCorrect: false, sortOrder: 2 },
+   562→                      { content: "25 feet", isCorrect: false, sortOrder: 3 },
+   563→                    ],
+   564→                  },
+   565→                  {
+   566→                    questionType: "multiple_choice",
+   567→                    difficulty: "hard",
+   568→                    tags: JSON.stringify([
+   569→                      "geometry",
+   570→                      "pythagorean",
+   571→                      "diagonal",
+   572→                    ]),
+   573→                    answers: [
+   574→                      { content: "10\u221a2", isCorrect: true, sortOrder: 0 },
+   575→                      { content: "20", isCorrect: false, sortOrder: 1 },
+   576→                      { content: "14", isCorrect: false, sortOrder: 2 },
+   577→                      { content: "10\u221a3", isCorrect: false, sortOrder: 3 },
+   578→                    ],
+   579→                  },
+   580→                ],
+   581→              },
+   582→            ],
+   583→          },
+   584→        ],
+   585→      },
+   586→    ],
+   587→  },
+   588→  {
+   589→    code: "science",
+   590→    title: "Science",
+   591→    description:
+   592→      "Life science, physical science, earth and space science concepts for the GED.",
+   593→    iconUrl: "/icons/science.svg",
+   594→    colorHex: "#22C55E",
+   595→    sortOrder: 1,
+   596→    modules: [
+   597→      {
+   598→        title: "Life Science",
+   599→        description: "Cell biology, genetics, evolution, and human body systems.",
+   600→        estimatedHours: 7.0,
+   601→        sortOrder: 0,
+   602→        topics: [
+   603→          {
+   604→            title: "Cell Biology",
+   605→            description: "Cell structure, organelles, and cell processes.",
+   606→            sortOrder: 0,
+   607→            lessons: [
+   608→              {
+   609→                title: "Cell Structure and Organelles",
+   610→                slug: "cell-structure-organelles",
+   611→                contentType: "text",
+   612→                durationMinutes: 16,
+   613→                sortOrder: 0,
+   614→                bodyContent: JSON.stringify([
+   615→                  { id: "b1", block_type: "heading", content: "Cell Structure", level: 2 },
+   616→                  { id: "b2", block_type: "paragraph", content: "All living things are made of cells. Prokaryotic cells (bacteria) lack a nucleus, while eukaryotic cells (plants, animals) have a nucleus and membrane-bound organelles." },
+   617→                  { id: "b3", block_type: "callout", callout: { variant: "info", title: "Key Organelles", body: "Mitochondria: energy production (ATP)\nRibosomes: protein synthesis\nNucleus: contains DNA\nCell membrane: controls what enters/exits" } },
+   618→                ]),
+   619→                questions: [
+   620→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["biology", "cell", "organelle"]), answers: [
+   621→                    { content: "Mitochondria", isCorrect: true, sortOrder: 0 },
+   622→                    { content: "Ribosome", isCorrect: false, sortOrder: 1 },
+   623→                    { content: "Nucleus", isCorrect: false, sortOrder: 2 },
+   624→                    { content: "Cell wall", isCorrect: false, sortOrder: 3 },
+   625→                  ]},
+   626→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["biology", "prokaryotic", "eukaryotic"]), answers: [
+   627→                    { content: "They have a nucleus", isCorrect: false, sortOrder: 0 },
+   628→                    { content: "They lack membrane-bound organelles", isCorrect: true, sortOrder: 1 },
+   629→                    { content: "They are larger", isCorrect: false, sortOrder: 2 },
+   630→                    { content: "They contain DNA", isCorrect: false, sortOrder: 3 },
+   631→                  ]},
+   632→                ],
+   633→              },
+   634→              {
+   635→                title: "Cell Division: Mitosis and Meiosis",
+   636→                slug: "cell-division-mitosis-meiosis",
+   637→                contentType: "text",
+   638→                durationMinutes: 18,
+   639→                sortOrder: 1,
+   640→                bodyContent: JSON.stringify([
+   641→                  { id: "b1", block_type: "heading", content: "Cell Division", level: 2 },
+   642→                  { id: "b2", block_type: "paragraph", content: "Mitosis produces two identical diploid cells for growth and repair. Meiosis produces four unique haploid cells for reproduction (sperm and egg)." },
+   643→                ]),
+   644→                questions: [
+   645→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["biology", "mitosis"]), answers: [
+   646→                    { content: "2 identical diploid cells", isCorrect: true, sortOrder: 0 },
+   647→                    { content: "4 unique haploid cells", isCorrect: false, sortOrder: 1 },
+   648→                    { content: "2 unique haploid cells", isCorrect: false, sortOrder: 2 },
+   649→                    { content: "4 identical diploid cells", isCorrect: false, sortOrder: 3 },
+   650→                  ]},
+   651→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["biology", "meiosis"]), answers: [
+   652→                    { content: "Growth and repair", isCorrect: false, sortOrder: 0 },
+   653→                    { content: "Sexual reproduction", isCorrect: true, sortOrder: 1 },
+   654→                    { content: "Asexual reproduction", isCorrect: false, sortOrder: 2 },
+   655→                    { content: "Protein synthesis", isCorrect: false, sortOrder: 3 },
+   656→                  ]},
+   657→                ],
+   658→              },
+   659→            ],
+   660→          },
+   661→          {
+   662→            title: "Genetics and Heredity",
+   663→            description: "DNA, genes, alleles, and Punnett squares.",
+   664→            sortOrder: 1,
+   665→            lessons: [
+   666→              {
+   667→                title: "DNA and Genes",
+   668→                slug: "dna-and-genes",
+   669→                contentType: "text",
+   670→                durationMinutes: 15,
+   671→                sortOrder: 0,
+   672→                bodyContent: JSON.stringify([
+   673→                  { id: "b1", block_type: "heading", content: "DNA and Genes", level: 2 },
+   674→                  { id: "b2", block_type: "paragraph", content: "DNA (deoxyribonucleic acid) is a double helix that carries genetic instructions. Genes are segments of DNA that code for specific proteins. Alleles are different versions of a gene." },
+   675→                ]),
+   676→                questions: [
+   677→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["genetics", "DNA"]), answers: [
+   678→                    { content: "Double helix", isCorrect: true, sortOrder: 0 },
+   679→                    { content: "Single strand", isCorrect: false, sortOrder: 1 },
+   680→                    { content: "Triple helix", isCorrect: false, sortOrder: 2 },
+   681→                    { content: "Circular ring", isCorrect: false, sortOrder: 3 },
+   682→                  ]},
+   683→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["genetics", "allele"]), answers: [
+   684→                    { content: "Different versions of the same gene", isCorrect: true, sortOrder: 0 },
+   685→                    { content: "Different genes on different chromosomes", isCorrect: false, sortOrder: 1 },
+   686→                    { content: "Mutated DNA sequences only", isCorrect: false, sortOrder: 2 },
+   687→                    { content: "Proteins that build cells", isCorrect: false, sortOrder: 3 },
+   688→                  ]},
+   689→                ],
+   690→              },
+   691→              {
+   692→                title: "Punnett Squares",
+   693→                slug: "punnett-squares",
+   694→                contentType: "text",
+   695→                durationMinutes: 14,
+   696→                sortOrder: 1,
+   697→                bodyContent: JSON.stringify([
+   698→                  { id: "b1", block_type: "heading", content: "Punnett Squares", level: 2 },
+   699→                  { id: "b2", block_type: "paragraph", content: "A Punnett square predicts the probability of offspring genotypes from parental crosses. Dominant alleles (uppercase) mask recessive alleles (lowercase)." },
+   700→                ]),
+   701→                questions: [
+   702→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["genetics", "punnett-square"]), answers: [
+   703→                    { content: "25%", isCorrect: true, sortOrder: 0 },
+   704→                    { content: "50%", isCorrect: false, sortOrder: 1 },
+   705→                    { content: "75%", isCorrect: false, sortOrder: 2 },
+   706→                    { content: "100%", isCorrect: false, sortOrder: 3 },
+   707→                  ]},
+   708→                  { questionType: "multiple_choice", difficulty: "hard", tags: JSON.stringify(["genetics", "genotype-phenotype"]), answers: [
+   709→                    { content: "Genotype is the genetic makeup; phenotype is the physical expression", isCorrect: true, sortOrder: 0 },
+   710→                    { content: "They mean the same thing", isCorrect: false, sortOrder: 1 },
+   711→                    { content: "Phenotype determines genotype", isCorrect: false, sortOrder: 2 },
+   712→                    { content: "Genotype is only about appearance", isCorrect: false, sortOrder: 3 },
+   713→                  ]},
+   714→                ],
+   715→              },
+   716→            ],
+   717→          },
+   718→        ],
+   719→      },
+   720→      {
+   721→        title: "Physical Science",
+   722→        description: "Chemistry, physics, and energy concepts.",
+   723→        estimatedHours: 6.5,
+   724→        sortOrder: 1,
+   725→        topics: [
+   726→          {
+   727→            title: "Chemistry Basics",
+   728→            description: "Atoms, elements, compounds, and chemical reactions.",
+   729→            sortOrder: 0,
+   730→            lessons: [
+   731→              {
+   732→                title: "Atoms and the Periodic Table",
+   733→                slug: "atoms-periodic-table",
+   734→                contentType: "text",
+   735→                durationMinutes: 16,
+   736→                sortOrder: 0,
+   737→                bodyContent: JSON.stringify([
+   738→                  { id: "b1", block_type: "heading", content: "Atoms and the Periodic Table", level: 2 },
+   739→                  { id: "b2", block_type: "paragraph", content: "Atoms are the smallest units of elements. They consist of protons (positive), neutrons (neutral), and electrons (negative). The periodic table organizes elements by atomic number." },
+   740→                ]),
+   741→                questions: [
+   742→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["chemistry", "atom"]), answers: [
+   743→                    { content: "Proton", isCorrect: true, sortOrder: 0 },
+   744→                    { content: "Neutron", isCorrect: false, sortOrder: 1 },
+   745→                    { content: "Electron", isCorrect: false, sortOrder: 2 },
+   746→                    { content: "Isotope", isCorrect: false, sortOrder: 3 },
+   747→                  ]},
+   748→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["chemistry", "periodic-table"]), answers: [
+   749→                    { content: "Atomic number", isCorrect: true, sortOrder: 0 },
+   750→                    { content: "Atomic mass", isCorrect: false, sortOrder: 1 },
+   751→                    { content: "Number of neutrons", isCorrect: false, sortOrder: 2 },
+   752→                    { content: "Chemical symbol", isCorrect: false, sortOrder: 3 },
+   753→                  ]},
+   754→                ],
+   755→              },
+   756→              {
+   757→                title: "Chemical Reactions",
+   758→                slug: "chemical-reactions",
+   759→                contentType: "text",
+   760→                durationMinutes: 15,
+   761→                sortOrder: 1,
+   762→                bodyContent: JSON.stringify([
+   763→                  { id: "b1", block_type: "heading", content: "Chemical Reactions", level: 2 },
+   764→                  { id: "b2", block_type: "paragraph", content: "In a chemical reaction, bonds break and form to create new substances. Reactants are on the left side; products are on the right. The law of conservation of mass means atoms are neither created nor destroyed." },
+   765→                ]),
+   766→                questions: [
+   767→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["chemistry", "conservation-of-mass"]), answers: [
+   768→                    { content: "The total mass of reactants equals total mass of products", isCorrect: true, sortOrder: 0 },
+   769→                    { content: "Mass can be created during reactions", isCorrect: false, sortOrder: 1 },
+   770→                    { content: "Gases have no mass", isCorrect: false, sortOrder: 2 },
+   771→                    { content: "Mass is only conserved in solids", isCorrect: false, sortOrder: 3 },
+   772→                  ]},
+   773→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["chemistry", "reaction-type"]), answers: [
+   774→                    { content: "Synthesis", isCorrect: true, sortOrder: 0 },
+   775→                    { content: "Decomposition", isCorrect: false, sortOrder: 1 },
+   776→                    { content: "Combustion", isCorrect: false, sortOrder: 2 },
+   777→                    { content: "Neutralization", isCorrect: false, sortOrder: 3 },
+   778→                  ]},
+   779→                ],
+   780→              },
+   781→            ],
+   782→          },
+   783→          {
+   784→            title: "Physics: Motion and Forces",
+   785→            description: "Newton's laws, speed, velocity, and acceleration.",
+   786→            sortOrder: 1,
+   787→            lessons: [
+   788→              {
+   789→                title: "Newton's Laws of Motion",
+   790→                slug: "newtons-laws-motion",
+   791→                contentType: "text",
+   792→                durationMinutes: 18,
+   793→                sortOrder: 0,
+   794→                bodyContent: JSON.stringify([
+   795→                  { id: "b1", block_type: "heading", content: "Newton's Laws of Motion", level: 2 },
+   796→                  { id: "b2", block_type: "paragraph", content: "1st Law (Inertia): An object at rest stays at rest; an object in motion stays in motion unless acted on by an unbalanced force. 2nd Law: F = ma. 3rd Law: Every action has an equal and opposite reaction." },
+   797→                ]),
+   798→                questions: [
+   799→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["physics", "newton"]), answers: [
+   800→                    { content: "F = ma", isCorrect: true, sortOrder: 0 },
+   801→                    { content: "E = mc\u00b2", isCorrect: false, sortOrder: 1 },
+   802→                    { content: "P = mv", isCorrect: false, sortOrder: 2 },
+   803→                    { content: "V = IR", isCorrect: false, sortOrder: 3 },
+   804→                  ]},
+   805→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["physics", "inertia"]), answers: [
+   806→                    { content: "First law", isCorrect: true, sortOrder: 0 },
+   807→                    { content: "Second law", isCorrect: false, sortOrder: 1 },
+   808→                    { content: "Third law", isCorrect: false, sortOrder: 2 },
+   809→                    { content: "Law of gravity", isCorrect: false, sortOrder: 3 },
+   810→                  ]},
+   811→                ],
+   812→              },
+   813→              {
+   814→                title: "Speed, Velocity, and Acceleration",
+   815→                slug: "speed-velocity-acceleration",
+   816→                contentType: "text",
+   817→                durationMinutes: 14,
+   818→                sortOrder: 1,
+   819→                bodyContent: JSON.stringify([
+   820→                  { id: "b1", block_type: "heading", content: "Speed, Velocity, and Acceleration", level: 2 },
+   821→                  { id: "b2", block_type: "paragraph", content: "Speed is how fast (scalar). Velocity is speed with direction (vector). Acceleration is the rate of change of velocity." },
+   822→                ]),
+   823→                questions: [
+   824→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["physics", "speed-velocity"]), answers: [
+   825→                    { content: "Velocity includes direction; speed does not", isCorrect: true, sortOrder: 0 },
+   826→                    { content: "They are the same thing", isCorrect: false, sortOrder: 1 },
+   827→                    { content: "Speed is a vector quantity", isCorrect: false, sortOrder: 2 },
+   828→                    { content: "Velocity only measures deceleration", isCorrect: false, sortOrder: 3 },
+   829→                  ]},
+   830→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["physics", "acceleration"]), answers: [
+   831→                    { content: "m/s\u00b2", isCorrect: true, sortOrder: 0 },
+   832→                    { content: "m/s", isCorrect: false, sortOrder: 1 },
+   833→                    { content: "kg\u00b7m/s", isCorrect: false, sortOrder: 2 },
+   834→                    { content: "N", isCorrect: false, sortOrder: 3 },
+   835→                  ]},
+   836→                ],
+   837→              },
+   838→            ],
+   839→          },
+   840→        ],
+   841→      },
+   842→    ],
+   843→  },
+   844→  {
+   845→    code: "rla",
+   846→    title: "Reasoning Through Language Arts",
+   847→    description: "Reading comprehension, writing, grammar, and language conventions.",
+   848→    iconUrl: "/icons/rla.svg",
+   849→    colorHex: "#F59E0B",
+   850→    sortOrder: 2,
+   851→    modules: [
+   852→      {
+   853→        title: "Reading Comprehension",
+   854→        description: "Analyze passages, identify main ideas, and make inferences.",
+   855→        estimatedHours: 8.0,
+   856→        sortOrder: 0,
+   857→        topics: [
+   858→          {
+   859→            title: "Main Idea and Details",
+   860→            description: "Identify the main idea and supporting details in passages.",
+   861→            sortOrder: 0,
+   862→            lessons: [
+   863→              {
+   864→                title: "Finding the Main Idea",
+   865→                slug: "finding-main-idea",
+   866→                contentType: "text",
+   867→                durationMinutes: 14,
+   868→                sortOrder: 0,
+   869→                bodyContent: JSON.stringify([
+   870→                  { id: "b1", block_type: "heading", content: "Finding the Main Idea", level: 2 },
+   871→                  { id: "b2", block_type: "paragraph", content: "The <strong>main idea</strong> is the central point the author wants to communicate. It is often (but not always) stated in the first or last sentence. Supporting details provide evidence, examples, and explanations." },
+   872→                  { id: "b3", block_type: "callout", callout: { variant: "tip", title: "GED Strategy", body: "Ask yourself: 'What is the one thing the author most wants me to understand?' If you can answer in one sentence, you have found the main idea." } },
+   873→                ]),
+   874→                questions: [
+   875→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["rla", "main-idea"]), answers: [
+   876→                    { content: "First or last sentence", isCorrect: true, sortOrder: 0 },
+   877→                    { content: "Random sentence in the middle", isCorrect: false, sortOrder: 1 },
+   878→                    { content: "Only in the title", isCorrect: false, sortOrder: 2 },
+   879→                    { content: "It is never directly stated", isCorrect: false, sortOrder: 3 },
+   880→                  ]},
+   881→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["rla", "supporting-detail"]), answers: [
+   882→                    { content: "To provide evidence and examples", isCorrect: true, sortOrder: 0 },
+   883→                    { content: "To contradict the main idea", isCorrect: false, sortOrder: 1 },
+   884→                    { content: "To introduce a new topic", isCorrect: false, sortOrder: 2 },
+   885→                    { content: "To summarize the passage", isCorrect: false, sortOrder: 3 },
+   886→                  ]},
+   887→                ],
+   888→              },
+   889→              {
+   890→                title: "Making Inferences",
+   891→                slug: "making-inferences",
+   892→                contentType: "text",
+   893→                durationMinutes: 16,
+   894→                sortOrder: 1,
+   895→                bodyContent: JSON.stringify([
+   896→                  { id: "b1", block_type: "heading", content: "Making Inferences", level: 2 },
+   897→                  { id: "b2", block_type: "paragraph", content: "An <strong>inference</strong> is a conclusion drawn from evidence and reasoning rather than from explicit statements. On the GED, you will need to 'read between the lines' to answer inference questions." },
+   898→                ]),
+   899→                questions: [
+   900→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["rla", "inference"]), answers: [
+   901→                    { content: "A conclusion based on clues and evidence in the text", isCorrect: true, sortOrder: 0 },
+   902→                    { content: "A fact directly stated by the author", isCorrect: false, sortOrder: 1 },
+   903→                    { content: "The title of the passage", isCorrect: false, sortOrder: 2 },
+   904→                    { content: "A summary of the main idea", isCorrect: false, sortOrder: 3 },
+   905→                  ]},
+   906→                  { questionType: "multiple_choice", difficulty: "hard", tags: JSON.stringify(["rla", "tone"]), answers: [
+   907→                    { content: "The author's attitude toward the subject", isCorrect: true, sortOrder: 0 },
+   908→                    { content: "The main character's name", isCorrect: false, sortOrder: 1 },
+   909→                    { content: "The number of paragraphs", isCorrect: false, sortOrder: 2 },
+   910→                    { content: "The publication date", isCorrect: false, sortOrder: 3 },
+   911→                  ]},
+   912→                ],
+   913→              },
+   914→            ],
+   915→          },
+   916→          {
+   917→            title: "Text Structure and Purpose",
+   918→            description: "Recognize how texts are organized and the author's purpose.",
+   919→            sortOrder: 1,
+   920→            lessons: [
+   921→              {
+   922→                title: "Author's Purpose",
+   923→                slug: "authors-purpose",
+   924→                contentType: "text",
+   925→                durationMinutes: 12,
+   926→                sortOrder: 0,
+   927→                bodyContent: JSON.stringify([
+   928→                  { id: "b1", block_type: "heading", content: "Author's Purpose", level: 2 },
+   929→                  { id: "b2", block_type: "paragraph", content: "The three main purposes are: <strong>to inform</strong> (explain facts), <strong>to persuade</strong> (convince the reader), and <strong>to entertain</strong> (tell a story). Some texts combine multiple purposes." },
+   930→                ]),
+   931→                questions: [
+   932→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["rla", "purpose"]), answers: [
+   933→                    { content: "To persuade", isCorrect: true, sortOrder: 0 },
+   934→                    { content: "To entertain", isCorrect: false, sortOrder: 1 },
+   935→                    { content: "To inform", isCorrect: false, sortOrder: 2 },
+   936→                    { content: "To describe", isCorrect: false, sortOrder: 3 },
+   937→                  ]},
+   938→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["rla", "text-structure"]), answers: [
+   939→                    { content: "Cause and effect", isCorrect: true, sortOrder: 0 },
+   940→                    { content: "Alphabetical order", isCorrect: false, sortOrder: 1 },
+   941→                    { content: "Rhyming scheme", isCorrect: false, sortOrder: 2 },
+   942→                    { content: "Question and answer", isCorrect: false, sortOrder: 3 },
+   943→                  ]},
+   944→                ],
+   945→              },
+   946→              {
+   947→                title: "Point of View",
+   948→                slug: "point-of-view",
+   949→                contentType: "text",
+   950→                durationMinutes: 13,
+   951→                sortOrder: 1,
+   952→                bodyContent: JSON.stringify([
+   953→                  { id: "b1", block_type: "heading", content: "Point of View", level: 2 },
+   954→                  { id: "b2", block_type: "paragraph", content: "Point of view (POV) is the perspective from which a story is told. First person uses 'I'. Third person limited follows one character. Third person omniscient knows all characters' thoughts." },
+   955→                ]),
+   956→                questions: [
+   957→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["rla", "point-of-view"]), answers: [
+   958→                    { content: "First person", isCorrect: true, sortOrder: 0 },
+   959→                    { content: "Second person", isCorrect: false, sortOrder: 1 },
+   960→                    { content: "Third person omniscient", isCorrect: false, sortOrder: 2 },
+   961→                    { content: "Third person objective", isCorrect: false, sortOrder: 3 },
+   962→                  ]},
+   963→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["rla", "narrator"]), answers: [
+   964→                    { content: "Can reveal all characters' thoughts and feelings", isCorrect: true, sortOrder: 0 },
+   965→                    { content: "Only knows one character's perspective", isCorrect: false, sortOrder: 1 },
+   966→                    { content: "Is a character in the story", isCorrect: false, sortOrder: 2 },
+   967→                    { content: "Never describes settings", isCorrect: false, sortOrder: 3 },
+   968→                  ]},
+   969→                ],
+   970→              },
+   971→            ],
+   972→          },
+   973→        ],
+   974→      },
+   975→      {
+   976→        title: "Grammar and Language Conventions",
+   977→        description: "Sentence structure, punctuation, verb tense, and agreement.",
+   978→        estimatedHours: 6.0,
+   979→        sortOrder: 1,
+   980→        topics: [
+   981→          {
+   982→            title: "Sentence Structure",
+   983→            description: "Complete sentences, fragments, run-ons, and sentence types.",
+   984→            sortOrder: 0,
+   985→            lessons: [
+   986→              {
+   987→                title: "Complete Sentences vs. Fragments",
+   988→                slug: "sentences-vs-fragments",
+   989→                contentType: "text",
+   990→                durationMinutes: 12,
+   991→                sortOrder: 0,
+   992→                bodyContent: JSON.stringify([
+   993→                  { id: "b1", block_type: "heading", content: "Complete Sentences vs. Fragments", level: 2 },
+   994→                  { id: "b2", block_type: "paragraph", content: "A <strong>complete sentence</strong> has a subject and a verb and expresses a complete thought. A <strong>fragment</strong> is missing one of these elements. A <strong>run-on</strong> joins two complete sentences without proper punctuation or conjunction." },
+   995→                ]),
+   996→                questions: [
+   997→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["grammar", "fragment"]), answers: [
+   998→                    { content: "Missing a subject or verb or complete thought", isCorrect: true, sortOrder: 0 },
+   999→                    { content: "Too long", isCorrect: false, sortOrder: 1 },
+  1000→                    { content: "Contains a spelling error", isCorrect: false, sortOrder: 2 },
+  1001→                    { content: "Has too many commas", isCorrect: false, sortOrder: 3 },
+  1002→                  ]},
+  1003→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["grammar", "run-on"]), answers: [
+  1004→                    { content: "I love coffee she loves tea.", isCorrect: true, sortOrder: 0 },
+  1005→                    { content: "I love coffee, but she loves tea.", isCorrect: false, sortOrder: 1 },
+  1006→                    { content: "I love coffee and she loves tea.", isCorrect: false, sortOrder: 2 },
+  1007→                    { content: "I love coffee; she loves tea.", isCorrect: false, sortOrder: 3 },
+  1008→                  ]},
+  1009→                ],
+  1010→              },
+  1011→              {
+  1012→                title: "Subject-Verb Agreement",
+  1013→                slug: "subject-verb-agreement",
+  1014→                contentType: "text",
+  1015→                durationMinutes: 14,
+  1016→                sortOrder: 1,
+  1017→                bodyContent: JSON.stringify([
+  1018→                  { id: "b1", block_type: "heading", content: "Subject-Verb Agreement", level: 2 },
+  1019→                  { id: "b2", block_type: "paragraph", content: "A singular subject takes a singular verb; a plural subject takes a plural verb. Be careful with prepositional phrases between the subject and verb \u2014 they do not affect agreement." },
+  1020→                ]),
+  1021→                questions: [
+  1022→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["grammar", "subject-verb"]), answers: [
+  1023→                    { content: "runs", isCorrect: true, sortOrder: 0 },
+  1024→                    { content: "run", isCorrect: false, sortOrder: 1 },
+  1025→                    { content: "running", isCorrect: false, sortOrder: 2 },
+  1026→                    { content: "ran", isCorrect: false, sortOrder: 3 },
+  1027→                  ]},
+  1028→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["grammar", "pronoun-agreement"]), answers: [
+  1029→                    { content: "their", isCorrect: false, sortOrder: 0 },
+  1030→                    { content: "his or her", isCorrect: true, sortOrder: 1 },
+  1031→                    { content: "its", isCorrect: false, sortOrder: 2 },
+  1032→                    { content: "they", isCorrect: false, sortOrder: 3 },
+  1033→                  ]},
+  1034→                ],
+  1035→              },
+  1036→            ],
+  1037→          },
+  1038→          {
+  1039→            title: "Punctuation and Capitalization",
+  1040→            description: "Proper use of commas, periods, apostrophes, and capital letters.",
+  1041→            sortOrder: 1,
+  1042→            lessons: [
+  1043→              {
+  1044→                title: "Comma Rules",
+  1045→                slug: "comma-rules",
+  1046→                contentType: "text",
+  1047→                durationMinutes: 13,
+  1048→                sortOrder: 0,
+  1049→                bodyContent: JSON.stringify([
+  1050→                  { id: "b1", block_type: "heading", content: "Comma Rules", level: 2 },
+  1051→                  { id: "b2", block_type: "paragraph", content: "Use commas to: separate items in a list, after introductory clauses, before coordinating conjunctions (FANBOYS) in compound sentences, and to set off non-essential information." },
+  1052→                ]),
+  1053→                questions: [
+  1054→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["grammar", "comma"]), answers: [
+  1055→                    { content: "apples, bananas, and oranges", isCorrect: true, sortOrder: 0 },
+  1056→                    { content: "apples bananas and oranges", isCorrect: false, sortOrder: 1 },
+  1057→                    { content: "apples, bananas and, oranges", isCorrect: false, sortOrder: 2 },
+  1058→                    { content: "apples bananas, and oranges", isCorrect: false, sortOrder: 3 },
+  1059→                  ]},
+  1060→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["grammar", "comma-splice"]), answers: [
+  1061→                    { content: "Add a period or semicolon between the independent clauses", isCorrect: true, sortOrder: 0 },
+  1062→                    { content: "Add more commas", isCorrect: false, sortOrder: 1 },
+  1063→                    { content: "Remove all punctuation", isCorrect: false, sortOrder: 2 },
+  1064→                    { content: "Make the sentences shorter", isCorrect: false, sortOrder: 3 },
+  1065→                  ]},
+  1066→                ],
+  1067→              },
+  1068→              {
+  1069→                title: "Apostrophes and Quotation Marks",
+  1070→                slug: "apostrophes-quotation-marks",
+  1071→                contentType: "text",
+  1072→                durationMinutes: 12,
+  1073→                sortOrder: 1,
+  1074→                bodyContent: JSON.stringify([
+  1075→                  { id: "b1", block_type: "heading", content: "Apostrophes and Quotation Marks", level: 2 },
+  1076→                  { id: "b2", block_type: "paragraph", content: "Use apostrophes for contractions (don't, can't) and possessives (the cat's tail). Never use an apostrophe for plurals. Use quotation marks for direct speech and titles of short works." },
+  1077→                ]),
+  1078→                questions: [
+  1079→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["grammar", "apostrophe"]), answers: [
+  1080→                    { content: "The dog's bone", isCorrect: true, sortOrder: 0 },
+  1081→                    { content: "The dogs bone", isCorrect: false, sortOrder: 1 },
+  1082→                    { content: "The dogs' bone's", isCorrect: false, sortOrder: 2 },
+  1083→                    { content: "The dog bone", isCorrect: false, sortOrder: 3 },
+  1084→                  ]},
+  1085→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["grammar", "its-vs-it's"]), answers: [
+  1086→                    { content: "Its is possessive; it's is a contraction for it is", isCorrect: true, sortOrder: 0 },
+  1087→                    { content: "They mean the same thing", isCorrect: false, sortOrder: 1 },
+  1088→                    { content: "Its is a contraction", isCorrect: false, sortOrder: 2 },
+  1089→                    { content: "It's is possessive", isCorrect: false, sortOrder: 3 },
+  1090→                  ]},
+  1091→                ],
+  1092→              },
+  1093→            ],
+  1094→          },
+  1095→        ],
+  1096→      },
+  1097→    ],
+  1098→  },
+  1099→  {
+  1100→    code: "ss",
+  1101→    title: "Social Studies",
+  1102→    description: "U.S. history, civics, economics, and geography for the GED.",
+  1103→    iconUrl: "/icons/ss.svg",
+  1104→    colorHex: "#8B5CF6",
+  1105→    sortOrder: 3,
+  1106→    modules: [
+  1107→      {
+  1108→        title: "U.S. History",
+  1109→        description: "Major events, documents, and movements in American history.",
+  1110→        estimatedHours: 8.0,
+  1111→        sortOrder: 0,
+  1112→        topics: [
+  1113→          {
+  1114→            title: "Founding Documents",
+  1115→            description: "Declaration of Independence, Constitution, and Bill of Rights.",
+  1116→            sortOrder: 0,
+  1117→            lessons: [
+  1118→              {
+  1119→                title: "The Declaration of Independence",
+  1120→                slug: "declaration-of-independence",
+  1121→                contentType: "text",
+  1122→                durationMinutes: 15,
+  1123→                sortOrder: 0,
+  1124→                bodyContent: JSON.stringify([
+  1125→                  { id: "b1", block_type: "heading", content: "The Declaration of Independence", level: 2 },
+  1126→                  { id: "b2", block_type: "paragraph", content: "Adopted on July 4, 1776, the Declaration announced the 13 colonies' separation from Great Britain. Written primarily by Thomas Jefferson, it asserts that all men are created equal with unalienable rights to life, liberty, and the pursuit of happiness." },
+  1127→                ]),
+  1128→                questions: [
+  1129→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["history", "declaration"]), answers: [
+  1130→                    { content: "July 4, 1776", isCorrect: true, sortOrder: 0 },
+  1131→                    { content: "July 4, 1775", isCorrect: false, sortOrder: 1 },
+  1132→                    { content: "June 15, 1776", isCorrect: false, sortOrder: 2 },
+  1133→                    { content: "January 1, 1777", isCorrect: false, sortOrder: 3 },
+  1134→                  ]},
+  1135→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["history", "unalienable-rights"]), answers: [
+  1136→                    { content: "Life, liberty, and the pursuit of happiness", isCorrect: true, sortOrder: 0 },
+  1137→                    { content: "Life, liberty, and property", isCorrect: false, sortOrder: 1 },
+  1138→                    { content: "Freedom, equality, and justice", isCorrect: false, sortOrder: 2 },
+  1139→                    { content: "Faith, hope, and charity", isCorrect: false, sortOrder: 3 },
+  1140→                  ]},
+  1141→                ],
+  1142→              },
+  1143→              {
+  1144→                title: "The U.S. Constitution",
+  1145→                slug: "us-constitution",
+  1146→                contentType: "text",
+  1147→                durationMinutes: 18,
+  1148→                sortOrder: 1,
+  1149→                bodyContent: JSON.stringify([
+  1150→                  { id: "b1", block_type: "heading", content: "The U.S. Constitution", level: 2 },
+  1151→                  { id: "b2", block_type: "paragraph", content: "The Constitution (1787) established the framework of the U.S. government with three branches: Legislative (Congress), Executive (President), and Judicial (Supreme Court). The system of checks and balances ensures no branch becomes too powerful." },
+  1152→                ]),
+  1153→                questions: [
+  1154→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["civics", "constitution", "branches"]), answers: [
+  1155→                    { content: "Three", isCorrect: true, sortOrder: 0 },
+  1156→                    { content: "Two", isCorrect: false, sortOrder: 1 },
+  1157→                    { content: "Four", isCorrect: false, sortOrder: 2 },
+  1158→                    { content: "Five", isCorrect: false, sortOrder: 3 },
+  1159→                  ]},
+  1160→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["civics", "checks-and-balances"]), answers: [
+  1161→                    { content: "To prevent any one branch from becoming too powerful", isCorrect: true, sortOrder: 0 },
+  1162→                    { content: "To make government more efficient", isCorrect: false, sortOrder: 1 },
+  1163→                    { content: "To give the President more power", isCorrect: false, sortOrder: 2 },
+  1164→                    { content: "To eliminate state governments", isCorrect: false, sortOrder: 3 },
+  1165→                  ]},
+  1166→                ],
+  1167→              },
+  1168→            ],
+  1169→          },
+  1170→          {
+  1171→            title: "Civil Rights Movement",
+  1172→            description: "Key events and figures in the struggle for civil rights.",
+  1173→            sortOrder: 1,
+  1174→            lessons: [
+  1175→              {
+  1176→                title: "The Civil Rights Movement Overview",
+  1177→                slug: "civil-rights-movement-overview",
+  1178→                contentType: "text",
+  1179→                durationMinutes: 16,
+  1180→                sortOrder: 0,
+  1181→                bodyContent: JSON.stringify([
+  1182→                  { id: "b1", block_type: "heading", content: "The Civil Rights Movement", level: 2 },
+  1183→                  { id: "b2", block_type: "paragraph", content: "The Civil Rights Movement (1950s-1960s) aimed to end racial segregation and discrimination. Key events include Brown v. Board of Education (1954), the Montgomery Bus Boycott (1955), the March on Washington (1963), and the Civil Rights Act (1964)." },
+  1184→                ]),
+  1185→                questions: [
+  1186→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["history", "civil-rights"]), answers: [
+  1187→                    { content: "Outlawed segregation in public schools", isCorrect: true, sortOrder: 0 },
+  1188→                    { content: "Gave women the right to vote", isCorrect: false, sortOrder: 1 },
+  1189→                    { content: "Ended slavery", isCorrect: false, sortOrder: 2 },
+  1190→                    { content: "Established the Bill of Rights", isCorrect: false, sortOrder: 3 },
+  1191→                  ]},
+  1192→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["history", "civil-rights-act"]), answers: [
+  1193→                    { content: "1964", isCorrect: true, sortOrder: 0 },
+  1194→                    { content: "1954", isCorrect: false, sortOrder: 1 },
+  1195→                    { content: "1968", isCorrect: false, sortOrder: 2 },
+  1196→                    { content: "1972", isCorrect: false, sortOrder: 3 },
+  1197→                  ]},
+  1198→                ],
+  1199→              },
+  1200→              {
+  1201→                title: "Key Figures: MLK and Rosa Parks",
+  1202→                slug: "mlk-rosa-parks",
+  1203→                contentType: "text",
+  1204→                durationMinutes: 14,
+  1205→                sortOrder: 1,
+  1206→                bodyContent: JSON.stringify([
+  1207→                  { id: "b1", block_type: "heading", content: "Key Figures of the Movement", level: 2 },
+  1208→                  { id: "b2", block_type: "paragraph", content: "Martin Luther King Jr. led nonviolent protests and delivered the 'I Have a Dream' speech. Rosa Parks refused to give up her bus seat, sparking the Montgomery Bus Boycott. Both became symbols of the fight for equality." },
+  1209→                ]),
+  1210→                questions: [
+  1211→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["history", "mlk"]), answers: [
+  1212→                    { content: "I Have a Dream", isCorrect: true, sortOrder: 0 },
+  1213→                    { content: "Gettysburg Address", isCorrect: false, sortOrder: 1 },
+  1214→                    { content: "The Federalist Papers", isCorrect: false, sortOrder: 2 },
+  1215→                    { content: "Emancipation Proclamation", isCorrect: false, sortOrder: 3 },
+  1216→                  ]},
+  1217→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["history", "rosa-parks"]), answers: [
+  1218→                    { content: "Montgomery Bus Boycott", isCorrect: true, sortOrder: 0 },
+  1219→                    { content: "March on Washington", isCorrect: false, sortOrder: 1 },
+  1220→                    { content: "Brown v. Board of Education", isCorrect: false, sortOrder: 2 },
+  1221→                    { content: "Freedom Rides", isCorrect: false, sortOrder: 3 },
+  1222→                  ]},
+  1223→                ],
+  1224→              },
+  1225→            ],
+  1226→          },
+  1227→        ],
+  1228→      },
+  1229→      {
+  1230→        title: "Civics and Government",
+  1231→        description: "How government works, elections, and citizenship.",
+  1232→        estimatedHours: 6.5,
+  1233→        sortOrder: 1,
+  1234→        topics: [
+  1235→          {
+  1236→            title: "The Three Branches of Government",
+  1237→            description: "Legislative, Executive, and Judicial branches and their powers.",
+  1238→            sortOrder: 0,
+  1239→            lessons: [
+  1240→              {
+  1241→                title: "Legislative Branch: Congress",
+  1242→                slug: "legislative-branch-congress",
+  1243→                contentType: "text",
+  1244→                durationMinutes: 14,
+  1245→                sortOrder: 0,
+  1246→                bodyContent: JSON.stringify([
+  1247→                  { id: "b1", block_type: "heading", content: "The Legislative Branch", level: 2 },
+  1248→                  { id: "b2", block_type: "paragraph", content: "Congress is the legislative branch, made up of the Senate (100 members, 2 per state) and the House of Representatives (435 members, based on state population). Congress makes laws, declares war, and controls spending." },
+  1249→                ]),
+  1250→                questions: [
+  1251→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["civics", "congress"]), answers: [
+  1252→                    { content: "100", isCorrect: true, sortOrder: 0 },
+  1253→                    { content: "50", isCorrect: false, sortOrder: 1 },
+  1254→                    { content: "435", isCorrect: false, sortOrder: 2 },
+  1255→                    { content: "535", isCorrect: false, sortOrder: 3 },
+  1256→                  ]},
+  1257→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["civics", "house-representatives"]), answers: [
+  1258→                    { content: "Based on state population", isCorrect: true, sortOrder: 0 },
+  1259→                    { content: "Two per state", isCorrect: false, sortOrder: 1 },
+  1260→                    { content: "Appointed by the President", isCorrect: false, sortOrder: 2 },
+  1261→                    { content: "Elected by the Senate", isCorrect: false, sortOrder: 3 },
+  1262→                  ]},
+  1263→                ],
+  1264→              },
+  1265→              {
+  1266→                title: "Executive and Judicial Branches",
+  1267→                slug: "executive-judicial-branches",
+  1268→                contentType: "text",
+  1269→                durationMinutes: 15,
+  1270→                sortOrder: 1,
+  1271→                bodyContent: JSON.stringify([
+  1272→                  { id: "b1", block_type: "heading", content: "Executive and Judicial Branches", level: 2 },
+  1273→                  { id: "b2", block_type: "paragraph", content: "The Executive branch is headed by the President, who serves as Commander in Chief and enforces laws. The Judicial branch, led by the Supreme Court, interprets laws and can declare them unconstitutional." },
+  1274→                ]),
+  1275→                questions: [
+  1276→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["civics", "president"]), answers: [
+  1277→                    { content: "Commander in Chief", isCorrect: true, sortOrder: 0 },
+  1278→                    { content: "Chief Justice", isCorrect: false, sortOrder: 1 },
+  1279→                    { content: "Speaker of the House", isCorrect: false, sortOrder: 2 },
+  1280→                    { content: "Senate Majority Leader", isCorrect: false, sortOrder: 3 },
+  1281→                  ]},
+  1282→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["civics", "supreme-court"]), answers: [
+  1283→                    { content: "Declare laws unconstitutional", isCorrect: true, sortOrder: 0 },
+  1284→                    { content: "Create new laws", isCorrect: false, sortOrder: 1 },
+  1285→                    { content: "Enforce laws", isCorrect: false, sortOrder: 2 },
+  1286→                    { content: "Command the military", isCorrect: false, sortOrder: 3 },
+  1287→                  ]},
+  1288→                ],
+  1289→              },
+  1290→            ],
+  1291→          },
+  1292→          {
+  1293→            title: "Elections and Voting",
+  1294→            description: "The electoral process, voting rights, and political parties.",
+  1295→            sortOrder: 1,
+  1296→            lessons: [
+  1297→              {
+  1298→                title: "How Elections Work",
+  1299→                slug: "how-elections-work",
+  1300→                contentType: "text",
+  1301→                durationMinutes: 14,
+  1302→                sortOrder: 0,
+  1303→                bodyContent: JSON.stringify([
+  1304→                  { id: "b1", block_type: "heading", content: "How Elections Work", level: 2 },
+  1305→                  { id: "b2", block_type: "paragraph", content: "The President is elected through the Electoral College, not by direct popular vote. Each state has electors equal to its Congressional delegation. A candidate needs 270 electoral votes to win." },
+  1306→                ]),
+  1307→                questions: [
+  1308→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["civics", "electoral-college"]), answers: [
+  1309→                    { content: "270", isCorrect: true, sortOrder: 0 },
+  1310→                    { content: "300", isCorrect: false, sortOrder: 1 },
+  1311→                    { content: "218", isCorrect: false, sortOrder: 2 },
+  1312→                    { content: "51", isCorrect: false, sortOrder: 3 },
+  1313→                  ]},
+  1314→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["civics", "voting-amendments"]), answers: [
+  1315→                    { content: "15th, 19th, and 26th Amendments", isCorrect: true, sortOrder: 0 },
+  1316→                    { content: "1st, 2nd, and 3rd Amendments", isCorrect: false, sortOrder: 1 },
+  1317→                    { content: "10th, 11th, and 12th Amendments", isCorrect: false, sortOrder: 2 },
+  1318→                    { content: "4th, 5th, and 6th Amendments", isCorrect: false, sortOrder: 3 },
+  1319→                  ]},
+  1320→                ],
+  1321→              },
+  1322→              {
+  1323→                title: "Political Parties and the Two-Party System",
+  1324→                slug: "political-parties",
+  1325→                contentType: "text",
+  1326→                durationMinutes: 12,
+  1327→                sortOrder: 1,
+  1328→                bodyContent: JSON.stringify([
+  1329→                  { id: "b1", block_type: "heading", content: "Political Parties", level: 2 },
+  1330→                  { id: "b2", block_type: "paragraph", content: "The U.S. has a two-party system dominated by Democrats and Republicans. Third parties exist but rarely win major elections. Parties develop platforms, nominate candidates, and organize voters." },
+  1331→                ]),
+  1332→                questions: [
+  1333→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["civics", "political-parties"]), answers: [
+  1334→                    { content: "Democrats and Republicans", isCorrect: true, sortOrder: 0 },
+  1335→                    { content: "Liberals and Conservatives", isCorrect: false, sortOrder: 1 },
+  1336→                    { content: "Federalists and Anti-Federalists", isCorrect: false, sortOrder: 2 },
+  1337→                    { content: "Whigs and Tories", isCorrect: false, sortOrder: 3 },
+  1338→                  ]},
+  1339→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["civics", "primary-election"]), answers: [
+  1340→                    { content: "To select a party's nominee for the general election", isCorrect: true, sortOrder: 0 },
+  1341→                    { content: "To elect the President directly", isCorrect: false, sortOrder: 1 },
+  1342→                    { content: "To remove a sitting official", isCorrect: false, sortOrder: 2 },
+  1343→                    { content: "To amend the Constitution", isCorrect: false, sortOrder: 3 },
+  1344→                  ]},
+  1345→                ],
+  1346→              },
+  1347→            ],
+  1348→          },
+  1349→        ],
+  1350→      },
+  1351→    ],
+  1352→  },
+  1353→];
+  1354→
+  1355→async function seed() {
+  1356→  console.log("=== GED Prep Platform — Seeding Database ===\n");
+  1357→
+  1358→  // Clear in reverse dependency order
+  1359→  console.log("Clearing existing data...");
+  1360→  await prisma.readinessHistory.deleteMany();
+  1361→  await prisma.readinessScore.deleteMany();
+  1362→  await prisma.essayGradingDetail.deleteMany();
+  1363→  await prisma.essaySubmission.deleteMany();
+  1364→  await prisma.essayPrompt.deleteMany();
+  1365→  await prisma.aiMessage.deleteMany();
+  1366→  await prisma.aiConversation.deleteMany();
+  1367→  await prisma.lessonProgress.deleteMany();
+  1368→  await prisma.spacedRepetition.deleteMany();
+  1369→  await prisma.quizAttemptAnswer.deleteMany();
+  1370→  await prisma.quizAttempt.deleteMany();
+  1371→  await prisma.answer.deleteMany();
+  1372→  await prisma.question.deleteMany();
+  1373→  await prisma.lesson.deleteMany();
+  1374→  await prisma.topic.deleteMany();
+  1375→  await prisma.module.deleteMany();
+  1376→  await prisma.subject.deleteMany();
+  1377→
+  1378→  // Create a demo user (upsert to avoid unique constraint on re-runs)
+  1379→  const user = await prisma.user.upsert({
+  1380→    where: { email: "student@gedprep.com" },
+  1381→    update: {},
+  1382→    create: {
+  1383→      email: "student@gedprep.com",
+  1384→      passwordHash: "$2b$10$demo_hashed_password",
+  1385→      firstName: "Alex",
+  1386→      lastName: "Student",
+  1387→      displayName: "Alex S.",
+  1388→      role: "student",
+  1389→      status: "active",
+  1390→    },
+  1391→  });
+  1392→  console.log(`Created user: ${user.email}`);
+  1393→
+  1394→  let totalLessons = 0;
+  1395→  let totalQuestions = 0;
+  1396→
+  1397→  for (const subjectData of SUBJECTS) {
+  1398→    const { modules: _mods, ...subjectInput } = subjectData;
+  1399→    const subject = await prisma.subject.create({
+  1400→      data: { ...subjectInput, status: "published" },
+  1401→    });
+  1402→    console.log(`  Subject: ${subject.title}`);
+  1403→
+  1404→    for (const moduleData of _mods) {
+  1405→      const { topics: _topics, ...modInput } = moduleData;
+  1406→      const mod = await prisma.module.create({
+  1407→        data: { ...modInput, subjectId: subject.id, status: "published" },
+  1408→      });
+  1409→
+  1410→      for (const topicData of _topics) {
+  1411→        const { lessons: _lessons, ...topicInput } = topicData;
+  1412→        const topic = await prisma.topic.create({
+  1413→          data: { ...topicInput, moduleId: mod.id, status: "published" },
+  1414→        });
+  1415→
+  1416→        for (const lessonData of _lessons) {
+  1417→          const { questions: _questions, ...lessonInput } = lessonData;
+  1418→          const lesson = await prisma.lesson.create({
+  1419→            data: {
+  1420→              ...lessonInput,
+  1421→              topicId: topic.id,
+  1422→              status: "published",
+  1423→            },
+  1424→          });
+  1425→          totalLessons++;
+  1426→
+  1427→          for (const qData of _questions) {
+  1428→            const { answers: _answers, ...qInput } = qData;
+  1429→            const question = await prisma.question.create({
+  1430→              data: {
+  1431→                ...qInput,
+  1432→                lessonId: lesson.id,
+  1433→                subjectId: subject.id,
+  1434→              },
+  1435→            });
+  1436→
+  1437→            for (const aData of _answers) {
+  1438→              await prisma.answer.create({
+  1439→                data: { ...aData, questionId: question.id },
+  1440→              });
+  1441→            }
+  1442→            totalQuestions += 1;
+  1443→          }
+  1444→        }
+  1445→      }
+  1446→    }
+  1447→  }
+  1448→
+  1449→  console.log(`\n=== Seed Complete ===`);
+  1450→  console.log(`Subjects: ${SUBJECTS.length}`);
+  1451→  console.log(`Lessons: ${totalLessons}`);
+  1452→  console.log(`Questions: ${totalQuestions}`);
+  1453→  console.log(`Demo user: student@gedprep.com`);
+  1454→}
+  1455→
+  1456→seed()
+  1457→  .then(async () => {
+  1458→    await prisma.$disconnect();
+  1459→  })
+  1460→  .catch(async (e) => {
+  1461→    console.error("Seed failed:", e);
+  1462→    await prisma.$disconnect();
+  1463→    process.exit(1);
+  1464→  });

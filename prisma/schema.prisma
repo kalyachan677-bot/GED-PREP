@@ -149,6 +149,7 @@ model Question {
   questionType  String                           // multiple_choice, multiple_select, fill_blank, drag_drop, short_answer
   difficulty    String   @default("medium")      // easy, medium, hard
   points        Int      @default(1)
+  questionText  String?
   explanation   String?
   hintText      String?
   isActive      Boolean  @default(true)

@@ -9,7 +9,7 @@ const SUBJECTS = [
     description:
       "Algebraic problem solving, quantitative reasoning, data analysis, and geometry concepts tested on the GED.",
     iconUrl: "/icons/math.svg",
-    colorHex: "#EF4444",
+    colorHex: "#10B981",
     sortOrder: 0,
     modules: [
       {
@@ -591,7 +591,7 @@ const SUBJECTS = [
     description:
       "Life science, physical science, earth and space science concepts for the GED.",
     iconUrl: "/icons/science.svg",
-    colorHex: "#22C55E",
+    colorHex: "#F59E0B",
     sortOrder: 1,
     modules: [
       {
@@ -846,7 +846,7 @@ const SUBJECTS = [
     title: "Reasoning Through Language Arts",
     description: "Reading comprehension, writing, grammar, and language conventions.",
     iconUrl: "/icons/rla.svg",
-    colorHex: "#F59E0B",
+    colorHex: "#8B5CF6",
     sortOrder: 2,
     modules: [
       {
@@ -1101,7 +1101,7 @@ const SUBJECTS = [
     title: "Social Studies",
     description: "U.S. history, civics, economics, and geography for the GED.",
     iconUrl: "/icons/ss.svg",
-    colorHex: "#8B5CF6",
+    colorHex: "#F43F5E",
     sortOrder: 3,
     modules: [
       {
@@ -1376,15 +1376,16 @@ async function seed() {
   await prisma.subject.deleteMany();
 
   // Create a demo user (upsert to avoid unique constraint on re-runs)
+  const demoPasswordHash = await Bun.password.hash("demo1234");
   const user = await prisma.user.upsert({
-    where: { email: "student@gedprep.com" },
+    where: { email: "demo@ged.com" },
     update: {},
     create: {
-      email: "student@gedprep.com",
-      passwordHash: "$2b$10$demo_hashed_password",
-      firstName: "Alex",
+      email: "demo@ged.com",
+      passwordHash: demoPasswordHash,
+      firstName: "Demo",
       lastName: "Student",
-      displayName: "Alex S.",
+      displayName: "Demo Student",
       role: "student",
       status: "active",
     },
@@ -1450,7 +1451,7 @@ async function seed() {
   console.log(`Subjects: ${SUBJECTS.length}`);
   console.log(`Lessons: ${totalLessons}`);
   console.log(`Questions: ${totalQuestions}`);
-  console.log(`Demo user: student@gedprep.com`);
+  console.log(`Demo user: demo@ged.com / demo1234`);
 }
 
 seed()
