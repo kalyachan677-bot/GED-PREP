@@ -7,6 +7,7 @@
 
 const express = require('express');
 const healthRoutes = require('./health');
+const authRoutes = require('./auth');
 
 const router = express.Router();
 
@@ -16,9 +17,13 @@ const router = express.Router();
 router.use(healthRoutes);
 
 // ---------------------------------------------------------------------------
-// Protected routes (auth required — added in Loop 3)
+// Auth routes (public register/login, protected me)
 // ---------------------------------------------------------------------------
-// router.use('/auth', require('./auth'));
+router.use('/auth', authRoutes);
+
+// ---------------------------------------------------------------------------
+// Protected routes (auth required — added in future loops)
+// ---------------------------------------------------------------------------
 // router.use('/subjects', require('./subjects'));
 // router.use('/quiz', require('./quiz'));
 // ... etc.

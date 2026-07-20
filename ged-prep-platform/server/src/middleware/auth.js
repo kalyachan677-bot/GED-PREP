@@ -1,101 +1,63 @@
 // ============================================================================
 // GED Prep Platform — Auth Middleware
 // ============================================================================
-// authenticate:  Extracts JWT from Authorization header and attaches user to req
-// authorize:     Checks if authenticated user has the required role(s)
+// requireAuth: Verifies JWT and attaches req.user
+// requireRole: Checks that req.user.role is in the allowed list
 // ============================================================================
 
-const { verifyToken } = require('../utils/jwt');
 const { UnauthorizedError, ForbiddenError } = require('../utils/errors');
+const { extractToken, verifyToken } = require('../utils/auth');
 
 /**
- * Middleware: Authenticate request via JWT.
- * Reads "Authorization: Bearer <token>" header, verifies the token,
- * and attaches decoded payload to `req.user`.
- *
- * After this middleware:
- *   req.user = { sub (user id), email, role, type, iat, exp }
+ * Middleware: Require valid JWT in Authorization header.
+ * Attaches req.user = { userId, email, role }
  */
-function authenticate(req, res, next) {
-  const authHeader = req.headers.authorization;
+function requireAuth(req, res, next) {
+  const token = extractToken(req.headers.authorization);
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  if (!token) {
     return next(new UnauthorizedError('Missing or invalid Authorization header'));
   }
 
-  const token = authHeader.slice(7).trim();
-
-  if (!token) {
-    return next(new UnauthorizedError('Empty token'));
-  }
-
   try {
-    const decoded = verifyToken(token, 'access');
-    req.user = decoded;
+    const decoded = verifyToken(token);
+    // Attach user info to request
+    req.user = {
+      userId: decoded.userId,
+      email: decoded.email,
+      role: decoded.role,
+    };
     next();
   } catch (err) {
     if (err.name === 'TokenExpiredError') {
-      return next(new UnauthorizedError('Token expired — please log in again'));
+      return next(new UnauthorizedError('Token expired, please sign in again'));
     }
-    return next(new UnauthorizedError('Invalid token'));
+    if (err.name === 'JsonWebTokenError') {
+      return next(new UnauthorizedError('Invalid token'));
+    }
+    return next(new UnauthorizedError('Authentication failed'));
   }
 }
 
 /**
- * Factory: Create a role-authorization middleware.
- * Must be used AFTER `authenticate`.
- *
- * Usage:
- *   router.get('/admin', authenticate, authorize('admin'), handler);
- *   router.get('/staff', authenticate, authorize('admin', 'instructor'), handler);
+ * Middleware factory: Require specific role(s).
+ * Must be used AFTER requireAuth.
  *
  * @param  {...string} allowedRoles - Roles that are permitted
  * @returns {function} Express middleware
+ *
+ * Usage: router.delete('/users/:id', requireAuth, requireRole('admin'), handler)
  */
-function authorize(...allowedRoles) {
-  if (allowedRoles.length === 0) {
-    throw new Error('authorize() requires at least one role');
-  }
-
+function requireRole(...allowedRoles) {
   return (req, res, next) => {
     if (!req.user) {
-      return next(new UnauthorizedError('Not authenticated'));
+      return next(new UnauthorizedError('Authentication required'));
     }
-
     if (!allowedRoles.includes(req.user.role)) {
-      return next(new ForbiddenError(`Role "${req.user.role}" is not permitted`));
+      return next(new ForbiddenError(`Role '${req.user.role}' is not authorized`));
     }
-
     next();
   };
 }
 
-/**
- * Optional auth — tries to decode the token but doesn't reject if missing.
- * Attaches `req.user` if token is valid, otherwise `req.user = null`.
- * Useful for endpoints that work for both authenticated and anonymous users.
- */
-function optionalAuth(req, res, next) {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    req.user = null;
-    return next();
-  }
-
-  const token = authHeader.slice(7).trim();
-  if (!token) {
-    req.user = null;
-    return next();
-  }
-
-  try {
-    req.user = verifyToken(token, 'access');
-  } catch {
-    req.user = null;
-  }
-
-  next();
-}
-
-module.exports = { authenticate, authorize, optionalAuth };
+module.exports = { requireAuth, requireRole };

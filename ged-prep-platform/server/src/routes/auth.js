@@ -1,60 +1,84 @@
 // ============================================================================
 // GED Prep Platform — Auth Routes
 // ============================================================================
-// POST /api/auth/register   — Create a new user account
-// POST /api/auth/login      — Login with email + password
-// GET  /api/auth/me        — Get current user info (requires auth)
-// POST /api/auth/refresh   — Refresh access token
-//
-// Note: All DB operations use the real PostgreSQL schema from 001_init_schema.sql.
-//       When no DB is available, endpoints return 503 with a clear message.
+// POST /api/auth/register  — Create a new user account
+// POST /api/auth/login     — Sign in and get JWT
+// GET  /api/auth/me        — Get current user profile (protected)
+// PUT  /api/auth/me        — Update current user profile (protected)
 // ============================================================================
 
 const express = require('express');
-const { getPool } = require('../config/postgres');
-const { hashPassword, comparePassword } = require('../utils/password');
-const { generateAccessToken, generateRefreshToken, verifyToken } = require('../utils/jwt');
-const { success } = require('../utils/response');
-const { BadRequestError, UnauthorizedError, ConflictError, ServiceUnavailableError, ValidationError } = require('../utils/errors');
-const { authenticate } = require('../middleware/auth');
-const { validate } = require('../middleware/validate');
-
 const router = express.Router();
 
-// Helper: check if PG is available
-function requireDb() {
-  try {
-    return getPool();
-  } catch {
-    throw new ServiceUnavailableError('Database is not available');
-  }
-}
+const { getPool } = require('../config/postgres');
+const { hashPassword, comparePassword, signToken } = require('../utils/auth');
+const { success } = require('../utils/response');
+const { validate } = require('../middleware/validate');
+const { requireAuth } = require('../middleware/auth');
+const { BadRequestError, ConflictError, UnauthorizedError } = require('../utils/errors');
 
-// Helper: sanitize user object (remove password_hash)
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Sanitize user row — remove password_hash before sending to client.
+ */
 function sanitizeUser(row) {
+  if (!row) return null;
   const { password_hash, ...safe } = row;
   return safe;
+}
+
+/**
+ * Build the JWT payload and token for a user row.
+ */
+function buildAuthResponse(row) {
+  const user = sanitizeUser(row);
+  const token = signToken({
+    userId: user.id,
+    email: user.email,
+    role: user.role,
+  });
+  return { user, token };
 }
 
 // ---------------------------------------------------------------------------
 // POST /api/auth/register
 // ---------------------------------------------------------------------------
-router.post('/register', validate({
+const registerSchema = {
   body: {
-    email:      { type: 'string', required: true },
-    password:   { type: 'string', required: true },
+    email: {
+      type: 'string',
+      required: true,
+      validate: (v) => {
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return 'Invalid email format';
+        return null;
+      },
+    },
+    password: {
+      type: 'string',
+      required: true,
+      validate: (v) => {
+        if (v.length < 8) return 'Password must be at least 8 characters';
+        return null;
+      },
+    },
     first_name: { type: 'string', required: true },
-    last_name:  { type: 'string', required: true },
-    display_name: { type: 'string' },
+    last_name: { type: 'string', required: true },
   },
-}), async (req, res, next) => {
-  try {
-    const pool = requireDb();
-    const { email, password, first_name, last_name, display_name } = req.body;
+};
 
-    // Validate password strength
-    if (password.length < 8) {
-      throw new ValidationError({ password: 'Password must be at least 8 characters' });
+router.post('/register', validate(registerSchema), async (req, res, next) => {
+  const { email, password, first_name, last_name, display_name, preferred_lang, timezone, target_ged_date } = req.body;
+
+  try {
+    const pool = getPool();
+
+    // Check if email already exists
+    const existing = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+    if (existing.rows.length > 0) {
+      return next(new ConflictError('An account with this email already exists'));
     }
 
     // Hash password
@@ -62,33 +86,25 @@ router.post('/register', validate({
 
     // Insert user
     const result = await pool.query(
-      `INSERT INTO users (email, password_hash, first_name, last_name, display_name)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING id, email, first_name, last_name, display_name, role, status, preferred_lang, timezone, target_ged_date, created_at`,
-      [email.toLowerCase().trim(), password_hash, first_name.trim(), last_name.trim(), display_name?.trim() || null]
+      `INSERT INTO users (email, password_hash, first_name, last_name, display_name, preferred_lang, timezone, target_ged_date)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       RETURNING *`,
+      [
+        email,
+        password_hash,
+        first_name,
+        last_name,
+        display_name || null,
+        preferred_lang || 'en',
+        timezone || 'UTC',
+        target_ged_date || null,
+      ]
     );
 
-    const user = result.rows[0];
-
-    // Generate tokens
-    const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user);
-
-    return success(res, {
-      user: sanitizeUser(user),
-      tokens: {
-        access_token: accessToken,
-        refresh_token: refreshToken,
-        token_type: 'Bearer',
-        expires_in: 604800, // 7 days in seconds
-      },
-    }, 201);
+    const authResponse = buildAuthResponse(result.rows[0]);
+    return success(res, authResponse, 201);
 
   } catch (err) {
-    // PostgreSQL unique violation on email
-    if (err.code === '23505') {
-      return next(new ConflictError('An account with this email already exists'));
-    }
     next(err);
   }
 });
@@ -96,49 +112,39 @@ router.post('/register', validate({
 // ---------------------------------------------------------------------------
 // POST /api/auth/login
 // ---------------------------------------------------------------------------
-router.post('/login', validate({
+const loginSchema = {
   body: {
-    email:    { type: 'string', required: true },
+    email: { type: 'string', required: true },
     password: { type: 'string', required: true },
   },
-}), async (req, res, next) => {
-  try {
-    const pool = requireDb();
-    const { email, password } = req.body;
+};
 
-    // Find user by email
+router.post('/login', validate(loginSchema), async (req, res, next) => {
+  const { email, password } = req.body;
+
+  try {
+    const pool = getPool();
+
+    // Fetch user with password_hash (for comparison)
     const result = await pool.query(
-      `SELECT id, email, password_hash, first_name, last_name, display_name,
-              role, status, preferred_lang, timezone, target_ged_date, created_at
-       FROM users
-       WHERE email = $1 AND status = 'active'`,
-      [email.toLowerCase().trim()]
+      'SELECT * FROM users WHERE email = $1 AND status = $2',
+      [email, 'active']
     );
 
-    const user = result.rows[0];
-    if (!user) {
-      throw new UnauthorizedError('Invalid email or password');
+    if (result.rows.length === 0) {
+      return next(new UnauthorizedError('Invalid email or password'));
     }
+
+    const user = result.rows[0];
 
     // Compare password
     const isMatch = await comparePassword(password, user.password_hash);
     if (!isMatch) {
-      throw new UnauthorizedError('Invalid email or password');
+      return next(new UnauthorizedError('Invalid email or password'));
     }
 
-    // Generate tokens
-    const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user);
-
-    return success(res, {
-      user: sanitizeUser(user),
-      tokens: {
-        access_token: accessToken,
-        refresh_token: refreshToken,
-        token_type: 'Bearer',
-        expires_in: 604800,
-      },
-    });
+    const authResponse = buildAuthResponse(user);
+    return success(res, authResponse);
 
   } catch (err) {
     next(err);
@@ -146,27 +152,18 @@ router.post('/login', validate({
 });
 
 // ---------------------------------------------------------------------------
-// GET /api/auth/me — Get current authenticated user
+// GET /api/auth/me — Get current user profile
 // ---------------------------------------------------------------------------
-router.get('/me', authenticate, async (req, res, next) => {
+router.get('/me', requireAuth, async (req, res, next) => {
   try {
-    const pool = requireDb();
-    const userId = req.user.sub;
+    const pool = getPool();
 
-    const result = await pool.query(
-      `SELECT id, email, first_name, last_name, display_name,
-              role, status, preferred_lang, timezone, target_ged_date, avatar_url, created_at, updated_at
-       FROM users
-       WHERE id = $1`,
-      [userId]
-    );
-
-    const user = result.rows[0];
-    if (!user) {
-      throw new UnauthorizedError('User not found');
+    const result = await pool.query('SELECT * FROM users WHERE id = $1', [req.user.userId]);
+    if (result.rows.length === 0) {
+      return next(new UnauthorizedError('User not found'));
     }
 
-    return success(res, { user: sanitizeUser(user) });
+    return success(res, sanitizeUser(result.rows[0]));
 
   } catch (err) {
     next(err);
@@ -174,56 +171,60 @@ router.get('/me', authenticate, async (req, res, next) => {
 });
 
 // ---------------------------------------------------------------------------
-// POST /api/auth/refresh — Get new access token from refresh token
+// PUT /api/auth/me — Update current user profile
 // ---------------------------------------------------------------------------
-router.post('/refresh', async (req, res, next) => {
+const updateProfileSchema = {
+  body: {
+    first_name: { type: 'string' },
+    last_name: { type: 'string' },
+    display_name: { type: 'string' },
+    preferred_lang: { type: 'string' },
+    timezone: { type: 'string' },
+    target_ged_date: { type: 'string' },
+    avatar_url: { type: 'string' },
+  },
+};
+
+router.put('/me', requireAuth, validate(updateProfileSchema), async (req, res, next) => {
+  // Collect only the fields that were provided
+  const allowedFields = ['first_name', 'last_name', 'display_name', 'preferred_lang', 'timezone', 'target_ged_date', 'avatar_url'];
+  const updates = {};
+  const values = [];
+  let paramIndex = 1;
+
+  for (const field of allowedFields) {
+    if (req.body[field] !== undefined) {
+      updates[field] = `$${paramIndex}`;
+      values.push(req.body[field]);
+      paramIndex++;
+    }
+  }
+
+  // Nothing to update
+  if (Object.keys(updates).length === 0) {
+    return next(new BadRequestError('No valid fields to update'));
+  }
+
+  // Add WHERE parameter
+  values.push(req.user.userId);
+
+  const setClauses = Object.entries(updates).map(([k, v]) => `${k} = ${v}`).join(', ');
+
   try {
-    // Accept refresh_token from body or Authorization header
-    let refreshToken = req.body?.refresh_token;
+    const pool = getPool();
 
-    if (!refreshToken) {
-      const authHeader = req.headers.authorization;
-      if (authHeader?.startsWith('Bearer ')) {
-        refreshToken = authHeader.slice(7).trim();
-      }
-    }
-
-    if (!refreshToken) {
-      throw new UnauthorizedError('Refresh token is required');
-    }
-
-    // Verify refresh token
-    const decoded = verifyToken(refreshToken, 'refresh');
-
-    // Look up user to ensure they still exist and are active
-    const pool = requireDb();
     const result = await pool.query(
-      `SELECT id, email, role, status
-       FROM users
-       WHERE id = $1 AND status = 'active'`,
-      [decoded.sub]
+      `UPDATE users SET ${setClauses} WHERE id = $${paramIndex} RETURNING *`,
+      values
     );
 
-    const user = result.rows[0];
-    if (!user) {
-      throw new UnauthorizedError('User not found or deactivated');
+    if (result.rows.length === 0) {
+      return next(new UnauthorizedError('User not found'));
     }
 
-    // Issue new access token (keep same refresh token)
-    const newAccessToken = generateAccessToken(user);
-
-    return success(res, {
-      tokens: {
-        access_token: newAccessToken,
-        token_type: 'Bearer',
-        expires_in: 604800,
-      },
-    });
+    return success(res, sanitizeUser(result.rows[0]));
 
   } catch (err) {
-    if (err.name === 'TokenExpiredError') {
-      return next(new UnauthorizedError('Refresh token expired — please log in again'));
-    }
     next(err);
   }
 });
