@@ -6,13 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { GraduationCap, Loader2, ArrowLeft } from "lucide-react";
+import { GraduationCap, Loader2, Eye, EyeOff, ArrowLeft } from "lucide-react";
 
 export function RegisterForm() {
   const { setUser, setView } = useAppStore();
-  const [studentName, setStudentName] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [studentId, setStudentId] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -20,12 +22,21 @@ export function RegisterForm() {
     e.preventDefault();
     setError("");
 
+    if (password.length < 6) {
+      setError("รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("รหัสผ่านไม่ตรงกัน");
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, studentId, studentName }),
+        body: JSON.stringify({ email, password, name }),
       });
       const json = await res.json();
 
@@ -74,8 +85,8 @@ export function RegisterForm() {
                 <Input
                   id="name"
                   placeholder="ชื่อ-นามสกุล"
-                  value={studentName}
-                  onChange={(e) => setStudentName(e.target.value)}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   required
                 />
               </div>
@@ -93,13 +104,34 @@ export function RegisterForm() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="reg-studentId">รหัสผู้เข้าเรียน</Label>
+                <Label htmlFor="reg-password">รหัสผ่าน</Label>
+                <div className="relative">
+                  <Input
+                    id="reg-password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="อย่างน้อย 6 ตัวอักษร"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">ยืนยันรหัสผ่าน</Label>
                 <Input
-                  id="reg-studentId"
-                  type="text"
-                  placeholder="เช่น GED-002"
-                  value={studentId}
-                  onChange={(e) => setStudentId(e.target.value)}
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="กรอกรหัสผ่านอีกครั้ง"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                 />
               </div>

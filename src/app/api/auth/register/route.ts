@@ -1,61 +1,58 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import bcrypt from "bcryptjs";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, studentId, studentName } = body as {
+    const { email, password, name } = body as {
       email: string;
-      studentId: string;
-      studentName: string;
+      password: string;
+      name: string;
     };
 
-    if (!email || !studentId || !studentName) {
+    if (!email || !password || !name) {
       return NextResponse.json(
-        { error: "จำเป็นต้องกรอก อีเมล รหัสผู้เข้าเรียน และชื่อผู้เข้าเรียน" },
+        { error: "จำเป็นต้องกรอกอีเมล รหัสผ่าน และชื่อผู้เข้าเรียน" },
         { status: 400 }
       );
     }
 
-    // Check duplicate email
-    const existingEmail = await db.user.findUnique({ where: { email } });
-    if (existingEmail) {
+    if (password.length < 6) {
+      return NextResponse.json(
+        { error: "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร" },
+        { status: 400 }
+      );
+    }
+
+    const existing = await db.user.findUnique({ where: { email } });
+    if (existing) {
       return NextResponse.json(
         { error: "อีเมลนี้ลงทะเบียนแล้ว" },
         { status: 409 }
       );
     }
 
-    // Check duplicate studentId
-    const existingStudentId = await db.user.findUnique({ where: { studentId } });
-    if (existingStudentId) {
-      return NextResponse.json(
-        { error: "รหัสผู้เข้าเรียนนี้ถูกใช้แล้ว" },
-        { status: 409 }
-      );
-    }
+    const passwordHash = await bcrypt.hash(password, 12);
 
-    const nameParts = studentName.trim().split(/\s+/);
+    const nameParts = name.trim().split(/\s+/);
     const firstName = nameParts[0] || "";
     const lastName = nameParts.slice(1).join(" ") || "";
 
     const user = await db.user.create({
       data: {
         email,
-        studentId: studentId.trim(),
+        passwordHash,
         firstName,
         lastName,
-        displayName: studentName,
+        displayName: name,
         role: "student",
         status: "active",
       },
     });
 
-    // Return user without sensitive fields (none now)
-    const { id, email: e, studentId: sid, firstName: fn, lastName: ln, displayName, role, status, createdAt, updatedAt } = user;
-    return NextResponse.json({
-      data: { id, email: e, studentId: sid, firstName: fn, lastName: ln, displayName, role, status, createdAt, updatedAt }
-    }, { status: 201 });
+    const { passwordHash: _, ...safeUser } = user;
+    return NextResponse.json({ data: safeUser }, { status: 201 });
   } catch (error) {
     console.error("[POST /api/auth/register] Error:", error);
     return NextResponse.json(
