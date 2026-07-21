@@ -11,6 +11,7 @@ export interface User {
   displayName?: string | null;
   role: string;
   status: string;
+  scoreTarget?: number | null;
 }
 
 export interface SubjectSummary {
@@ -120,6 +121,123 @@ export interface QuizResult {
   results: QuizAnswerResult[];
 }
 
+// ---------------------------------------------------------------------------
+// AI Tutor Rigor System Types
+// ---------------------------------------------------------------------------
+export type RigorLevel = 1 | 2 | 3;
+
+export interface RigorConfig {
+  level: RigorLevel;
+  label: string;
+  shortLabel: string;
+  description: string;
+  personality: string;
+  personalityDesc: string;
+  color: string;
+  bgColor: string;
+  borderColor: string;
+  iconEmoji: string;
+  rules: string[];
+  lockThreshold: number | null;   // Quiz score below this triggers lock
+  unlockThreshold: number | null; // Must reach this to unlock
+  dailyQuizRequired: boolean;
+  flashcardRequired: boolean;
+  missPenaltyDays: number;        // 0 = no penalty, 1 = 1 day miss = penalty
+  scoreDeductionOnMiss: boolean;  // Level 3: deduct discipline score
+  hardModeOnMiss: boolean;        // Level 3: inject hard mode quiz on miss
+  doubleScheduleOnFail: boolean;  // Level 3: double schedule if mock exam < 175
+}
+
+export function getRigorConfig(scoreTarget: number | null | undefined): RigorConfig | null {
+  if (!scoreTarget) return null;
+
+  if (scoreTarget >= 145 && scoreTarget <= 160) {
+    return {
+      level: 1,
+      label: "ระดับผ่านเกณฑ์มาตรฐาน",
+      shortLabel: "ประคอง",
+      description: "เน้นประคองและย้ำคิดย้ำทำ",
+      personality: "ใจดีแต่เด็ดขาด",
+      personalityDesc: "ติวเตอร์ใจดีแต่เด็ดขาด เน้นความเข้าใจพื้นฐาน คอยเตือนเบาๆ และช่วยให้คุณกลับมาเรียนได้ทุกเมื่อ",
+      color: "text-emerald-700",
+      bgColor: "bg-emerald-50",
+      borderColor: "border-emerald-200",
+      iconEmoji: "🌿",
+      rules: [
+        "ตรวจสอบภารกิจประจำวัน",
+        "หากไม่เข้าเรียน 2 วันติดกัน ระบบจะส่ง Notification เตือนเบาๆ",
+        "ล็อกเนื้อหาบทถัดไปจนกว่าจะเคลียร์บทเรียนเก่าเสร็จ",
+      ],
+      lockThreshold: null,
+      unlockThreshold: null,
+      dailyQuizRequired: false,
+      flashcardRequired: false,
+      missPenaltyDays: 2,
+      scoreDeductionOnMiss: false,
+      hardModeOnMiss: false,
+      doubleScheduleOnFail: false,
+    };
+  }
+
+  if (scoreTarget >= 161 && scoreTarget <= 175) {
+    return {
+      level: 2,
+      label: "ระดับคะแนนดีเกียรตินิยม",
+      shortLabel: "เข้มงวด",
+      description: "เข้มงวด แผนการเรียนชัดเจน",
+      personality: "มืออาชีพสายสตริกต์",
+      personalityDesc: "ติวเตอร์มืออาชีพสายเข้มงวด พูดตรงประเด็น เน้นจุดผิดพลาด ไม่ปรานี",
+      color: "text-amber-700",
+      bgColor: "bg-amber-50",
+      borderColor: "border-amber-200",
+      iconEmoji: "⚡",
+      rules: [
+        "บังคับทำโจทย์และทวน Due Flashcards ทุกวัน",
+        "คะแนน Quiz ต่ำกว่า 150 = ล็อกบทเรียนถัดไปทันที",
+        "บังคับอ่านเนื้อหาจุดอ่อนซ้ำ + ทำแบบทดสอบแก้ตัวใหม่",
+        "ต้องทำคะแนนผ่านเกณฑ์ 155 คะแนนจึงจะปลดล็อก",
+      ],
+      lockThreshold: 150,
+      unlockThreshold: 155,
+      dailyQuizRequired: true,
+      flashcardRequired: true,
+      missPenaltyDays: 1,
+      scoreDeductionOnMiss: false,
+      hardModeOnMiss: false,
+      doubleScheduleOnFail: false,
+    };
+  }
+
+  // 176 - 200
+  return {
+    level: 3,
+    label: "ระดับท็อปประเทศ / College Ready",
+    shortLabel: "จอมโหด",
+    description: "โหมดจอมโหดเพื่อความเป็นที่หนึ่ง",
+    personality: "สถาบันชั้นนำที่เฮี้ยนขั้นสุด",
+    personalityDesc: "ติวเตอร์ระดับสถาบันชั้นนำ เฮี้ยนและเข้มงวดขั้นสุด ไม่มีข้อแม้ ต้องเป็นที่ 1",
+    color: "text-rose-700",
+    bgColor: "bg-rose-50",
+    borderColor: "border-rose-200",
+    iconEmoji: "🔥",
+    rules: [
+      "กดข้าม Due Flashcards หรือขาดเรียนแม้แต่คืนเดียว = ตัดคะแนนวินัยทันที",
+      "ส่งโจทย์ Hard Mode เข้าขัดจังหวะหน้าจอแอปให้แก้ตัว",
+      "ข้อสอบจำลอง < 175 คะแนน = วิเคราะห์จุดอ่อนขยี้จุดผิดตรงไปตรงมา",
+      "บังคับตารางเรียนชดเชยเพิ่ม 2 เท่าในวันถัดไป",
+      "ไม่มีการยกเว้น ไม่มีข้อแม้ ต้องทำทุกอย่างให้ครบ",
+    ],
+    lockThreshold: 175,
+    unlockThreshold: 180,
+    dailyQuizRequired: true,
+    flashcardRequired: true,
+    missPenaltyDays: 1,
+    scoreDeductionOnMiss: true,
+    hardModeOnMiss: true,
+    doubleScheduleOnFail: true,
+  };
+}
+
 export type ViewState =
   | "login"
   | "register"
@@ -141,6 +259,13 @@ interface AppStore {
   user: User | null;
   setUser: (user: User | null) => void;
 
+  // Score Target & Rigor
+  scoreTarget: number | null;
+  setScoreTarget: (target: number | null) => void;
+  rigorConfig: RigorConfig | null;
+  showScoreTargetModal: boolean;
+  setShowScoreTargetModal: (show: boolean) => void;
+
   // Selected items
   selectedSubject: SubjectFull | null;
   setSelectedSubject: (s: SubjectFull | null) => void;
@@ -160,12 +285,34 @@ interface AppStore {
   logout: () => void;
 }
 
-export const useAppStore = create<AppStore>((set) => ({
+export const useAppStore = create<AppStore>((set, get) => ({
   view: "login",
   setView: (view) => set({ view }),
 
   user: null,
-  setUser: (user) => set({ user }),
+  setUser: (user) => {
+    const state = get();
+    const scoreTarget = user?.scoreTarget ?? null;
+    const rigorConfig = getRigorConfig(scoreTarget);
+    // Show modal only if user has no score target set yet
+    const showScoreTargetModal = user !== null && scoreTarget === null;
+    set({
+      user,
+      scoreTarget,
+      rigorConfig,
+      showScoreTargetModal,
+    });
+  },
+
+  scoreTarget: null,
+  setScoreTarget: (target) => {
+    const rigorConfig = getRigorConfig(target);
+    set({ scoreTarget: target, rigorConfig, showScoreTargetModal: false });
+  },
+
+  rigorConfig: null,
+  showScoreTargetModal: false,
+  setShowScoreTargetModal: (show) => set({ showScoreTargetModal: show }),
 
   selectedSubject: null,
   setSelectedSubject: (s) => set({ selectedSubject: s }),
@@ -185,6 +332,9 @@ export const useAppStore = create<AppStore>((set) => ({
     set({
       user: null,
       view: "login",
+      scoreTarget: null,
+      rigorConfig: null,
+      showScoreTargetModal: false,
       selectedSubject: null,
       selectedLesson: null,
       quizAttempt: null,

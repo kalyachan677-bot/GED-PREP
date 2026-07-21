@@ -2,9 +2,11 @@
 
 import { useAppStore, SubjectSummary } from "@/lib/store";
 import { SubjectCard } from "./SubjectCard";
+import { ScoreTargetModal } from "./ScoreTargetModal";
+import { AiTutorPanel, ScoreTargetChangeButton } from "./AiTutorPanel";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BookOpen, BarChart3, Target, Flame } from "lucide-react";
+import { BookOpen, BarChart3, Target, Flame, Trophy } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface DashboardData {
@@ -28,7 +30,7 @@ interface DashboardData {
 }
 
 export function Dashboard() {
-  const { user, setView, setSelectedSubject, setSelectedLesson } = useAppStore();
+  const { user, scoreTarget, setView, setSelectedSubject, setSelectedLesson } = useAppStore();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -87,13 +89,49 @@ export function Dashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Score Target Modal (overlay) */}
+      <ScoreTargetModal />
+
       {/* Welcome */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">
-          สวัสดี, {user?.firstName} 👋
-        </h1>
-        <p className="mt-1 text-sm text-gray-500">เริ่มต้นการเรียนวันนี้ได้เลย</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            สวัสดี, {user?.firstName} 👋
+          </h1>
+          <p className="mt-1 text-sm text-gray-500">
+            {scoreTarget
+              ? `เป้าหมาย GED: ${scoreTarget} คะแนน — เริ่มต้นการเรียนวันนี้ได้เลย`
+              : "เริ่มต้นการเรียนวันนี้ได้เลย"
+            }
+          </p>
+        </div>
+        <ScoreTargetChangeButton />
       </div>
+
+      {/* AI Tutor Rigor Panel */}
+      <AiTutorPanel />
+
+      {/* Score Target Card (shown if no target set yet and modal dismissed) */}
+      {!scoreTarget && (
+        <button
+          onClick={() => useAppStore.getState().setShowScoreTargetModal(true)}
+          className="w-full rounded-xl border-2 border-dashed border-gray-300 bg-gray-50/50 p-5 text-center hover:border-teal-400 hover:bg-teal-50/30 transition-all group"
+        >
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 group-hover:bg-teal-100 transition-colors">
+              <Target className="h-6 w-6 text-gray-400 group-hover:text-teal-600 transition-colors" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-700 group-hover:text-teal-700 transition-colors">
+                ตั้งค่าเป้าหมายคะแนน GED ของคุณ
+              </p>
+              <p className="text-xs text-gray-400 mt-0.5">
+                คลิกเพื่อเลือกคะแนนเป้าหมาย 145-200 และให้ AI ติวเตอร์ปรับแผนการเรียนให้
+              </p>
+            </div>
+          </div>
+        </button>
+      )}
 
       {/* Stats */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

@@ -35,6 +35,7 @@ model User {
   preferredLang String   @default("en")
   timezone      String   @default("UTC")
   targetGedDate String?                       // ISO date string
+  scoreTarget   Int?                                 // GED Score Target: 145-200
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
