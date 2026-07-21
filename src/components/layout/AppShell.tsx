@@ -140,21 +140,40 @@ function SubjectSidebarLink({ code }: { code: string }) {
 }
 
 function BottomNav() {
-  const { view, setView } = useAppStore();
+  const { view, setView, selectedSubject, user } = useAppStore();
 
   const items = [
     { id: "dashboard" as const, label: "หน้าหลัก", icon: "🏠" },
     { id: "subject" as const, label: "วิชาเรียน", icon: "📚" },
   ];
 
+  function handleNav(id: string) {
+    if (id === "dashboard") {
+      setView("dashboard");
+    } else if (id === "subject") {
+      // If already viewing a subject, go back to dashboard first
+      if (view === "lesson" || view === "quiz" || view === "quiz-result") {
+        setView("subject");
+      } else {
+        setView("dashboard");
+      }
+    }
+  }
+
+  const activeTab = (view === "dashboard" || view === "subject" || view === "lesson" || view === "quiz" || view === "quiz-result")
+    ? "dashboard"
+    : view;
+
   return (
     <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 flex h-16 items-center justify-around border-t border-gray-100 bg-white/95 backdrop-blur-sm">
       {items.map((item) => (
         <button
           key={item.id}
-          onClick={() => item.id === "dashboard" && setView("dashboard")}
+          onClick={() => handleNav(item.id)}
           className={`flex flex-col items-center gap-0.5 px-4 py-1 ${
             view === "dashboard" && item.id === "dashboard"
+              ? "text-teal-600"
+              : view !== "dashboard" && item.id === "subject"
               ? "text-teal-600"
               : "text-gray-400"
           }`}

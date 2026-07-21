@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronRight, Clock, Brain, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { BackButton } from "@/components/ui/BackButton";
 import { useState } from "react";
 
 interface ContentBlock {
@@ -69,37 +70,27 @@ export function LessonView() {
     }
   }
 
+  function handleBack() {
+    setView("subject");
+  }
+
+  const subjectTitle = selectedLesson.topic?.module?.subject?.title;
+  const topicTitle = selectedLesson.topic?.title;
+
   return (
     <div className="space-y-6">
-      {/* Breadcrumb */}
-      <div className="flex flex-wrap items-center gap-1.5 text-sm">
-        <button
-          onClick={() => {
-            setView("dashboard");
-            setSelectedSubject(null);
-          }}
-          className="text-teal-600 hover:text-teal-700 font-medium"
-        >
-          แดชบอร์ด
-        </button>
-        <ChevronRight className="h-3.5 w-3.5 text-gray-300" />
-        {selectedLesson.topic?.module?.subject && (
-          <>
-            <span className="text-gray-500">
-              {selectedLesson.topic.module.subject.title}
-            </span>
-            <ChevronRight className="h-3.5 w-3.5 text-gray-300" />
-          </>
-        )}
-        {selectedLesson.topic && (
-          <>
-            <span className="text-gray-500">{selectedLesson.topic.title}</span>
-            <ChevronRight className="h-3.5 w-3.5 text-gray-300" />
-          </>
-        )}
-        <span className="font-medium text-gray-900 truncate max-w-[200px]">
-          {selectedLesson.title}
-        </span>
+      {/* Back button + Breadcrumb */}
+      <div className="flex items-center justify-between gap-4">
+        <BackButton label={subjectTitle || "วิชาเรียน"} onClick={handleBack} />
+        <div className="hidden sm:flex items-center gap-1.5 text-sm min-w-0">
+          <span className="text-gray-400 truncate">{subjectTitle}</span>
+          {topicTitle && <>
+            <ChevronRight className="h-3.5 w-3.5 text-gray-300 shrink-0" />
+            <span className="text-gray-400 truncate">{topicTitle}</span>
+          </>}
+          <ChevronRight className="h-3.5 w-3.5 text-gray-300 shrink-0" />
+          <span className="font-medium text-gray-900 truncate">{selectedLesson.title}</span>
+        </div>
       </div>
 
       {/* Title */}

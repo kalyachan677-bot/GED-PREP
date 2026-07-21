@@ -3,7 +3,8 @@
 import { useAppStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle2, XCircle, Clock, Trophy, RotateCcw, ChevronRight, ArrowLeft } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, Trophy, RotateCcw, ChevronRight } from "lucide-react";
+import { BackButton } from "@/components/ui/BackButton";
 
 export function QuizResult() {
   const { quizResult, quizQuestions, setView, clearQuiz, setSelectedLesson } = useAppStore();
@@ -40,17 +41,8 @@ export function QuizResult() {
 
   return (
     <div className="space-y-6">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm">
-        <button
-          onClick={handleBackToLesson}
-          className="text-teal-600 hover:text-teal-700 font-medium"
-        >
-          บทเรียน
-        </button>
-        <ChevronRight className="h-3.5 w-3.5 text-gray-300" />
-        <span className="font-medium text-gray-900">ผลลัพธ์</span>
-      </div>
+      {/* Back button */}
+      <BackButton label="บทเรียน" onClick={handleBackToLesson} />
 
       {/* Score card */}
       <Card className="border-0 shadow-sm">

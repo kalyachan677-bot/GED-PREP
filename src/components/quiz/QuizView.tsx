@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight, Flag, Clock, Send, Loader2 } from "lucide-react";
+import { BackButton } from "@/components/ui/BackButton";
 
 export function QuizView() {
   const { quizAttempt, quizQuestions, user, setQuizResult, clearQuiz, setView, selectedLesson } = useAppStore();
@@ -16,6 +17,23 @@ export function QuizView() {
   const [questionStart, setQuestionStart] = useState(Date.now());
   const [elapsed, setElapsed] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
+
+  function handleExit() {
+    const answered = Object.keys(selectedAnswers).length;
+    if (answered > 0) {
+      setShowExitConfirm(true);
+    } else {
+      clearQuiz();
+      setView("lesson");
+    }
+  }
+
+  function confirmExit() {
+    setShowExitConfirm(false);
+    clearQuiz();
+    setView("lesson");
+  }
 
   const question = quizQuestions[currentIdx];
   const totalQ = quizQuestions.length;
@@ -110,18 +128,36 @@ export function QuizView() {
 
   return (
     <div className="space-y-4">
+      {/* Exit confirm dialog */}
+      {showExitConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowExitConfirm(false)} />
+          <div className="relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+            <h3 className="text-lg font-bold text-gray-900">ออกจากแบบทดสอบ?</h3>
+            <p className="mt-2 text-sm text-gray-600">
+              คุณตอบไปแล้ว {Object.keys(selectedAnswers).length} ข้อจาก {totalQ} ข้อ หากออกตอนนี้คะแนนจะไม่ถูกบันทึก
+            </p>
+            <div className="mt-5 flex gap-3">
+              <button
+                onClick={() => setShowExitConfirm(false)}
+                className="flex-1 rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                ทำต่อ
+              </button>
+              <button
+                onClick={confirmExit}
+                className="flex-1 rounded-lg bg-rose-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-rose-600"
+              >
+                ออกจากแบบทดสอบ
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-sm">
-          <button
-            onClick={() => { clearQuiz(); setView("lesson"); }}
-            className="text-teal-600 hover:text-teal-700 font-medium"
-          >
-            บทเรียน
-          </button>
-          <ChevronRight className="h-3.5 w-3.5 text-gray-300" />
-          <span className="font-medium text-gray-900">แบบทดสอบ</span>
-        </div>
+        <BackButton label="บทเรียน" onClick={handleExit} />
         <div className="flex items-center gap-2 text-sm text-gray-500">
           <Clock className="h-4 w-4" />
           {formatTime(elapsed)}

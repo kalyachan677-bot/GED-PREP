@@ -4,6 +4,7 @@ import { useAppStore, SubjectFull } from "@/lib/store";
 import { ChevronDown, ChevronRight, CheckCircle2, Circle, Clock, BookOpen } from "lucide-react";
 import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { BackButton } from "@/components/ui/BackButton";
 
 export function SubjectView() {
   const { selectedSubject, setView, setSelectedLesson, user } = useAppStore();
@@ -43,13 +44,14 @@ export function SubjectView() {
 
   return (
     <div className="space-y-6">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm">
-        <button onClick={() => { setView("dashboard"); setSelectedSubject(null); }} className="text-teal-600 hover:text-teal-700 font-medium">
-          แดชบอร์ด
-        </button>
-        <ChevronRight className="h-3.5 w-3.5 text-gray-300" />
-        <span className="font-medium text-gray-900">{selectedSubject.title}</span>
+      {/* Back button + Breadcrumb */}
+      <div className="flex items-center justify-between">
+        <BackButton label="แดชบอร์ด" onClick={() => { setView("dashboard"); setSelectedSubject(null); }} />
+        <div className="flex items-center gap-2 text-sm">
+          <span className="text-gray-400">แดชบอร์ด</span>
+          <ChevronRight className="h-3.5 w-3.5 text-gray-300" />
+          <span className="font-medium text-gray-900">{selectedSubject.title}</span>
+        </div>
       </div>
 
       {/* Header */}
