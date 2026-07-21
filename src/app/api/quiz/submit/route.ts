@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     const questionIds = answers.map((a) => a.questionId);
     const correctAnswers = await db.answer.findMany({
       where: { questionId: { in: questionIds } },
-      select: { id: true; questionId: true; isCorrect: true; content: true; explanation: true; sortOrder: true },
+      select: { id: true, questionId: true, isCorrect: true, content: true, explanation: true, sortOrder: true },
     });
 
     const correctAnswerMap: Record<string, string[]> = {};
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     // Fetch question explanations
     const questions = await db.question.findMany({
       where: { id: { in: questionIds } },
-      select: { id: true; explanation: true },
+      select: { id: true, explanation: true },
     });
     const questionExplanationMap: Record<string, string> = {};
     for (const q of questions) {

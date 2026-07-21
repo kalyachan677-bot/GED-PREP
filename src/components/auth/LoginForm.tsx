@@ -7,13 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { GraduationCap, Loader2, Eye, EyeOff } from "lucide-react";
+import { GraduationCap, Loader2 } from "lucide-react";
 
 export function LoginForm() {
   const { setUser, setView } = useAppStore();
   const [email, setEmail] = useState("demo@ged.com");
-  const [password, setPassword] = useState("demo1234");
-  const [showPassword, setShowPassword] = useState(false);
+  const [studentId, setStudentId] = useState("GED-001");
+  const [studentName, setStudentName] = useState("Demo Student");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -26,7 +26,7 @@ export function LoginForm() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, studentId, studentName }),
       });
       const json = await res.json();
 
@@ -60,7 +60,7 @@ export function LoginForm() {
         <Card className="border-0 shadow-xl shadow-gray-200/50">
           <CardHeader className="pb-4 text-center">
             <CardTitle className="text-xl">เข้าสู่ระบบ</CardTitle>
-            <CardDescription>กรอกอีเมลและรหัสผ่านเพื่อเริ่มต้นการเรียน</CardDescription>
+            <CardDescription>กรอกข้อมูลเพื่อเริ่มต้นการเรียน</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -83,24 +83,27 @@ export function LoginForm() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">รหัสผ่าน</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
+                <Label htmlFor="studentId">รหัสผู้เข้าเรียน</Label>
+                <Input
+                  id="studentId"
+                  type="text"
+                  placeholder="เช่น GED-001"
+                  value={studentId}
+                  onChange={(e) => setStudentId(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="studentName">ชื่อผู้เข้าเรียน</Label>
+                <Input
+                  id="studentName"
+                  type="text"
+                  placeholder="ชื่อ-นามสกุล"
+                  value={studentName}
+                  onChange={(e) => setStudentName(e.target.value)}
+                  required
+                />
               </div>
 
               <Button
@@ -123,21 +126,6 @@ export function LoginForm() {
                 </button>
               </div>
             </form>
-
-            {/* Quick demo login */}
-            <div className="mt-4 rounded-lg border border-dashed border-gray-200 bg-gray-50/50 p-3 text-center">
-              <p className="text-xs text-gray-400 mb-2">ทดลองใช้งาน</p>
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail("demo@ged.com");
-                  setPassword("demo1234");
-                }}
-                className="text-xs text-teal-600 hover:underline"
-              >
-                ใช้บัญชี Demo: demo@ged.com / demo1234
-              </button>
-            </div>
           </CardContent>
         </Card>
       </div>

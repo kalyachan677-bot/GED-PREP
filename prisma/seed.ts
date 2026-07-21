@@ -1376,13 +1376,12 @@ async function seed() {
   await prisma.subject.deleteMany();
 
   // Create a demo user (upsert to avoid unique constraint on re-runs)
-  const demoPasswordHash = await Bun.password.hash("demo1234");
   const user = await prisma.user.upsert({
     where: { email: "demo@ged.com" },
     update: {},
     create: {
       email: "demo@ged.com",
-      passwordHash: demoPasswordHash,
+      studentId: "GED-001",
       firstName: "Demo",
       lastName: "Student",
       displayName: "Demo Student",
@@ -1390,7 +1389,7 @@ async function seed() {
       status: "active",
     },
   });
-  console.log(`Created user: ${user.email}`);
+  console.log(`Created user: ${user.email} (รหัส: ${user.studentId})`);
 
   let totalLessons = 0;
   let totalQuestions = 0;
@@ -1451,7 +1450,7 @@ async function seed() {
   console.log(`Subjects: ${SUBJECTS.length}`);
   console.log(`Lessons: ${totalLessons}`);
   console.log(`Questions: ${totalQuestions}`);
-  console.log(`Demo user: demo@ged.com / demo1234`);
+  console.log(`Demo user: demo@ged.com / รหัส: GED-001 / ชื่อ: Demo Student`);
 }
 
 seed()
