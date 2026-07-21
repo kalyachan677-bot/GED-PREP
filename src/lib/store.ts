@@ -247,6 +247,8 @@ export type ViewState =
   | "quiz"
   | "quiz-result";
 
+export type AppLanguage = "en" | "th" | "my";
+
 // ---------------------------------------------------------------------------
 // Store
 // ---------------------------------------------------------------------------
@@ -254,6 +256,12 @@ interface AppStore {
   // Navigation
   view: ViewState;
   setView: (view: ViewState) => void;
+
+  // Language / Translation
+  language: AppLanguage;
+  setLanguage: (lang: AppLanguage) => void;
+  translationCache: Record<string, Record<string, string>>; // { "th": { "orig": "translated" } }
+  setTranslationCache: (cache: Record<string, Record<string, string>>) => void;
 
   // Auth
   user: User | null;
@@ -288,6 +296,15 @@ interface AppStore {
 export const useAppStore = create<AppStore>((set, get) => ({
   view: "login",
   setView: (view) => set({ view }),
+
+  // Language / Translation
+  language: (typeof window !== "undefined" ? (localStorage.getItem("ged-lang") as AppLanguage) : null) || "en",
+  setLanguage: (lang) => {
+    if (typeof window !== "undefined") localStorage.setItem("ged-lang", lang);
+    set({ language: lang });
+  },
+  translationCache: {},
+  setTranslationCache: (cache) => set({ translationCache: cache }),
 
   user: null,
   setUser: (user) => {
