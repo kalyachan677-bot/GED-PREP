@@ -45,3 +45,25 @@ Stage Summary:
 - 42 total lessons with topicCategoryId linked (32 core + 10 supplementary)
 - AI Tutor system prompt covers all 4 subjects with exact category weights
 - API route /api/ai/chat ready for integration
+---
+Task ID: 2
+Agent: main
+Task: Complete remaining tasks - fix popup flow, fill empty categories, verify build
+
+Work Log:
+- Fixed AppShell.tsx: Refactored popup chain using refs instead of state for pendingNavFn and pendingSubjectCodeRef. Flow is now: Daily Quiz → Pre-study Warning → Navigate to Subject
+- Created seed-missing-lessons.ts: Added 10 core lessons for 4 previously empty categories
+  - RLA Extended Response/Essay: 3 lessons (essay overview, claims/evidence, writing tips)
+  - Science Earth & Space: 3 lessons (plate tectonics, weather/climate, solar system)
+  - SS Economics: 2 lessons (supply/demand, economic systems)
+  - SS Geography & World History: 2 lessons (maps/population, world history events)
+- Verified all 16 core categories now have at least 2 lessons each
+- Verified Next.js build passes successfully
+- Verified APIs respond correctly (subjects, flashcards)
+- Total: 52 lessons, 64 questions, 32 flashcards, 16 topic categories
+
+Stage Summary:
+- All core categories have lessons (0 empty categories remaining)
+- Pre-study popup chain fixed with proper ref-based state management
+- App builds and runs on port 3000
+- All APIs functional

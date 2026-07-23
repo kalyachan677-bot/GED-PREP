@@ -4,16 +4,20 @@ import { useAppStore } from "@/lib/store";
 import { GraduationCap, LogOut, User, ChevronRight } from "lucide-react";
 import { LanguageToggle } from "@/components/ui/LanguageToggle";
 import { PreStudyWarning, DailyFlashcardQuiz } from "@/components/flashcard/FlashcardPopups";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, view, setView, logout } = useAppStore();
 
   const [preStudySubjectCode, setPreStudySubjectCode] = useState<string | null>(null);
-  const [pendingSubjectNav, setPendingSubjectNav] = useState<(() => void) | null>(null);
   const [showDailyQuiz, setShowDailyQuiz] = useState(false);
   const [dailyQuizDone, setDailyQuizDone] = useState(false);
 
+  // Refs to persist across renders without causing re-renders
+  const pendingNavFnRef = useRef<(() => void) | null>(null);
+  const pendingSubjectCodeRef = useRef<string | null>(null);
+
+  // Check if daily quiz was already completed today
   useEffect(() => {
     if (!user) return;
     const todayKey = `ged-daily-quiz-${new Date().toISOString().slice(0, 10)}`;
@@ -26,19 +30,27 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, [user]);
 
   const navigateToSubject = useCallback((code: string, navFn: () => void) => {
+    // Always store both the nav function and subject code
+    pendingNavFnRef.current = navFn;
+    pendingSubjectCodeRef.current = code;
+
     if (!dailyQuizDone) {
+      // Show daily quiz first
       setShowDailyQuiz(true);
-      setPendingSubjectNav(() => () => { setPreStudySubjectCode(code); });
-      return;
+    } else {
+      // Skip daily quiz, go straight to pre-study warning
+      setPreStudySubjectCode(code);
     }
-    setPreStudySubjectCode(code);
-    setPendingSubjectNav(() => navFn);
   }, [dailyQuizDone]);
 
   const handlePreStudyContinue = useCallback(() => {
     setPreStudySubjectCode(null);
-    if (pendingSubjectNav) { pendingSubjectNav(); setPendingSubjectNav(null); }
-  }, [pendingSubjectNav]);
+    // Execute the actual navigation
+    const navFn = pendingNavFnRef.current;
+    pendingNavFnRef.current = null;
+    pendingSubjectCodeRef.current = null;
+    if (navFn) navFn();
+  }, []);
 
   const handleDailyQuizClose = useCallback(() => {
     setShowDailyQuiz(false);
@@ -46,10 +58,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       localStorage.setItem(`ged-daily-quiz-${new Date().toISOString().slice(0, 10)}`, "done");
       setDailyQuizDone(true);
     }
-    if (pendingSubjectNav) {
-      setTimeout(() => { pendingSubjectNav(); setPendingSubjectNav(null); }, 300);
+    // After daily quiz closes, show pre-study warning if there's a pending subject
+    const pendingCode = pendingSubjectCodeRef.current;
+    if (pendingCode) {
+      setTimeout(() => setPreStudySubjectCode(pendingCode), 300);
     }
-  }, [user, pendingSubjectNav]);
+  }, [user]);
 
   if (view === "login" || view === "register") {
     return <>{children}</>;
