@@ -64,13 +64,14 @@ model Subject {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  modules        Module[]
-  questions      Question[]
-  quizAttempts   QuizAttempt[]
-  essayPrompts   EssayPrompt[]
-  readinessScores ReadinessScore[]
+  modules          Module[]
+  questions        Question[]
+  quizAttempts     QuizAttempt[]
+  essayPrompts     EssayPrompt[]
+  readinessScores  ReadinessScore[]
   readinessHistory ReadinessHistory[]
-  flashcards      Flashcard[]
+  flashcards       Flashcard[]
+  topicCategories  TopicCategory[]
 }
 
 // ---------------------------------------------------------------------------
@@ -115,24 +116,49 @@ model Topic {
 }
 
 // ---------------------------------------------------------------------------
+// TOPIC CATEGORIES (Exam-weighted curriculum categories)
+// ---------------------------------------------------------------------------
+model TopicCategory {
+  id               String   @id @default(cuid())
+  subjectId        String
+  name             String                           // e.g. "Quantitative Problem Solving"
+  nameTh           String                           // e.g. "การแก้ปัญหาเชิงปริมาณ"
+  description      String?
+  weightPercentage Int      @default(0)               // exam weight e.g. 45
+  categoryType     String   @default("core")        // core, supplementary
+  sortOrder        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  subject  Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  lessons  Lesson[]
+
+  @@index([subjectId])
+  @@index([subjectId, sortOrder])
+}
+
+// ---------------------------------------------------------------------------
 // LESSONS
 // ---------------------------------------------------------------------------
 model Lesson {
-  id            String   @id @default(cuid())
-  topicId       String
-  title         String
-  slug          String   @unique
-  contentType   String   @default("text")       // text, video, mixed
-  bodyContent   String   @default("{}")         // JSON: mirrors MongoDB LessonContent blocks
-  videoUrl      String?
+  id             String   @id @default(cuid())
+  topicId        String
+  title          String
+  slug           String   @unique
+  contentType    String   @default("text")       // text, video, mixed
+  bodyContent    String   @default("{}")         // JSON: mirrors MongoDB LessonContent blocks
+  videoUrl       String?
   durationMinutes Int     @default(0)
-  sortOrder     Int      @default(0)
+  sortOrder      Int      @default(0)
   isPrerequisite Boolean  @default(false)
-  status        String   @default("draft")
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  status         String   @default("draft")
+  lessonType     String   @default("core_topic")  // core_topic, supplementary_topic
+  topicCategoryId String?                         // links to TopicCategory
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   topic           Topic          @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  topicCategory   TopicCategory?  @relation(fields: [topicCategoryId], references: [id], onDelete: SetNull)
   questions       Question[]
   lessonProgresses LessonProgress[]
   quizAttempts    QuizAttempt[]
@@ -140,6 +166,8 @@ model Lesson {
   @@index([topicId])
   @@index([topicId, sortOrder])
   @@index([slug])
+  @@index([topicCategoryId])
+  @@index([lessonType])
 }
 
 // ---------------------------------------------------------------------------
