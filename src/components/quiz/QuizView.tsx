@@ -1,15 +1,17 @@
 "use client";
 
-import { useAppStore, QuizQuestion, QuizResult } from "@/lib/store";
+import { useAppStore, QuizQuestion } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { ChevronLeft, ChevronRight, Flag, Clock, Send, Loader2 } from "lucide-react";
 import { BackButton } from "@/components/ui/BackButton";
+import { TranslatingIndicator } from "@/components/ui/LanguageToggle";
+import { useTranslation } from "@/lib/useTranslation";
 
 export function QuizView() {
-  const { quizAttempt, quizQuestions, user, setQuizResult, clearQuiz, setView, selectedLesson } = useAppStore();
+  const { quizAttempt, quizQuestions, user, setQuizResult, clearQuiz, setView } = useAppStore();
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({});
   const [flagged, setFlagged] = useState<Set<string>>(new Set());
@@ -18,6 +20,47 @@ export function QuizView() {
   const [elapsed, setElapsed] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
+
+  const { language, translateBatch, isTranslating } = useTranslation();
+
+  // ดึงข้อความที่ต้องแปลจากทุกคำถาม
+  const allTexts = useMemo(() => {
+    const texts: string[] = [];
+    for (const q of quizQuestions) {
+      if (q.questionText) texts.push(q.questionText);
+      if (q.hintText) texts.push(q.hintText);
+      for (const a of q.answers) texts.push(a.content);
+    }
+    return texts;
+  }, [quizQuestions]);
+
+  const [translatedMap, setTranslatedMap] = useState<Record<string, string>>({});
+
+  const doTranslate = useCallback(async () => {
+    if (language === "en" || allTexts.length === 0) {
+      setTranslatedMap({});
+      return;
+    }
+    const results = await translateBatch(allTexts);
+    const map: Record<string, string> = {};
+    allTexts.forEach((orig, i) => {
+      if (results[i] && results[i] !== orig) map[orig] = results[i];
+    });
+    setTranslatedMap(map);
+  }, [language, allTexts, translateBatch]);
+
+  useEffect(() => {
+    doTranslate();
+  }, [doTranslate]);
+
+  const tr = useCallback(
+    (text: string | undefined): string => {
+      if (!text) return "";
+      if (language === "en") return text;
+      return translatedMap[text] || text;
+    },
+    [language, translatedMap]
+  );
 
   function handleExit() {
     const answered = Object.keys(selectedAnswers).length;
@@ -158,9 +201,12 @@ export function QuizView() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <BackButton label="บทเรียน" onClick={handleExit} />
-        <div className="flex items-center gap-2 text-sm text-gray-500">
-          <Clock className="h-4 w-4" />
-          {formatTime(elapsed)}
+        <div className="flex items-center gap-2">
+          <TranslatingIndicator isTranslating={isTranslating} />
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <Clock className="h-4 w-4" />
+            {formatTime(elapsed)}
+          </div>
         </div>
       </div>
 
@@ -223,9 +269,9 @@ export function QuizView() {
               </button>
             </div>
 
-            {/* Question text - show hintText as placeholder since we don't have questionText in schema */}
+            {/* Question text */}
             <p className="text-base font-medium text-gray-900 mb-6">
-              {question.questionText || question.hintText || `คำถามที่ ${currentIdx + 1}`}
+              {tr(question.questionText) || tr(question.hintText) || `คำถามที่ ${currentIdx + 1}`}
             </p>
 
             {/* Answers */}
@@ -249,7 +295,7 @@ export function QuizView() {
                   >
                     {String.fromCharCode(65 + i)}
                   </span>
-                  <span className="text-sm text-gray-700">{answer.content}</span>
+                  <span className="text-sm text-gray-700">{tr(answer.content)}</span>
                 </button>
               ))}
             </div>

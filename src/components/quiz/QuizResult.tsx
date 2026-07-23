@@ -3,11 +3,54 @@
 import { useAppStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle2, XCircle, Clock, Trophy, RotateCcw, ChevronRight } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, Trophy, RotateCcw, ArrowLeft } from "lucide-react";
 import { BackButton } from "@/components/ui/BackButton";
+import { TranslatingIndicator } from "@/components/ui/LanguageToggle";
+import { useTranslation } from "@/lib/useTranslation";
+import { useEffect, useMemo, useState, useCallback } from "react";
 
 export function QuizResult() {
-  const { quizResult, quizQuestions, setView, clearQuiz, setSelectedLesson } = useAppStore();
+  const { quizResult, quizQuestions, setView, clearQuiz } = useAppStore();
+  const { language, translateBatch, isTranslating } = useTranslation();
+
+  // ดึงข้อความที่ต้องแปล: explanations + answer contents
+  const allTexts = useMemo(() => {
+    if (!quizResult) return [];
+    const texts: string[] = [];
+    for (const r of quizResult.results) {
+      if (r.explanation) texts.push(r.explanation);
+      for (const a of r.allAnswers) texts.push(a.content);
+    }
+    return texts;
+  }, [quizResult]);
+
+  const [translatedMap, setTranslatedMap] = useState<Record<string, string>>({});
+
+  const doTranslate = useCallback(async () => {
+    if (language === "en" || allTexts.length === 0) {
+      setTranslatedMap({});
+      return;
+    }
+    const results = await translateBatch(allTexts);
+    const map: Record<string, string> = {};
+    allTexts.forEach((orig, i) => {
+      if (results[i] && results[i] !== orig) map[orig] = results[i];
+    });
+    setTranslatedMap(map);
+  }, [language, allTexts, translateBatch]);
+
+  useEffect(() => {
+    doTranslate();
+  }, [doTranslate]);
+
+  const tr = useCallback(
+    (text: string | undefined): string => {
+      if (!text) return "";
+      if (language === "en") return text;
+      return translatedMap[text] || text;
+    },
+    [language, translatedMap]
+  );
 
   if (!quizResult) return null;
 
@@ -23,10 +66,7 @@ export function QuizResult() {
 
   function handleRetry() {
     clearQuiz();
-    if (setSelectedLesson) {
-      // Trigger re-opening the lesson to start a new quiz
-      setView("lesson");
-    }
+    setView("lesson");
   }
 
   const scoreColor =
@@ -41,8 +81,11 @@ export function QuizResult() {
 
   return (
     <div className="space-y-6">
-      {/* Back button */}
-      <BackButton label="บทเรียน" onClick={handleBackToLesson} />
+      {/* Back button + indicator */}
+      <div className="flex items-center justify-between">
+        <BackButton label="บทเรียน" onClick={handleBackToLesson} />
+        <TranslatingIndicator isTranslating={isTranslating} />
+      </div>
 
       {/* Score card */}
       <Card className="border-0 shadow-sm">
@@ -146,7 +189,7 @@ export function QuizResult() {
                                   : "bg-rose-50 text-rose-700 border border-rose-200"
                               }`}
                             >
-                              {a.content}
+                              {tr(a.content)}
                             </span>
                           ))}
                       </div>
@@ -163,7 +206,7 @@ export function QuizResult() {
                               key={a.id}
                               className="inline-block rounded-lg bg-teal-50 px-3 py-1.5 text-sm text-teal-700 border border-teal-200 mr-2"
                             >
-                              {a.content}
+                              {tr(a.content)}
                             </span>
                           ))}
                       </div>
@@ -173,7 +216,7 @@ export function QuizResult() {
                     {result.explanation && (
                       <div className="mt-2 rounded-lg bg-gray-50 px-3 py-2">
                         <p className="text-xs text-gray-500">
-                          💡 {result.explanation}
+                          💡 {tr(result.explanation)}
                         </p>
                       </div>
                     )}

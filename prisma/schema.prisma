@@ -46,6 +46,7 @@ model User {
   essaySubmissions  EssaySubmission[]
   readinessScores   ReadinessScore[]
   readinessHistory  ReadinessHistory[]
+  dailyFlashcardQuizLogs DailyFlashcardQuizLog[]
 }
 
 // ---------------------------------------------------------------------------
@@ -69,6 +70,7 @@ model Subject {
   essayPrompts   EssayPrompt[]
   readinessScores ReadinessScore[]
   readinessHistory ReadinessHistory[]
+  flashcards      Flashcard[]
 }
 
 // ---------------------------------------------------------------------------
@@ -410,6 +412,44 @@ model EssayGradingDetail {
 
   @@unique([submissionId, dimension])
   @@index([submissionId])
+}
+
+// ---------------------------------------------------------------------------
+// FLASHCARDS (Vocabulary active recall)
+// ---------------------------------------------------------------------------
+model Flashcard {
+  id          String   @id @default(cuid())
+  subjectId   String
+  term        String                           // English term e.g. "Slope (m)"
+  translation String                           // Thai translation e.g. "ความชันของเส้นตรง"
+  meaning     String                           // Detailed explanation in Thai
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  subject       Subject              @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  dailyQuizLogs DailyFlashcardQuizLog[]
+
+  @@index([subjectId])
+  @@index([subjectId, sortOrder])
+}
+
+// ---------------------------------------------------------------------------
+// DAILY FLASHCARD QUIZ LOG
+// ---------------------------------------------------------------------------
+model DailyFlashcardQuizLog {
+  id          String   @id @default(cuid())
+  userId      String
+  flashcardId String
+  answeredAt  DateTime @default(now())
+  isCorrect   Boolean
+  userAnswer  String                           // what the user typed
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  flashcard Flashcard @relation(fields: [flashcardId], references: [id], onDelete: Cascade)
+
+  @@index([userId, answeredAt])
+  @@index([userId])
 }
 
 // ---------------------------------------------------------------------------

@@ -6,7 +6,9 @@ import { ChevronRight, Clock, Brain, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BackButton } from "@/components/ui/BackButton";
-import { useState } from "react";
+import { TranslatingIndicator } from "@/components/ui/LanguageToggle";
+import { useTranslation } from "@/lib/useTranslation";
+import { useState, useEffect, useMemo, useCallback } from "react";
 
 interface ContentBlock {
   id: string;
@@ -26,9 +28,60 @@ const CALLOUT_COLORS: Record<string, string> = {
   example: "border-orange-200 bg-orange-50",
 };
 
+// ดึงข้อความภาษาอังกฤษทั้งหมดจาก content blocks
+function extractTexts(blocks: ContentBlock[]): string[] {
+  const texts: string[] = [];
+  for (const b of blocks) {
+    if (b.content) texts.push(b.content);
+    if (b.callout?.title) texts.push(b.callout.title);
+    if (b.callout?.body) texts.push(b.callout.body);
+    if (b.items) texts.push(...b.items);
+  }
+  return texts.filter((t) => t && t.trim().length > 0);
+}
+
 export function LessonView() {
-  const { selectedLesson, setView, setSelectedSubject, user, startQuiz } = useAppStore();
+  const { selectedLesson, setView, user, startQuiz } = useAppStore();
   const [startingQuiz, setStartingQuiz] = useState(false);
+  const { language, translateBatch, isTranslating } = useTranslation();
+
+  const blocks: ContentBlock[] = Array.isArray(selectedLesson?.bodyContent)
+    ? (selectedLesson.bodyContent as ContentBlock[])
+    : [];
+
+  // สร้างชุดข้อความต้นฉบับ (stable reference)
+  const originalTexts = useMemo(() => extractTexts(blocks), [blocks]);
+
+  // translatedMap: originalText → translatedText
+  const [translatedMap, setTranslatedMap] = useState<Record<string, string>>({});
+
+  // เรียกแปลเมื่อเปลี่ยนภาษา
+  const doTranslate = useCallback(async () => {
+    if (language === "en" || originalTexts.length === 0) {
+      setTranslatedMap({});
+      return;
+    }
+    const results = await translateBatch(originalTexts);
+    const map: Record<string, string> = {};
+    originalTexts.forEach((orig, i) => {
+      if (results[i] && results[i] !== orig) map[orig] = results[i];
+    });
+    setTranslatedMap(map);
+  }, [language, originalTexts, translateBatch]);
+
+  useEffect(() => {
+    doTranslate();
+  }, [doTranslate]);
+
+  // helper แปลข้อความเดี่ยว
+  const tr = useCallback(
+    (text: string | undefined): string => {
+      if (!text) return "";
+      if (language === "en") return text;
+      return translatedMap[text] || text;
+    },
+    [language, translatedMap]
+  );
 
   if (!selectedLesson) {
     return (
@@ -38,10 +91,6 @@ export function LessonView() {
       </div>
     );
   }
-
-  const blocks: ContentBlock[] = Array.isArray(selectedLesson.bodyContent)
-    ? selectedLesson.bodyContent
-    : [];
 
   async function handleStartQuiz() {
     if (!user || !selectedLesson) return;
@@ -79,23 +128,26 @@ export function LessonView() {
 
   return (
     <div className="space-y-6">
-      {/* Back button + Breadcrumb */}
+      {/* Back button + Breadcrumb + Translate indicator */}
       <div className="flex items-center justify-between gap-4">
-        <BackButton label={subjectTitle || "วิชาเรียน"} onClick={handleBack} />
-        <div className="hidden sm:flex items-center gap-1.5 text-sm min-w-0">
-          <span className="text-gray-400 truncate">{subjectTitle}</span>
-          {topicTitle && <>
+        <BackButton label={tr(subjectTitle) || "วิชาเรียน"} onClick={handleBack} />
+        <div className="flex items-center gap-3 min-w-0">
+          <TranslatingIndicator isTranslating={isTranslating} />
+          <div className="hidden sm:flex items-center gap-1.5 text-sm">
+            <span className="text-gray-400 truncate">{tr(subjectTitle)}</span>
+            {topicTitle && <>
+              <ChevronRight className="h-3.5 w-3.5 text-gray-300 shrink-0" />
+              <span className="text-gray-400 truncate">{tr(topicTitle)}</span>
+            </>}
             <ChevronRight className="h-3.5 w-3.5 text-gray-300 shrink-0" />
-            <span className="text-gray-400 truncate">{topicTitle}</span>
-          </>}
-          <ChevronRight className="h-3.5 w-3.5 text-gray-300 shrink-0" />
-          <span className="font-medium text-gray-900 truncate">{selectedLesson.title}</span>
+            <span className="font-medium text-gray-900 truncate">{tr(selectedLesson.title)}</span>
+          </div>
         </div>
       </div>
 
       {/* Title */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">{selectedLesson.title}</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{tr(selectedLesson.title)}</h1>
         <div className="mt-2 flex items-center gap-3 text-sm text-gray-500">
           <span className="flex items-center gap-1">
             <Clock className="h-3.5 w-3.5" />
@@ -108,7 +160,7 @@ export function LessonView() {
       {/* Content blocks */}
       <div className="space-y-5">
         {blocks.map((block) => (
-          <BlockRenderer key={block.id} block={block} />
+          <BlockRenderer key={block.id} block={block} tr={tr} />
         ))}
       </div>
 
@@ -136,20 +188,20 @@ export function LessonView() {
   );
 }
 
-function BlockRenderer({ block }: { block: ContentBlock }) {
+function BlockRenderer({ block, tr }: { block: ContentBlock; tr: (s: string | undefined) => string }) {
   if (block.block_type === "heading") {
     const Tag = (`h${block.level || 2}`) as keyof JSX.IntrinsicElements;
     const cls = block.level === 2
       ? "text-xl font-semibold text-gray-900 mt-6 mb-2"
       : "text-lg font-medium text-gray-800 mt-4 mb-1";
-    return <Tag className={cls}>{block.content}</Tag>;
+    return <Tag className={cls}>{tr(block.content)}</Tag>;
   }
 
   if (block.block_type === "paragraph") {
     return (
       <p
         className="text-gray-700 leading-relaxed"
-        dangerouslySetInnerHTML={{ __html: block.content || "" }}
+        dangerouslySetInnerHTML={{ __html: tr(block.content) || "" }}
       />
     );
   }
@@ -160,9 +212,9 @@ function BlockRenderer({ block }: { block: ContentBlock }) {
         className={`rounded-lg border-l-4 p-4 ${CALLOUT_COLORS[block.callout.variant] || CALLOUT_COLORS.info}`}
       >
         {block.callout.title && (
-          <p className="font-semibold text-gray-900 text-sm">{block.callout.title}</p>
+          <p className="font-semibold text-gray-900 text-sm">{tr(block.callout.title)}</p>
         )}
-        <p className="mt-1 text-sm text-gray-700 whitespace-pre-line">{block.callout.body}</p>
+        <p className="mt-1 text-sm text-gray-700 whitespace-pre-line">{tr(block.callout.body)}</p>
       </div>
     );
   }
@@ -171,7 +223,7 @@ function BlockRenderer({ block }: { block: ContentBlock }) {
     return (
       <ol className="list-decimal pl-5 space-y-1 text-gray-700">
         {block.items.map((item, i) => (
-          <li key={i} dangerouslySetInnerHTML={{ __html: item }} />
+          <li key={i} dangerouslySetInnerHTML={{ __html: tr(item) || "" }} />
         ))}
       </ol>
     );
@@ -181,7 +233,7 @@ function BlockRenderer({ block }: { block: ContentBlock }) {
     return (
       <ul className="list-disc pl-5 space-y-1 text-gray-700">
         {block.items.map((item, i) => (
-          <li key={i} dangerouslySetInnerHTML={{ __html: item }} />
+          <li key={i} dangerouslySetInnerHTML={{ __html: tr(item) || "" }} />
         ))}
       </ul>
     );
