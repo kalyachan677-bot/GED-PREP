@@ -1,0 +1,1674 @@
+{
+  "cmrvybia": [
+    {
+      "id": "cmrvybiay0009njqmdjpxlolv",
+      "expl": "Subtract 7 from both sides to get 3x = 15, then divide by 3.",
+      "ans": [
+        {
+          "id": "cmrvybiaz000bnjqm6b010wm2",
+          "c": "5",
+          "ok": true
+        },
+        {
+          "id": "cmrvybib0000dnjqm88rzto8h",
+          "c": "4",
+          "ok": false
+        },
+        {
+          "id": "cmrvybib1000fnjqmqwam00wx",
+          "c": "6",
+          "ok": false
+        },
+        {
+          "id": "cmrvybib1000hnjqmdbfhnoeo",
+          "c": "7",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybib2000jnjqme6nzvgz0",
+      "expl": "Subtract 4: 2(x+4) = 18 → x+4 = 9 → x = 5.",
+      "ans": [
+        {
+          "id": "cmrvybib2000lnjqm6z4aa0xx",
+          "c": "3",
+          "ok": false
+        },
+        {
+          "id": "cmrvybib3000nnjqmxj24ru0m",
+          "c": "5",
+          "ok": true
+        },
+        {
+          "id": "cmrvybib3000pnjqmvz9am75q",
+          "c": "7",
+          "ok": false
+        },
+        {
+          "id": "cmrvybib4000rnjqmq1gxkvuy",
+          "c": "9",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybib7000vnjqmcukxjwja",
+      "expl": "Divide both sides by -2 and flip the sign: x < 5.",
+      "ans": [
+        {
+          "id": "cmrvybib8000xnjqmz2wl3pvg",
+          "c": "x > 5",
+          "ok": false
+        },
+        {
+          "id": "cmrvybib9000znjqm3x1rheds",
+          "c": "x < 5",
+          "ok": true
+        },
+        {
+          "id": "cmrvybiba0011njqmorr1yxw7",
+          "c": "x < -5",
+          "ok": false
+        },
+        {
+          "id": "cmrvybiba0013njqmezd7wqhn",
+          "c": "x > -5",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybibb0015njqmf1zhtk3x",
+      "expl": "Add 3 to both sides: 3x ≤ 12, then divide by 3: x ≤ 4.",
+      "ans": [
+        {
+          "id": "cmrvybibc0017njqmm089zcko",
+          "c": "x ≤ 4",
+          "ok": true
+        },
+        {
+          "id": "cmrvybibc0019njqmi9tf52jw",
+          "c": "x ≥ 4",
+          "ok": false
+        },
+        {
+          "id": "cmrvybibc001bnjqmb2l2ebrf",
+          "c": "x < 4",
+          "ok": false
+        },
+        {
+          "id": "cmrvybibd001dnjqmldlcj04p",
+          "c": "x > 4",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybibf001jnjqmg3t8f9lr",
+      "expl": "Substitute x=3 into y=2x+1: y=7. Check: 3+7=10.",
+      "ans": [
+        {
+          "id": "cmrvybibf001lnjqmugv2dy2d",
+          "c": "(2, 5)",
+          "ok": false
+        },
+        {
+          "id": "cmrvybibf001nnjqmaaax4zwn",
+          "c": "(3, 7)",
+          "ok": true
+        },
+        {
+          "id": "cmrvybibg001pnjqmc4ktxbn4",
+          "c": "(4, 6)",
+          "ok": false
+        },
+        {
+          "id": "cmrvybibh001rnjqmjgh4qkey",
+          "c": "(1, 9)",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybibi001tnjqmqzfp06ax",
+      "expl": "3(3) + 2y = 13 → 9 + 2y = 13 → y = 2.",
+      "ans": [
+        {
+          "id": "cmrvybibj001vnjqmqw1rpds1",
+          "c": "y = 1",
+          "ok": false
+        },
+        {
+          "id": "cmrvybibj001xnjqmfsk6zexg",
+          "c": "y = 2",
+          "ok": true
+        },
+        {
+          "id": "cmrvybibk001znjqm02y047bk",
+          "c": "y = 3",
+          "ok": false
+        },
+        {
+          "id": "cmrvybibl0021njqmdyvxciqe",
+          "c": "y = 4",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybibm0025njqmkvatp8s1",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybibn0027njqmriz5hsba",
+          "c": "(3, 1)",
+          "ok": true
+        },
+        {
+          "id": "cmrvybibo0029njqmk1czi562",
+          "c": "(1, 3)",
+          "ok": false
+        },
+        {
+          "id": "cmrvybibp002bnjqmyl63o8x7",
+          "c": "(2, 2)",
+          "ok": false
+        },
+        {
+          "id": "cmrvybibp002dnjqmxu3oeptf",
+          "c": "(4, 0)",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybibq002fnjqm7fe20zto",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybibq002hnjqmjx4skss3",
+          "c": "One solution",
+          "ok": false
+        },
+        {
+          "id": "cmrvybibr002jnjqmo5kdohgg",
+          "c": "No solution",
+          "ok": true
+        },
+        {
+          "id": "cmrvybibs002lnjqmg0r75xp9",
+          "c": "Infinite solutions",
+          "ok": false
+        },
+        {
+          "id": "cmrvybibt002nnjqmh3izvln5",
+          "c": "Two solutions",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybibv002vnjqmer5v1i5e",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybibw002xnjqmys20tw35",
+          "c": "30",
+          "ok": true
+        },
+        {
+          "id": "cmrvybibw002znjqmkig7lmn8",
+          "c": "35",
+          "ok": false
+        },
+        {
+          "id": "cmrvybibx0031njqm9t1aud1f",
+          "c": "40",
+          "ok": false
+        },
+        {
+          "id": "cmrvybibx0033njqm8741ou7i",
+          "c": "50",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybiby0035njqmwjlc9swk",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybiby0037njqm0bqc67xd",
+          "c": "12",
+          "ok": true
+        },
+        {
+          "id": "cmrvybibz0039njqma3gf8gyo",
+          "c": "24",
+          "ok": false
+        },
+        {
+          "id": "cmrvybibz003bnjqmrk7r2lou",
+          "c": "10",
+          "ok": false
+        },
+        {
+          "id": "cmrvybic0003dnjqm20xyn81j",
+          "c": "6",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybic1003hnjqmjioraett",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybic2003jnjqm6nlfv5gc",
+          "c": "10π",
+          "ok": true
+        },
+        {
+          "id": "cmrvybic2003lnjqm4pl1gl8x",
+          "c": "20π",
+          "ok": false
+        },
+        {
+          "id": "cmrvybic2003nnjqm409uwwoo",
+          "c": "5π",
+          "ok": false
+        },
+        {
+          "id": "cmrvybic4003pnjqmf7wr980j",
+          "c": "25π",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybic5003rnjqm2umamgv7",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybic6003tnjqm1yv8imbt",
+          "c": "16π",
+          "ok": true
+        },
+        {
+          "id": "cmrvybic6003vnjqmcyx4rwrw",
+          "c": "8π",
+          "ok": false
+        },
+        {
+          "id": "cmrvybic7003xnjqmax8b4i64",
+          "c": "4π",
+          "ok": false
+        },
+        {
+          "id": "cmrvybic7003znjqmwh9o3e2q",
+          "c": "32π",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybic80045njqmhg5lmplm",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybic80047njqm58s6dr8x",
+          "c": "13",
+          "ok": true
+        },
+        {
+          "id": "cmrvybic90049njqmdsu5gl3e",
+          "c": "12",
+          "ok": false
+        },
+        {
+          "id": "cmrvybic9004bnjqmhfzfdah6",
+          "c": "14",
+          "ok": false
+        },
+        {
+          "id": "cmrvybic9004dnjqm64xf659p",
+          "c": "15",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybica004fnjqm6sudaevg",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybicb004hnjqmir39rwfq",
+          "c": "8",
+          "ok": false
+        },
+        {
+          "id": "cmrvybicb004jnjqmfmjhn8k6",
+          "c": "9",
+          "ok": true
+        },
+        {
+          "id": "cmrvybicc004lnjqmgts55wa5",
+          "c": "12",
+          "ok": false
+        },
+        {
+          "id": "cmrvybice004nnjqmhqb5bal8",
+          "c": "15",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybicf004rnjqmh2scbglr",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybicg004tnjqm9rqrxmgc",
+          "c": "17 feet",
+          "ok": true
+        },
+        {
+          "id": "cmrvybicg004vnjqmajdz0p3t",
+          "c": "20 feet",
+          "ok": false
+        },
+        {
+          "id": "cmrvybicg004xnjqmbfcl2et1",
+          "c": "15 feet",
+          "ok": false
+        },
+        {
+          "id": "cmrvybich004znjqm2jtoc9ew",
+          "c": "25 feet",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybich0051njqm3rhkkclm",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybici0053njqms1x18dag",
+          "c": "10√2",
+          "ok": true
+        },
+        {
+          "id": "cmrvybici0055njqm82qa90c4",
+          "c": "20",
+          "ok": false
+        },
+        {
+          "id": "cmrvybicj0057njqmbtzzvlsf",
+          "c": "14",
+          "ok": false
+        },
+        {
+          "id": "cmrvybick0059njqmdwrabf28",
+          "c": "10√3",
+          "ok": false
+        }
+      ]
+    }
+  ],
+  "cmrvybic": [
+    {
+      "id": "cmrvybicp005injqmdqdjaq0l",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybicp005knjqm09rqtnoo",
+          "c": "Mitochondria",
+          "ok": true
+        },
+        {
+          "id": "cmrvybicq005mnjqmv5cb88el",
+          "c": "Ribosome",
+          "ok": false
+        },
+        {
+          "id": "cmrvybicq005onjqmncyko2h8",
+          "c": "Nucleus",
+          "ok": false
+        },
+        {
+          "id": "cmrvybicr005qnjqmty1cazsu",
+          "c": "Cell wall",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybicr005snjqm0adxi439",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybics005unjqm4kooxpyq",
+          "c": "They have a nucleus",
+          "ok": false
+        },
+        {
+          "id": "cmrvybict005wnjqmd5pplw6k",
+          "c": "They lack membrane-bound organelles",
+          "ok": true
+        },
+        {
+          "id": "cmrvybict005ynjqmkrwzy03k",
+          "c": "They are larger",
+          "ok": false
+        },
+        {
+          "id": "cmrvybicu0060njqmay07s8ie",
+          "c": "They contain DNA",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybicv0064njqmy2xi8jkx",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybicw0066njqmxzrg6q7k",
+          "c": "2 identical diploid cells",
+          "ok": true
+        },
+        {
+          "id": "cmrvybicw0068njqmvwkgkgbp",
+          "c": "4 unique haploid cells",
+          "ok": false
+        },
+        {
+          "id": "cmrvybicx006anjqmp6vlhou0",
+          "c": "2 unique haploid cells",
+          "ok": false
+        },
+        {
+          "id": "cmrvybicx006cnjqmomipqfd4",
+          "c": "4 identical diploid cells",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybicy006enjqmk2rne0yb",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybicy006gnjqmnt2puakd",
+          "c": "Growth and repair",
+          "ok": false
+        },
+        {
+          "id": "cmrvybicz006injqm5q729op1",
+          "c": "Sexual reproduction",
+          "ok": true
+        },
+        {
+          "id": "cmrvybid0006knjqmvahrfsbn",
+          "c": "Asexual reproduction",
+          "ok": false
+        },
+        {
+          "id": "cmrvybid0006mnjqmyqalh8px",
+          "c": "Protein synthesis",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybid3006snjqmvp50zmdy",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybid3006unjqmeyyc9z81",
+          "c": "Double helix",
+          "ok": true
+        },
+        {
+          "id": "cmrvybid4006wnjqmdsrj386m",
+          "c": "Single strand",
+          "ok": false
+        },
+        {
+          "id": "cmrvybid5006ynjqmx2hh37jj",
+          "c": "Triple helix",
+          "ok": false
+        },
+        {
+          "id": "cmrvybid50070njqmxeqvtqae",
+          "c": "Circular ring",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybid60072njqmgo4emt7o",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybid70074njqmbtad3r2b",
+          "c": "Different versions of the same gene",
+          "ok": true
+        },
+        {
+          "id": "cmrvybid70076njqmfszh799f",
+          "c": "Different genes on different chromosomes",
+          "ok": false
+        },
+        {
+          "id": "cmrvybid80078njqmoneopmdc",
+          "c": "Mutated DNA sequences only",
+          "ok": false
+        },
+        {
+          "id": "cmrvybid8007anjqmub767l62",
+          "c": "Proteins that build cells",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybida007enjqm74j7mma0",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybida007gnjqmwyod6dok",
+          "c": "25%",
+          "ok": true
+        },
+        {
+          "id": "cmrvybidb007injqmljvcc3j5",
+          "c": "50%",
+          "ok": false
+        },
+        {
+          "id": "cmrvybidc007knjqmzm9icqh7",
+          "c": "75%",
+          "ok": false
+        },
+        {
+          "id": "cmrvybide007mnjqmo1cfg3x2",
+          "c": "100%",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybidf007onjqmagwbmxi7",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybidf007qnjqmwiywx382",
+          "c": "Genotype is the genetic makeup; phenotype is the physical expression",
+          "ok": true
+        },
+        {
+          "id": "cmrvybidg007snjqm9v7oiqp1",
+          "c": "They mean the same thing",
+          "ok": false
+        },
+        {
+          "id": "cmrvybie2007unjqmrmhwal6s",
+          "c": "Phenotype determines genotype",
+          "ok": false
+        },
+        {
+          "id": "cmrvybie2007wnjqm7j3oh9ma",
+          "c": "Genotype is only about appearance",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybie50084njqmgu6u61ja",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybie60086njqmty8goirl",
+          "c": "Proton",
+          "ok": true
+        },
+        {
+          "id": "cmrvybie60088njqmw9uq8atz",
+          "c": "Neutron",
+          "ok": false
+        },
+        {
+          "id": "cmrvybie7008anjqm0hxjiroq",
+          "c": "Electron",
+          "ok": false
+        },
+        {
+          "id": "cmrvybie8008cnjqmnwumnlr4",
+          "c": "Isotope",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybie9008enjqmzk5glzx8",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybie9008gnjqm7mu9m2hz",
+          "c": "Atomic number",
+          "ok": true
+        },
+        {
+          "id": "cmrvybiea008injqmibdipfes",
+          "c": "Atomic mass",
+          "ok": false
+        },
+        {
+          "id": "cmrvybiea008knjqmt8txue26",
+          "c": "Number of neutrons",
+          "ok": false
+        },
+        {
+          "id": "cmrvybieb008mnjqmyojxqzh2",
+          "c": "Chemical symbol",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybiec008qnjqmxecyafxt",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybied008snjqm6rlovq3q",
+          "c": "The total mass of reactants equals total mass of products",
+          "ok": true
+        },
+        {
+          "id": "cmrvybied008unjqm8pr7de18",
+          "c": "Mass can be created during reactions",
+          "ok": false
+        },
+        {
+          "id": "cmrvybiee008wnjqmgi1pbt95",
+          "c": "Gases have no mass",
+          "ok": false
+        },
+        {
+          "id": "cmrvybiee008ynjqmy6ph9b88",
+          "c": "Mass is only conserved in solids",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybief0090njqm5bt811wl",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybieg0092njqmkspvrx5d",
+          "c": "Synthesis",
+          "ok": true
+        },
+        {
+          "id": "cmrvybieg0094njqmnddz7ywm",
+          "c": "Decomposition",
+          "ok": false
+        },
+        {
+          "id": "cmrvybieh0096njqmridqnjvw",
+          "c": "Combustion",
+          "ok": false
+        },
+        {
+          "id": "cmrvybieh0098njqmqrmickdj",
+          "c": "Neutralization",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybiel009enjqmegvznhj4",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybiel009gnjqmwaihi139",
+          "c": "F = ma",
+          "ok": true
+        },
+        {
+          "id": "cmrvybiel009injqm0jilh78a",
+          "c": "E = mc²",
+          "ok": false
+        },
+        {
+          "id": "cmrvybiem009knjqm9vn95ojh",
+          "c": "P = mv",
+          "ok": false
+        },
+        {
+          "id": "cmrvybiem009mnjqmen9sodk0",
+          "c": "V = IR",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybiem009onjqm7hql615m",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybien009qnjqm482jnpdp",
+          "c": "First law",
+          "ok": true
+        },
+        {
+          "id": "cmrvybien009snjqmxei5ltfz",
+          "c": "Second law",
+          "ok": false
+        },
+        {
+          "id": "cmrvybien009unjqmuir4zffo",
+          "c": "Third law",
+          "ok": false
+        },
+        {
+          "id": "cmrvybieo009wnjqmh5kpm28p",
+          "c": "Law of gravity",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybiep00a0njqm5hazy6lj",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybiep00a2njqmlwepckpy",
+          "c": "Velocity includes direction; speed does not",
+          "ok": true
+        },
+        {
+          "id": "cmrvybieq00a4njqm4j7f851x",
+          "c": "They are the same thing",
+          "ok": false
+        },
+        {
+          "id": "cmrvybieq00a6njqm9hj7ez0l",
+          "c": "Speed is a vector quantity",
+          "ok": false
+        },
+        {
+          "id": "cmrvybier00a8njqmarievktt",
+          "c": "Velocity only measures deceleration",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybier00aanjqmfy05i2ci",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybies00acnjqm1gw92ek5",
+          "c": "m/s²",
+          "ok": true
+        },
+        {
+          "id": "cmrvybies00aenjqmqj8wmqwz",
+          "c": "m/s",
+          "ok": false
+        },
+        {
+          "id": "cmrvybiet00agnjqm3xtvdu4o",
+          "c": "kg·m/s",
+          "ok": false
+        },
+        {
+          "id": "cmrvybiet00ainjqmf6db1bdh",
+          "c": "N",
+          "ok": false
+        }
+      ]
+    }
+  ],
+  "cmrvybie": [
+    {
+      "id": "cmrvybiew00arnjqmd9v6aoeo",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybiex00atnjqm93icoz5f",
+          "c": "First or last sentence",
+          "ok": true
+        },
+        {
+          "id": "cmrvybiey00avnjqmfketjg5c",
+          "c": "Random sentence in the middle",
+          "ok": false
+        },
+        {
+          "id": "cmrvybiez00axnjqmgzd2liw9",
+          "c": "Only in the title",
+          "ok": false
+        },
+        {
+          "id": "cmrvybiez00aznjqm7k4c1yf4",
+          "c": "It is never directly stated",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybif000b1njqmsb2easn5",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybif000b3njqm4itt5ahf",
+          "c": "To provide evidence and examples",
+          "ok": true
+        },
+        {
+          "id": "cmrvybif000b5njqmeqjhcyzk",
+          "c": "To contradict the main idea",
+          "ok": false
+        },
+        {
+          "id": "cmrvybif100b7njqm3rv6do45",
+          "c": "To introduce a new topic",
+          "ok": false
+        },
+        {
+          "id": "cmrvybif100b9njqm0m31fw37",
+          "c": "To summarize the passage",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybif200bdnjqm3t2o59yz",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybif200bfnjqm2kbqabbw",
+          "c": "A conclusion based on clues and evidence in the text",
+          "ok": true
+        },
+        {
+          "id": "cmrvybif300bhnjqmxelpog5u",
+          "c": "A fact directly stated by the author",
+          "ok": false
+        },
+        {
+          "id": "cmrvybif300bjnjqm56qsbhpx",
+          "c": "The title of the passage",
+          "ok": false
+        },
+        {
+          "id": "cmrvybif400blnjqm3uaovj5f",
+          "c": "A summary of the main idea",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybif500bnnjqml1hrbppk",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybif500bpnjqm7m59q5t4",
+          "c": "The author's attitude toward the subject",
+          "ok": true
+        },
+        {
+          "id": "cmrvybif700brnjqmjht9dg9h",
+          "c": "The main character's name",
+          "ok": false
+        },
+        {
+          "id": "cmrvybif700btnjqmf27xifhh",
+          "c": "The number of paragraphs",
+          "ok": false
+        },
+        {
+          "id": "cmrvybif800bvnjqmpccfkmug",
+          "c": "The publication date",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybif900c1njqmbjsd0igl",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybifa00c3njqm8nx7bdpl",
+          "c": "To persuade",
+          "ok": true
+        },
+        {
+          "id": "cmrvybifa00c5njqmiotomqjh",
+          "c": "To entertain",
+          "ok": false
+        },
+        {
+          "id": "cmrvybifb00c7njqm2n5xb5jq",
+          "c": "To inform",
+          "ok": false
+        },
+        {
+          "id": "cmrvybifb00c9njqm78tjq4nn",
+          "c": "To describe",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybifc00cbnjqm0dkotion",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybifc00cdnjqmsbd0msea",
+          "c": "Cause and effect",
+          "ok": true
+        },
+        {
+          "id": "cmrvybifd00cfnjqmpgni4wjw",
+          "c": "Alphabetical order",
+          "ok": false
+        },
+        {
+          "id": "cmrvybife00chnjqm18hbq8vs",
+          "c": "Rhyming scheme",
+          "ok": false
+        },
+        {
+          "id": "cmrvybife00cjnjqmmdlsprc3",
+          "c": "Question and answer",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybiff00cnnjqmti7sit65",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybifg00cpnjqmp3l5r661",
+          "c": "First person",
+          "ok": true
+        },
+        {
+          "id": "cmrvybifh00crnjqmz43gl789",
+          "c": "Second person",
+          "ok": false
+        },
+        {
+          "id": "cmrvybifh00ctnjqmw24nobis",
+          "c": "Third person omniscient",
+          "ok": false
+        },
+        {
+          "id": "cmrvybifh00cvnjqmxxdokf2y",
+          "c": "Third person objective",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybifi00cxnjqmamer0pdx",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybifi00cznjqmv7330en0",
+          "c": "Can reveal all characters' thoughts and feelings",
+          "ok": true
+        },
+        {
+          "id": "cmrvybifj00d1njqm4m9mdk8f",
+          "c": "Only knows one character's perspective",
+          "ok": false
+        },
+        {
+          "id": "cmrvybifj00d3njqmws2jmi61",
+          "c": "Is a character in the story",
+          "ok": false
+        },
+        {
+          "id": "cmrvybifk00d5njqmvn6h09oq",
+          "c": "Never describes settings",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybifm00ddnjqm351t67d4",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybifn00dfnjqm5dnhqp0u",
+          "c": "Missing a subject or verb or complete thought",
+          "ok": true
+        },
+        {
+          "id": "cmrvybifo00dhnjqm69falljk",
+          "c": "Too long",
+          "ok": false
+        },
+        {
+          "id": "cmrvybifo00djnjqmoqqcfkq3",
+          "c": "Contains a spelling error",
+          "ok": false
+        },
+        {
+          "id": "cmrvybifp00dlnjqmi4l5isma",
+          "c": "Has too many commas",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybifp00dnnjqmclsfzvik",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybifq00dpnjqmxza5g5ug",
+          "c": "I love coffee she loves tea.",
+          "ok": true
+        },
+        {
+          "id": "cmrvybifq00drnjqmb65hsfej",
+          "c": "I love coffee, but she loves tea.",
+          "ok": false
+        },
+        {
+          "id": "cmrvybifr00dtnjqm5apa9146",
+          "c": "I love coffee and she loves tea.",
+          "ok": false
+        },
+        {
+          "id": "cmrvybifr00dvnjqmckw5t77r",
+          "c": "I love coffee; she loves tea.",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybifs00dznjqmymtd6b07",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybift00e1njqmnbaiwj1w",
+          "c": "runs",
+          "ok": true
+        },
+        {
+          "id": "cmrvybift00e3njqmsl99lds0",
+          "c": "run",
+          "ok": false
+        },
+        {
+          "id": "cmrvybifu00e5njqmlcgimvlc",
+          "c": "running",
+          "ok": false
+        },
+        {
+          "id": "cmrvybifv00e7njqmpcnwxmlq",
+          "c": "ran",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybifw00e9njqma3z7moda",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybifw00ebnjqm2z9bt9dk",
+          "c": "their",
+          "ok": false
+        },
+        {
+          "id": "cmrvybifx00ednjqm3j9c9oax",
+          "c": "his or her",
+          "ok": true
+        },
+        {
+          "id": "cmrvybifx00efnjqm4kdtwvyv",
+          "c": "its",
+          "ok": false
+        },
+        {
+          "id": "cmrvybify00ehnjqmjkmj2kwb",
+          "c": "they",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybig000ennjqm2qkx53ro",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybig100epnjqmfnyf99kw",
+          "c": "apples, bananas, and oranges",
+          "ok": true
+        },
+        {
+          "id": "cmrvybig100ernjqm40o5gcvr",
+          "c": "apples bananas and oranges",
+          "ok": false
+        },
+        {
+          "id": "cmrvybig200etnjqmkt61fum8",
+          "c": "apples, bananas and, oranges",
+          "ok": false
+        },
+        {
+          "id": "cmrvybig200evnjqmq18niyxa",
+          "c": "apples bananas, and oranges",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybig300exnjqmzzxomxeh",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybig900eznjqmopgwmb73",
+          "c": "Add a period or semicolon between the independent clauses",
+          "ok": true
+        },
+        {
+          "id": "cmrvybig900f1njqm8yt69nvc",
+          "c": "Add more commas",
+          "ok": false
+        },
+        {
+          "id": "cmrvybig900f3njqm6k4efxag",
+          "c": "Remove all punctuation",
+          "ok": false
+        },
+        {
+          "id": "cmrvybiga00f5njqmivml9cz9",
+          "c": "Make the sentences shorter",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybigb00f9njqm0b52vepv",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybigw00fbnjqmz5o3jsbf",
+          "c": "The dog's bone",
+          "ok": true
+        },
+        {
+          "id": "cmrvybigw00fdnjqmywikoytk",
+          "c": "The dogs bone",
+          "ok": false
+        },
+        {
+          "id": "cmrvybigx00ffnjqmyqcwba8e",
+          "c": "The dogs' bone's",
+          "ok": false
+        },
+        {
+          "id": "cmrvybigx00fhnjqmxug99m7g",
+          "c": "The dog bone",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybigy00fjnjqm6oerigtx",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybigy00flnjqm8fzc6dim",
+          "c": "Its is possessive; it's is a contraction for it is",
+          "ok": true
+        },
+        {
+          "id": "cmrvybigz00fnnjqmmv5k5bll",
+          "c": "They mean the same thing",
+          "ok": false
+        },
+        {
+          "id": "cmrvybigz00fpnjqmwiiv12pz",
+          "c": "Its is a contraction",
+          "ok": false
+        },
+        {
+          "id": "cmrvybih000frnjqmj8han8wf",
+          "c": "It's is possessive",
+          "ok": false
+        }
+      ]
+    }
+  ],
+  "cmrvybih": [
+    {
+      "id": "cmrvybih300g0njqm7zrzwmx5",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybih300g2njqm96rhw20s",
+          "c": "July 4, 1776",
+          "ok": true
+        },
+        {
+          "id": "cmrvybih400g4njqm1b6ccwp8",
+          "c": "July 4, 1775",
+          "ok": false
+        },
+        {
+          "id": "cmrvybih500g6njqmvh19e95c",
+          "c": "June 15, 1776",
+          "ok": false
+        },
+        {
+          "id": "cmrvybih500g8njqm5pd9i502",
+          "c": "January 1, 1777",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybih600ganjqmmvonbfj5",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybih600gcnjqmn7b4vojv",
+          "c": "Life, liberty, and the pursuit of happiness",
+          "ok": true
+        },
+        {
+          "id": "cmrvybih700genjqma6mjuszp",
+          "c": "Life, liberty, and property",
+          "ok": false
+        },
+        {
+          "id": "cmrvybih700ggnjqmspdl77na",
+          "c": "Freedom, equality, and justice",
+          "ok": false
+        },
+        {
+          "id": "cmrvybih800ginjqmtr78w978",
+          "c": "Faith, hope, and charity",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybih900gmnjqmb68jl45a",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybih900gonjqmjoycd2la",
+          "c": "Three",
+          "ok": true
+        },
+        {
+          "id": "cmrvybiha00gqnjqm3y2j8gqw",
+          "c": "Two",
+          "ok": false
+        },
+        {
+          "id": "cmrvybihb00gsnjqm6uav7hki",
+          "c": "Four",
+          "ok": false
+        },
+        {
+          "id": "cmrvybihc00gunjqmg42lzk5f",
+          "c": "Five",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybihc00gwnjqm82wlvigg",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybihc00gynjqm3ucdi2vo",
+          "c": "To prevent any one branch from becoming too powerful",
+          "ok": true
+        },
+        {
+          "id": "cmrvybihd00h0njqmbda1k9vd",
+          "c": "To make government more efficient",
+          "ok": false
+        },
+        {
+          "id": "cmrvybihd00h2njqm3stx82zg",
+          "c": "To give the President more power",
+          "ok": false
+        },
+        {
+          "id": "cmrvybihe00h4njqm5vezle3e",
+          "c": "To eliminate state governments",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybihg00hanjqmcr7lcrti",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybihg00hcnjqm74jovkke",
+          "c": "Outlawed segregation in public schools",
+          "ok": true
+        },
+        {
+          "id": "cmrvybihg00henjqmzl6juhlj",
+          "c": "Gave women the right to vote",
+          "ok": false
+        },
+        {
+          "id": "cmrvybihh00hgnjqmzdxjwp0r",
+          "c": "Ended slavery",
+          "ok": false
+        },
+        {
+          "id": "cmrvybihh00hinjqmbe3t43d5",
+          "c": "Established the Bill of Rights",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybihi00hknjqm496xtoik",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybihi00hmnjqm1tetg6or",
+          "c": "1964",
+          "ok": true
+        },
+        {
+          "id": "cmrvybihj00honjqm8q8txqxd",
+          "c": "1954",
+          "ok": false
+        },
+        {
+          "id": "cmrvybihj00hqnjqmlyvljxwr",
+          "c": "1968",
+          "ok": false
+        },
+        {
+          "id": "cmrvybihj00hsnjqmb4dpyzuv",
+          "c": "1972",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybihl00hwnjqmmujrxum9",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybihm00hynjqmz5ehbf96",
+          "c": "I Have a Dream",
+          "ok": true
+        },
+        {
+          "id": "cmrvybihm00i0njqmg91thddl",
+          "c": "Gettysburg Address",
+          "ok": false
+        },
+        {
+          "id": "cmrvybihm00i2njqmozelbhi4",
+          "c": "The Federalist Papers",
+          "ok": false
+        },
+        {
+          "id": "cmrvybihn00i4njqm70uyipgk",
+          "c": "Emancipation Proclamation",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybihn00i6njqm78mz1dgq",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybiho00i8njqmb7b8nr20",
+          "c": "Montgomery Bus Boycott",
+          "ok": true
+        },
+        {
+          "id": "cmrvybiho00ianjqm5s39xpvx",
+          "c": "March on Washington",
+          "ok": false
+        },
+        {
+          "id": "cmrvybihp00icnjqme0wd4u1p",
+          "c": "Brown v. Board of Education",
+          "ok": false
+        },
+        {
+          "id": "cmrvybihp00ienjqm9bwcm3in",
+          "c": "Freedom Rides",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybiht00imnjqmgvk60fbn",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybiht00ionjqmb3krtwy1",
+          "c": "100",
+          "ok": true
+        },
+        {
+          "id": "cmrvybihu00iqnjqmz1c0ujdx",
+          "c": "50",
+          "ok": false
+        },
+        {
+          "id": "cmrvybihu00isnjqm8hfkmvcj",
+          "c": "435",
+          "ok": false
+        },
+        {
+          "id": "cmrvybihv00iunjqmy82oe7ng",
+          "c": "535",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybihv00iwnjqmgw1n444g",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybihw00iynjqmdlle6tcl",
+          "c": "Based on state population",
+          "ok": true
+        },
+        {
+          "id": "cmrvybihw00j0njqmb0is91t1",
+          "c": "Two per state",
+          "ok": false
+        },
+        {
+          "id": "cmrvybihx00j2njqm2bc81xea",
+          "c": "Appointed by the President",
+          "ok": false
+        },
+        {
+          "id": "cmrvybihx00j4njqmqshbusyy",
+          "c": "Elected by the Senate",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybihz00j8njqm8acgwify",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybihz00janjqm0p0usav5",
+          "c": "Commander in Chief",
+          "ok": true
+        },
+        {
+          "id": "cmrvybii000jcnjqmrowcikun",
+          "c": "Chief Justice",
+          "ok": false
+        },
+        {
+          "id": "cmrvybii000jenjqmut33ocy9",
+          "c": "Speaker of the House",
+          "ok": false
+        },
+        {
+          "id": "cmrvybii100jgnjqmsyh3kb6u",
+          "c": "Senate Majority Leader",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybii100jinjqm7vtt1cuy",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybii200jknjqmm6x8kk1v",
+          "c": "Declare laws unconstitutional",
+          "ok": true
+        },
+        {
+          "id": "cmrvybii200jmnjqm6hpq3hj7",
+          "c": "Create new laws",
+          "ok": false
+        },
+        {
+          "id": "cmrvybii300jonjqmff710xfn",
+          "c": "Enforce laws",
+          "ok": false
+        },
+        {
+          "id": "cmrvybii300jqnjqm0amyu6jg",
+          "c": "Command the military",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybii500jwnjqme84dcf93",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybii600jynjqme2qcyvfd",
+          "c": "270",
+          "ok": true
+        },
+        {
+          "id": "cmrvybii600k0njqmfpneo060",
+          "c": "300",
+          "ok": false
+        },
+        {
+          "id": "cmrvybii700k2njqme83vfbbf",
+          "c": "218",
+          "ok": false
+        },
+        {
+          "id": "cmrvybii700k4njqm3z6s7uy5",
+          "c": "51",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybii800k6njqmw0jruihp",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybii800k8njqmbu2rglr2",
+          "c": "15th, 19th, and 26th Amendments",
+          "ok": true
+        },
+        {
+          "id": "cmrvybii900kanjqm6j13svp1",
+          "c": "1st, 2nd, and 3rd Amendments",
+          "ok": false
+        },
+        {
+          "id": "cmrvybii900kcnjqmu11z6kl6",
+          "c": "10th, 11th, and 12th Amendments",
+          "ok": false
+        },
+        {
+          "id": "cmrvybiia00kenjqmxjybmsxj",
+          "c": "4th, 5th, and 6th Amendments",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybiib00kinjqmnhih7xk9",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybiic00kknjqmi9f6lm18",
+          "c": "Democrats and Republicans",
+          "ok": true
+        },
+        {
+          "id": "cmrvybiic00kmnjqmfinbk738",
+          "c": "Liberals and Conservatives",
+          "ok": false
+        },
+        {
+          "id": "cmrvybiid00konjqmtz66qump",
+          "c": "Federalists and Anti-Federalists",
+          "ok": false
+        },
+        {
+          "id": "cmrvybiid00kqnjqm9ssbelgy",
+          "c": "Whigs and Tories",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "cmrvybiie00ksnjqm4t9sa8xp",
+      "expl": null,
+      "ans": [
+        {
+          "id": "cmrvybiie00kunjqm05xp1no4",
+          "c": "To select a party's nominee for the general election",
+          "ok": true
+        },
+        {
+          "id": "cmrvybiif00kwnjqmt8zyme22",
+          "c": "To elect the President directly",
+          "ok": false
+        },
+        {
+          "id": "cmrvybiif00kynjqm0wepgrli",
+          "c": "To remove a sitting official",
+          "ok": false
+        },
+        {
+          "id": "cmrvybiig00l0njqm5kur91bg",
+          "c": "To amend the Constitution",
+          "ok": false
+        }
+      ]
+    }
+  ]
+}
