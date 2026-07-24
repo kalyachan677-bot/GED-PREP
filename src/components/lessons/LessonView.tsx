@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BackButton } from "@/components/ui/BackButton";
 import { TranslatingIndicator } from "@/components/ui/LanguageToggle";
+import { VocabReview } from "./VocabReview";
 import { useTranslation } from "@/lib/useTranslation";
 import { useState, useEffect, useMemo, useCallback } from "react";
 
@@ -163,6 +164,11 @@ export function LessonView() {
           <BlockRenderer key={block.id} block={block} tr={tr} />
         ))}
       </div>
+
+      {/* Vocab Review — ทบทวนคำศัพท์ก่อนทำแบบทดสอบ */}
+      {selectedLesson.topic?.module?.subject?.id && (
+        <VocabReview subjectId={selectedLesson.topic.module.subject.id} />
+      )}
 
       {/* Quiz button */}
       {selectedLesson.questions && selectedLesson.questions.length > 0 && (
