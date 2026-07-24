@@ -5,6 +5,7 @@ import { ChevronDown, ChevronRight, CheckCircle2, Circle, Clock, BookOpen } from
 import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BackButton } from "@/components/ui/BackButton";
+import { VocabReview } from "./VocabReview";
 
 export function SubjectView() {
   const { selectedSubject, setView, setSelectedLesson, user } = useAppStore();
@@ -68,6 +69,11 @@ export function SubjectView() {
           </span>
         </div>
       </div>
+
+      {/* ทบทวนคำศัพท์ของวิชานี้ */}
+      {selectedSubject.id && (
+        <VocabReview subjectId={selectedSubject.id} />
+      )}
 
       {/* Modules */}
       <div className="space-y-3">

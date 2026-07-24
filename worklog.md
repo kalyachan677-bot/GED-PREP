@@ -67,3 +67,26 @@ Stage Summary:
 - Pre-study popup chain fixed with proper ref-based state management
 - App builds and runs on port 3000
 - All APIs functional
+---
+Task ID: 1
+Agent: main
+Task: Move vocabulary review to subject pages with pronunciation subtitles and 3-day rotation
+
+Work Log:
+- Added pronunciation field to Flashcard Prisma model
+- Created and applied Prisma migration for pronunciation field
+- Updated seed.ts with Thai pronunciation for all 32 flashcards across 4 subjects
+- Updated /api/flashcards/subject API to return pronunciation field
+- Rewrote VocabReview component: shows English word + Thai pronunciation subtitle, student types meaning
+- Added 3-day rotation logic (divides 8 cards into 3 groups, rotates daily)
+- Moved VocabReview from LessonView to SubjectView (each subject page has its own vocab section)
+- Removed VocabReview from LessonView
+- Re-seeded database with pronunciation data
+- Built and started production server
+
+Stage Summary:
+- Each of the 4 subject pages now shows a vocabulary review section at the top
+- Each vocab card shows: English term (bold) + pronunciation subtitle (Thai reading) + Thai translation
+- Students type the meaning and get instant feedback
+- 3-day rotation: vocab set changes every 3 days automatically
+- Server running at localhost:3000

@@ -450,6 +450,7 @@ model Flashcard {
   subjectId   String
   term        String                           // English term e.g. "Slope (m)"
   translation String                           // Thai translation e.g. "ความชันของเส้นตรง"
+  pronunciation String  @default("")          // Thai pronunciation subtitle e.g. "ความ-ชัน คอน เส้น-ตรง"
   meaning     String                           // Detailed explanation in Thai
   sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())

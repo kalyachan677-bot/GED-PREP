@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
         id: true,
         term: true,
         translation: true,
+        pronunciation: true,
         meaning: true,
       },
     })
