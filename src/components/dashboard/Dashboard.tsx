@@ -30,7 +30,7 @@ interface DashboardData {
 }
 
 export function Dashboard() {
-  const { user, scoreTarget, setView, setSelectedSubject, setSelectedLesson } = useAppStore();
+  const { user, scoreTarget, setView, setSelectedSubject, setSelectedLesson, setPendingSubjectNav } = useAppStore();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -50,20 +50,21 @@ export function Dashboard() {
     load();
   }, [user]);
 
-  async function openSubject(code: string) {
+  function requestSubjectNav(code: string) {
     if (!user) return;
-    setView("subject");
-    setSelectedSubject(null);
-    try {
-      const res = await fetch(`/api/subjects/${code}?userId=${user.id}`);
-      const json = await res.json();
-      if (json.data) {
-        setSelectedSubject(json.data);
-        setSelectedLesson(null);
+    const navFn = async () => {
+      setView("subject");
+      setSelectedSubject(null);
+      setSelectedLesson(null);
+      try {
+        const res = await fetch(`/api/subjects/${code}?userId=${user.id}`);
+        const json = await res.json();
+        if (json.data) setSelectedSubject(json.data);
+      } catch (e) {
+        console.error("Failed to load subject", e);
       }
-    } catch (e) {
-      console.error("Failed to load subject", e);
-    }
+    };
+    setPendingSubjectNav({ code, navFn });
   }
 
   if (loading) {
@@ -202,7 +203,7 @@ export function Dashboard() {
         <h2 className="mb-4 text-lg font-semibold text-gray-900">📚 วิชาเรียน GED</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           {subjects.map((subject) => (
-            <SubjectCard key={subject.id} subject={subject} onClick={() => openSubject(subject.code)} />
+            <SubjectCard key={subject.id} subject={subject} onClick={() => requestSubjectNav(subject.code)} />
           ))}
         </div>
       </div>

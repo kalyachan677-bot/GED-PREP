@@ -289,6 +289,10 @@ interface AppStore {
   setQuizResult: (result: QuizResult) => void;
   clearQuiz: () => void;
 
+  // Pending subject navigation (for popup flow)
+  pendingSubjectNav: { code: string; navFn: () => void } | null;
+  setPendingSubjectNav: (nav: { code: string; navFn: () => void } | null) => void;
+
   // Actions
   logout: () => void;
 }
@@ -345,6 +349,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
   setQuizResult: (result) => set({ quizResult: result, view: "quiz-result" }),
   clearQuiz: () => set({ quizAttempt: null, quizQuestions: [], quizResult: null }),
 
+  pendingSubjectNav: null,
+  setPendingSubjectNav: (nav) => set({ pendingSubjectNav: nav }),
+
   logout: () =>
     set({
       user: null,
@@ -357,5 +364,6 @@ export const useAppStore = create<AppStore>((set, get) => ({
       quizAttempt: null,
       quizQuestions: [],
       quizResult: null,
+      pendingSubjectNav: null,
     }),
 }));

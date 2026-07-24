@@ -7,7 +7,7 @@ import { PreStudyWarning, DailyFlashcardQuiz } from "@/components/flashcard/Flas
 import { useState, useEffect, useCallback, useRef } from "react";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const { user, view, setView, logout } = useAppStore();
+  const { user, view, setView, logout, pendingSubjectNav, setPendingSubjectNav } = useAppStore();
 
   const [preStudySubjectCode, setPreStudySubjectCode] = useState<string | null>(null);
   const [showDailyQuiz, setShowDailyQuiz] = useState(false);
@@ -29,23 +29,36 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     }
   }, [user]);
 
+  // Watch for pending subject navigation from store (Dashboard clicks)
+  useEffect(() => {
+    if (!pendingSubjectNav) return;
+    // Store the nav function and code in refs
+    pendingNavFnRef.current = pendingSubjectNav.navFn;
+    pendingSubjectCodeRef.current = pendingSubjectNav.code;
+    // Clear the store pending
+    setPendingSubjectNav(null);
+
+    if (!dailyQuizDone) {
+      setShowDailyQuiz(true);
+    } else {
+      setPreStudySubjectCode(pendingSubjectNav.code);
+    }
+  }, [pendingSubjectNav, dailyQuizDone, setPendingSubjectNav]);
+
   const navigateToSubject = useCallback((code: string, navFn: () => void) => {
     // Always store both the nav function and subject code
     pendingNavFnRef.current = navFn;
     pendingSubjectCodeRef.current = code;
 
     if (!dailyQuizDone) {
-      // Show daily quiz first
       setShowDailyQuiz(true);
     } else {
-      // Skip daily quiz, go straight to pre-study warning
       setPreStudySubjectCode(code);
     }
   }, [dailyQuizDone]);
 
   const handlePreStudyContinue = useCallback(() => {
     setPreStudySubjectCode(null);
-    // Execute the actual navigation
     const navFn = pendingNavFnRef.current;
     pendingNavFnRef.current = null;
     pendingSubjectCodeRef.current = null;
@@ -58,7 +71,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       localStorage.setItem(`ged-daily-quiz-${new Date().toISOString().slice(0, 10)}`, "done");
       setDailyQuizDone(true);
     }
-    // After daily quiz closes, show pre-study warning if there's a pending subject
     const pendingCode = pendingSubjectCodeRef.current;
     if (pendingCode) {
       setTimeout(() => setPreStudySubjectCode(pendingCode), 300);
