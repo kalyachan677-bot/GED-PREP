@@ -1,26 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAppStore } from "@/lib/store";
 import { User, Loader2, Smile } from "lucide-react";
 
 export function NicknameModal() {
-  const { user, setUser, showScoreTargetModal } = useAppStore();
+  const { user, setUser } = useAppStore();
   const [nickname, setNickname] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [visible, setVisible] = useState(false);
+  const promptedRef = useState(false);
 
+  // แสดง modal ทุกครั้งที่ล็อกอินครั้งใหม่ (เช็ค session ไม่ใช่ displayName)
   useEffect(() => {
-    if (user && !user.displayName) {
-      setNickname(user.firstName || "");
+    if (user && !promptedRef[0]) {
+      promptedRef[1](true);
+      setNickname(user.displayName || user.firstName || "");
       setVisible(true);
-    } else {
-      setVisible(false);
     }
-  }, [user]);
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!visible || !user || user.displayName) return null;
+  if (!visible || !user) return null;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -48,14 +49,7 @@ export function NicknameModal() {
   }
 
   function handleSkip() {
-    const fallbackName = user.firstName;
-    fetch("/api/user/nickname", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: user.id, nickname: fallbackName }),
-    }).then((r) => r.json()).then((json) => {
-      if (json.data) { setUser(json.data); setVisible(false); }
-    }).catch(() => {});
+    setVisible(false);
   }
 
   return (

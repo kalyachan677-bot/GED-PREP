@@ -1,6 +1,6 @@
 "use client";
 
-import { useAppStore } from "@/lib/store";
+import { useAppStore, markQuizDone } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, Clock, Trophy, RotateCcw, ArrowLeft, HelpCircle } from "lucide-react";
 import { BackButton } from "@/components/ui/BackButton";
@@ -53,6 +53,21 @@ export function QuizResult() {
     },
     [language, translatedMap]
   );
+
+  // Mark quiz as done for rigor tracking + save score for rigor locking
+  useEffect(() => {
+    if (quizResult) {
+      markQuizDone();
+      // Save score for rigor lock checking
+      try {
+        const subjectId = quizResult.attempt.id; // We'll use attempt's subject context
+        // Store in a generic key since we don't have subjectId directly here
+        const scores: number[] = JSON.parse(localStorage.getItem("ged-recent-quiz-scores") || "[]");
+        scores.unshift(quizResult.attempt.scorePercent);
+        localStorage.setItem("ged-recent-quiz-scores", JSON.stringify(scores.slice(0, 10)));
+      } catch { /* ignore */ }
+    }
+  }, [quizResult]);
 
   if (!quizResult) return null;
 

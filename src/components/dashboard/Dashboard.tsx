@@ -1,12 +1,12 @@
 "use client";
 
-import { useAppStore, SubjectSummary } from "@/lib/store";
+import { useAppStore, SubjectSummary, getRigorWarnings, loadRigorState, RigorDailyState } from "@/lib/store";
 import { SubjectCard } from "./SubjectCard";
 import { ScoreTargetModal } from "./ScoreTargetModal";
 import { AiTutorPanel, ScoreTargetChangeButton } from "./AiTutorPanel";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BookOpen, BarChart3, Target, TrendingUp, Flame } from "lucide-react";
-import { useEffect, useState } from "react";
+import { BookOpen, BarChart3, Target, TrendingUp, Flame, AlertTriangle, ShieldAlert, CheckCircle2 } from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
 
 interface DashboardData {
   subjects: SubjectSummary[];
@@ -107,6 +107,9 @@ export function Dashboard() {
 
       {/* AI Tutor Rigor Panel */}
       <AiTutorPanel />
+
+      {/* ═══════ Rigor Daily Status ═══════ */}
+      <RigorDailyStatus />
 
       {/* Score Target Card */}
       {!scoreTarget && (
@@ -240,6 +243,123 @@ function StatCard({ label, value, subValue, icon, gradient, shadowColor, progres
           <div className={`h-full rounded-full bg-gradient-to-r ${progressColor} transition-all`} style={{ width: `${progress}%` }} />
         </div>
       )}
+    </div>
+  );
+}
+
+/* ═══════════════ RIGOR DAILY STATUS ═══════════════ */
+function RigorDailyStatus() {
+  const { rigorConfig, rigorState } = useAppStore();
+  const [state, setState] = useState<RigorDailyState | null>(rigorState);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setState(loadRigorState());
+    }
+  }, [rigorState]);
+
+  if (!rigorConfig || !state) return null;
+
+  const warnings = getRigorWarnings(rigorConfig, state);
+  const vocabCount = Object.keys(state.vocabDoneToday || {}).length;
+
+  return (
+    <div className={`rounded-2xl border-2 ${rigorConfig.borderColor} ${rigorConfig.bgColor} overflow-hidden`}>
+      <div className="px-5 py-3 flex items-center justify-between border-b ${rigorConfig.borderColor} bg-white/50">
+        <div className="flex items-center gap-2.5">
+          <span className="text-xl">{rigorConfig.iconEmoji}</span>
+          <div>
+            <p className={`text-sm font-bold ${rigorConfig.color}`}>สถานะภารกิจประจำวัน — ระดับ {rigorConfig.level}</p>
+            <p className="text-[11px] text-slate-400">{new Date().toLocaleDateString("th-TH", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
+          </div>
+        </div>
+        {rigorConfig.level === 3 && (
+          <div className="text-right">
+            <p className="text-[10px] text-slate-400">คะแนนวินัย</p>
+            <p className={`text-xl font-extrabold leading-none ${state.disciplineScore >= 80 ? "text-emerald-600" : state.disciplineScore >= 50 ? "text-amber-600" : "text-rose-600"}`}>
+              {state.disciplineScore}<span className="text-xs font-medium text-slate-300">/100</span>
+            </p>
+          </div>
+        )}
+      </div>
+
+      <div className="px-5 py-4 space-y-3">
+        {/* Daily Checklist */}
+        <div className="grid grid-cols-2 gap-2">
+          <CheckItem
+            label="ทบทวน Flashcards"
+            done={vocabCount >= 4}
+            sub={rigorConfig.level >= 2 ? `${vocabCount}/4 วิชา` : `${vocabCount}/4 วิชา`}
+            required={rigorConfig.flashcardRequired}
+          />
+          <CheckItem
+            label="ทำแบบทดสอบ"
+            done={state.quizDoneToday}
+            sub={state.quizDoneToday ? "เสร็จแล้ว" : "ยังไม่ได้ทำ"}
+            required={rigorConfig.dailyQuizRequired}
+          />
+        </div>
+
+        {/* Missed days */}
+        {state.consecutiveMissDays > 0 && (
+          <div className={`flex items-center gap-2 rounded-lg px-3 py-2 ${
+            state.consecutiveMissDays >= rigorConfig.missPenaltyDays
+              ? "bg-rose-100/80"
+              : "bg-amber-100/80"
+          }`}>
+            <AlertTriangle className={`h-4 w-4 ${
+              state.consecutiveMissDays >= rigorConfig.missPenaltyDays ? "text-rose-500" : "text-amber-500"
+            }`} />
+            <span className={`text-xs font-semibold ${
+              state.consecutiveMissDays >= rigorConfig.missPenaltyDays ? "text-rose-700" : "text-amber-700"
+            }`}>
+              ขาดเรียน {state.consecutiveMissDays} วันติดกัน
+              {rigorConfig.scoreDeductionOnMiss && " — คะแนนวินัยถูกตัด"}
+            </span>
+          </div>
+        )}
+
+        {/* Double schedule */}
+        {state.doubleScheduleToday && (
+          <div className="flex items-center gap-2 rounded-lg bg-rose-100/80 px-3 py-2">
+            <Flame className="h-4 w-4 text-rose-500" />
+            <span className="text-xs font-semibold text-rose-700">
+              โหมดชดเชย 2x เท่าวันนี้ — ตารางเรียนเพิ่มเติม
+            </span>
+          </div>
+        )}
+
+        {/* Warnings */}
+        {warnings.map((w, i) => (
+          <div key={i} className="flex items-start gap-2 rounded-lg bg-white/60 px-3 py-2">
+            <ShieldAlert className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${rigorConfig.level === 3 ? "text-rose-500" : "text-amber-500"}`} />
+            <p className="text-xs text-slate-700 leading-relaxed">{w}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CheckItem({ label, done, sub, required }: { label: string; done: boolean; sub: string; required: boolean }) {
+  return (
+    <div className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 transition-colors ${
+      done ? "bg-emerald-100/80" : required ? "bg-white border border-dashed border-slate-300" : "bg-white/60"
+    }`}>
+      {done ? (
+        <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+      ) : required ? (
+        <div className="h-4 w-4 rounded-full border-2 border-amber-400 shrink-0" />
+      ) : (
+        <div className="h-4 w-4 rounded-full border-2 border-slate-300 shrink-0" />
+      )}
+      <div className="min-w-0">
+        <p className={`text-xs font-semibold ${done ? "text-emerald-700" : "text-slate-600"}`}>
+          {label}
+          {required && !done && <span className="text-amber-500 ml-1">*</span>}
+        </p>
+        <p className="text-[10px] text-slate-400 mt-0.5">{sub}</p>
+      </div>
     </div>
   );
 }

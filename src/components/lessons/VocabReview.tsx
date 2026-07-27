@@ -276,6 +276,20 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
     }
   }
 
+  // Dispatch event when vocab completes (for rigor tracking)
+  useEffect(() => {
+    if (isComplete && cards.length > 0) {
+      window.dispatchEvent(new CustomEvent("ged-vocab-complete", { detail: { subjectId } }));
+      // Save recent score for rigor locking
+      try {
+        const scores: number[] = JSON.parse(localStorage.getItem(`ged-recent-scores-${subjectId}`) || "[]");
+        const pct = Math.round((correctCount / cards.length) * 100);
+        scores.unshift(pct);
+        localStorage.setItem(`ged-recent-scores-${subjectId}`, JSON.stringify(scores.slice(0, 5)));
+      } catch { /* ignore */ }
+    }
+  }, [isComplete, subjectId, cards.length, correctCount]);
+
   // ── Loading ──
   if (loading) {
     return (
