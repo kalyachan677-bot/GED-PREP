@@ -86,8 +86,8 @@ export function LessonView() {
   if (!selectedLesson) {
     return (
       <div className="space-y-4">
-        <Skeleton className="h-8 w-64" />
-        <Skeleton className="h-96 rounded-xl" />
+        <Skeleton className="h-8 w-64 rounded-xl" />
+        <Skeleton className="h-96 rounded-2xl" />
       </div>
     );
   }
@@ -134,21 +134,21 @@ export function LessonView() {
         <div className="flex items-center gap-3 min-w-0">
           <TranslatingIndicator isTranslating={isTranslating} />
           <div className="hidden sm:flex items-center gap-1.5 text-sm">
-            <span className="text-gray-400 truncate">{tr(subjectTitle)}</span>
+            <span className="text-slate-400 truncate font-medium">{tr(subjectTitle)}</span>
             {topicTitle && <>
-              <ChevronRight className="h-3.5 w-3.5 text-gray-300 shrink-0" />
-              <span className="text-gray-400 truncate">{tr(topicTitle)}</span>
+              <ChevronRight className="h-3.5 w-3.5 text-slate-300 shrink-0" />
+              <span className="text-slate-400 truncate font-medium">{tr(topicTitle)}</span>
             </>}
-            <ChevronRight className="h-3.5 w-3.5 text-gray-300 shrink-0" />
-            <span className="font-medium text-gray-900 truncate">{tr(selectedLesson.title)}</span>
+            <ChevronRight className="h-3.5 w-3.5 text-slate-300 shrink-0" />
+            <span className="font-bold text-slate-800 truncate">{tr(selectedLesson.title)}</span>
           </div>
         </div>
       </div>
 
       {/* Title */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">{tr(selectedLesson.title)}</h1>
-        <div className="mt-2 flex items-center gap-3 text-sm text-gray-500">
+        <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">{tr(selectedLesson.title)}</h1>
+        <div className="mt-2 flex items-center gap-3 text-sm text-slate-500 font-medium">
           <span className="flex items-center gap-1">
             <Clock className="h-3.5 w-3.5" />
             {selectedLesson.durationMinutes} นาที
@@ -169,13 +169,13 @@ export function LessonView() {
         <div className="border-t pt-8">
           <div className="flex items-center gap-2 mb-4">
             <Brain className="h-5 w-5 text-violet-600" />
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-bold text-slate-800">
               แบบทดสอบ ({selectedLesson.questions.length} คำถาม)
             </h2>
           </div>
           <Button
             onClick={handleStartQuiz}
-            className="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700"
+            className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 shadow-lg shadow-violet-200/50"
             size="lg"
             disabled={startingQuiz}
           >
@@ -192,15 +192,15 @@ function BlockRenderer({ block, tr }: { block: ContentBlock; tr: (s: string | un
   if (block.block_type === "heading") {
     const Tag = (`h${block.level || 2}`) as keyof JSX.IntrinsicElements;
     const cls = block.level === 2
-      ? "text-xl font-semibold text-gray-900 mt-6 mb-2"
-      : "text-lg font-medium text-gray-800 mt-4 mb-1";
+      ? "text-xl font-bold text-slate-900 mt-6 mb-2"
+      : "text-lg font-semibold text-slate-800 mt-4 mb-1";
     return <Tag className={cls}>{tr(block.content)}</Tag>;
   }
 
   if (block.block_type === "paragraph") {
     return (
       <p
-        className="text-gray-700 leading-relaxed"
+        className="text-slate-600 leading-relaxed"
         dangerouslySetInnerHTML={{ __html: tr(block.content) || "" }}
       />
     );

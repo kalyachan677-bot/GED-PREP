@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { GraduationCap, Loader2, Eye, EyeOff } from "lucide-react";
+import { GraduationCap, Loader2, Eye, EyeOff, Sparkles } from "lucide-react";
 
 export function LoginForm() {
   const { setUser, setView } = useAppStore();
@@ -21,7 +21,6 @@ export function LoginForm() {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
@@ -29,13 +28,11 @@ export function LoginForm() {
         body: JSON.stringify({ email, password }),
       });
       const json = await res.json();
-
       if (!res.ok) {
         setError(json.error || "การเข้าสู่ระบบล้มเหลว");
         setLoading(false);
         return;
       }
-
       setUser(json.data);
       setView("dashboard");
     } catch {
@@ -46,32 +43,33 @@ export function LoginForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-teal-50 via-white to-emerald-50 p-4">
-      <div className="w-full max-w-md">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-100 via-violet-50/30 to-indigo-50/30 p-4">
+      {/* Decorative blobs */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-violet-200/20 blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-indigo-200/20 blur-3xl" />
+      </div>
+      <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="mb-8 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 shadow-lg shadow-teal-200">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 shadow-xl shadow-violet-300/40">
             <GraduationCap className="h-8 w-8 text-white" />
           </div>
-          <h1 className="mt-4 text-2xl font-bold text-gray-900">GED Prep</h1>
-          <p className="mt-1 text-sm text-gray-500">แพลตฟอร์มเตรียมสอบ GED</p>
+          <h1 className="mt-4 text-2xl font-extrabold text-slate-900 tracking-tight">GED Prep</h1>
+          <p className="mt-1 text-sm text-slate-500 font-medium">Smart Learning Platform — เตรียมสอบ GED อย่างมืออาชีพ</p>
         </div>
-
-        <Card className="border-0 shadow-xl shadow-gray-200/50">
+        <Card className="border-0 shadow-2xl shadow-slate-200/50 rounded-2xl">
           <CardHeader className="pb-4 text-center">
-            <CardTitle className="text-xl">เข้าสู่ระบบ</CardTitle>
-            <CardDescription>กรอกอีเมลและรหัสผ่านเพื่อเริ่มต้นการเรียน</CardDescription>
+            <CardTitle className="text-xl font-bold text-slate-800">เข้าสู่ระบบ</CardTitle>
+            <CardDescription className="text-slate-400">กรอกอีเมลและรหัสผ่านเพื่อเริ่มต้นการเรียน</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600">
-                  {error}
-                </div>
+                <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-600 font-medium">{error}</div>
               )}
-
               <div className="space-y-2">
-                <Label htmlFor="email">อีเมล</Label>
+                <Label htmlFor="email" className="text-slate-600 font-semibold text-xs uppercase tracking-wider">อีเมล</Label>
                 <Input
                   id="email"
                   type="email"
@@ -79,61 +77,55 @@ export function LoginForm() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  className="rounded-xl h-11 border-slate-200 focus:border-violet-400 focus:ring-violet-200"
                 />
               </div>
-
               <div className="space-y-2">
-                <Label htmlFor="password">รหัสผ่าน</Label>
+                <Label htmlFor="password" className="text-slate-600 font-semibold text-xs uppercase tracking-wider">รหัสผ่าน</Label>
                 <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
+                    placeholder="•••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    className="rounded-xl h-11 border-slate-200 focus:border-violet-400 focus:ring-violet-200"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
-
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700"
+                className="w-full h-11 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 shadow-lg shadow-violet-200/50 font-semibold"
                 disabled={loading}
               >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 เข้าสู่ระบบ
               </Button>
-
               <div className="text-center text-sm">
-                <span className="text-gray-500">ยังไม่มีบัญชี? </span>
-                <button
-                  type="button"
-                  onClick={() => setView("register")}
-                  className="font-medium text-teal-600 hover:text-teal-700"
-                >
+                <span className="text-slate-500">ยังไม่มีบัญชี? </span>
+                <button type="button" onClick={() => setView("register")} className="font-semibold text-violet-600 hover:text-violet-700">
                   สมัครสมาชิก
                 </button>
               </div>
             </form>
-
-            {/* Quick demo login */}
-            <div className="mt-4 rounded-lg border border-dashed border-gray-200 bg-gray-50/50 p-3 text-center">
-              <p className="text-xs text-gray-400 mb-2">ทดลองใช้งาน</p>
+            {/* Quick demo */}
+            <div className="mt-5 rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-3 text-center">
+              <div className="flex items-center justify-center gap-1.5 mb-1.5">
+                <Sparkles className="h-3 w-3 text-violet-500" />
+                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">ทดลองใช้งาน</p>
+              </div>
               <button
                 type="button"
-                onClick={() => {
-                  setEmail("demo@ged.com");
-                  setPassword("demo1234");
-                }}
-                className="text-xs text-teal-600 hover:underline"
+                onClick={() => { setEmail("demo@ged.com"); setPassword("demo1234"); }}
+                className="text-xs text-violet-600 hover:text-violet-700 font-medium"
               >
                 ใช้บัญชี Demo: demo@ged.com / demo1234
               </button>
