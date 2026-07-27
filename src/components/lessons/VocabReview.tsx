@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { BookOpen, Send, CheckCircle2, XCircle, RotateCcw, Sparkles, Volume2 } from "lucide-react";
+import { BookOpen, Send, CheckCircle2, XCircle, RotateCcw, Sparkles, Volume2, VolumeX } from "lucide-react";
 
 interface VocabCard {
   id: string;
@@ -24,19 +24,60 @@ function getRotationOffset(): number {
   return daysSinceEpoch % 3;
 }
 
-// TTS: ออกเสียงคำภาษาอังกฤษ
-function speakEnglish(text: string) {
-  if (typeof window === "undefined" || !window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = "en-US";
-  utter.rate = 0.85;
-  utter.pitch = 1;
-  // พยายามเลือกเสียงอังกฤษ
+// ── TTS: ออกเสียงคำภาษาอังกฤษ (รอ voices โหลดเสร็จ) ──
+let voicesReady = false;
+let voicesPromise: Promise<SpeechSynthesisVoice[]> | null = null;
+
+function getVoices(): Promise<SpeechSynthesisVoice[]> {
+  if (typeof window === "undefined" || !window.speechSynthesis) return Promise.resolve([]);
   const voices = window.speechSynthesis.getVoices();
-  const enVoice = voices.find((v) => v.lang.startsWith("en"));
-  if (enVoice) utter.voice = enVoice;
-  window.speechSynthesis.speak(utter);
+  if (voices.length > 0) {
+    voicesReady = true;
+    return Promise.resolve(voices);
+  }
+  if (voicesPromise) return voicesPromise;
+  voicesPromise = new Promise<SpeechSynthesisVoice[]>((resolve) => {
+ const handler = () => {
+      voicesReady = true;
+      const v = window.speechSynthesis?.getVoices() || [];
+      window.speechSynthesis?.removeEventListener("voiceschanged", handler);
+      voicesPromise = null;
+      resolve(v);
+    };
+    window.speechSynthesis.addEventListener("voiceschanged", handler);
+    // fallback timeout
+    setTimeout(() => {
+      if (!voicesReady) {
+        window.speechSynthesis?.removeEventListener("voiceschanged", handler);
+        voicesPromise = null;
+        resolve(window.speechSynthesis?.getVoices() || []);
+      }
+    }, 3000);
+  });
+  return voicesPromise;
+}
+
+async function speakEnglish(text: string): Promise<boolean> {
+  if (typeof window === "undefined" || !window.speechSynthesis) return false;
+  window.speechSynthesis.cancel();
+  try {
+    const voices = await getVoices();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = "en-US";
+    utter.rate = 0.85;
+    utter.pitch = 1;
+    const enVoice = voices.find((v) => v.lang.startsWith("en") && v.localService);
+    if (enVoice) {
+      utter.voice = enVoice;
+    } else {
+      const anyEn = voices.find((v) => v.lang.startsWith("en"));
+      if (anyEn) utter.voice = anyEn;
+    }
+    window.speechSynthesis.speak(utter);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 // ตรวจสอบความหมายคำแปลแบบผ่อนปรน (fuzzy matching)
@@ -44,7 +85,6 @@ function isMeaningMatch(userInput: string, correctTranslation: string): boolean 
   const ans = userInput.trim().toLowerCase().replace(/\s+/g, "");
   if (!ans) return false;
 
-  // แยกคำแปลที่ถูกต้อง (อาจมีหลายคำ คั่นด้วย / หรือ ,)
   const correctOptions = correctTranslation
     .toLowerCase()
     .split(/[,/]/)
@@ -52,16 +92,9 @@ function isMeaningMatch(userInput: string, correctTranslation: string): boolean 
     .filter(Boolean);
 
   for (const correct of correctOptions) {
-    // 1) ตรงเป๊ะ
     if (ans === correct) return true;
-
-    // 2) ผู้ตอบสั้นกว่า แต่คำตอบอยู่ในคำแปลที่ถูกต้อง
     if (correct.includes(ans) && ans.length >= 2) return true;
-
-    // 3) คำแปลที่ถูกต้องอยู่ในคำตอบ
     if (ans.includes(correct) && correct.length >= 2) return true;
-
-    // 4) Levenshtein distance — อนุญาติสะกดผิด (distance <= 2 หรือ <= 30% ของความยาว)
     const maxLen = Math.max(ans.length, correct.length);
     if (maxLen >= 3) {
       const dist = levenshtein(ans, correct);
@@ -88,6 +121,27 @@ function levenshtein(a: string, b: string): number {
   return dp[m][n];
 }
 
+// ── localStorage helpers for progress ──
+function getVocabProgress(subjectId: string): { currentIndex: number; answers: AnswerState[]; correctCount: number; isComplete: boolean } | null {
+  try {
+    const raw = localStorage.getItem(`ged-vocab-${subjectId}`);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch { return null; }
+}
+
+function saveVocabProgress(subjectId: string, data: { currentIndex: number; answers: AnswerState[]; correctCount: number; isComplete: boolean }) {
+  try {
+    localStorage.setItem(`ged-vocab-${subjectId}`, JSON.stringify(data));
+  } catch { /* quota */ }
+}
+
+function clearVocabProgress(subjectId: string) {
+  try {
+    localStorage.removeItem(`ged-vocab-${subjectId}`);
+  } catch { /* ignore */ }
+}
+
 export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll?: boolean }) {
   const [cards, setCards] = useState<VocabCard[]>([]);
   const [loading, setLoading] = useState(true);
@@ -97,15 +151,14 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
   const [isComplete, setIsComplete] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [speakingId, setSpeakingId] = useState<string | null>(null);
+  const [ttsError, setTtsError] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const restoredFromSaved = useRef(false);
 
   // โหลดเสียง speech synthesis
   useEffect(() => {
     if (typeof window !== "undefined" && window.speechSynthesis) {
-      window.speechSynthesis.getVoices();
-      window.speechSynthesis.onvoiceschanged = () => {
-        window.speechSynthesis.getVoices();
-      };
+      getVoices(); // preload
     }
   }, []);
 
@@ -116,22 +169,39 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
       .then((r) => r.json())
       .then((j) => {
         if (j.data) {
+          let flashcards: VocabCard[];
           if (!showAll && j.data.length > 3) {
             const offset = getRotationOffset();
             const groupSize = Math.ceil(j.data.length / 3);
             const start = offset * groupSize;
-            const rotated = j.data.slice(start, start + groupSize);
-            setCards(rotated);
-            setAnswers(rotated.map(() => ({ userInput: "", submitted: false, isCorrect: false })));
+            flashcards = j.data.slice(start, start + groupSize);
           } else {
-            setCards(j.data);
-            setAnswers(j.data.map(() => ({ userInput: "", submitted: false, isCorrect: false })));
+            flashcards = j.data;
+          }
+          setCards(flashcards);
+
+          // ลองโหลด saved progress
+          const saved = getVocabProgress(subjectId);
+          if (saved && saved.answers && saved.answers.length === flashcards.length) {
+            setCurrentIndex(saved.currentIndex);
+            setAnswers(saved.answers);
+            setCorrectCount(saved.correctCount);
+            setIsComplete(saved.isComplete);
+            restoredFromSaved.current = true;
+          } else {
+            setAnswers(flashcards.map(() => ({ userInput: "", submitted: false, isCorrect: false })));
           }
         }
       })
       .catch((e) => console.error(e))
       .finally(() => setLoading(false));
   }, [subjectId, showAll]);
+
+  // บันทึก progress ทุกครั้งที่มีการเปลี่ยนแปลง
+  useEffect(() => {
+    if (!subjectId || cards.length === 0) return;
+    saveVocabProgress(subjectId, { currentIndex, answers, correctCount, isComplete });
+  }, [subjectId, currentIndex, answers, correctCount, isComplete, cards.length]);
 
   useEffect(() => {
     if (!loading && !isComplete && cards.length > 0) {
@@ -161,13 +231,16 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
     }
   }, [input, cards, currentIndex, answers]);
 
-  function handleSpeak(term: string, cardId: string) {
+  async function handleSpeak(term: string, cardId: string) {
     setSpeakingId(cardId);
-    speakEnglish(term);
+    setTtsError(false);
+    const ok = await speakEnglish(term);
+    if (!ok) setTtsError(true);
     setTimeout(() => setSpeakingId(null), 1500);
   }
 
   function handleReset() {
+    clearVocabProgress(subjectId);
     setCurrentIndex(0);
     setAnswers(cards.map(() => ({ userInput: "", submitted: false, isCorrect: false })));
     setInput("");
@@ -202,6 +275,9 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
 
   if (cards.length === 0) return null;
 
+  // แสดงข้อความว่ากำลังทำต่อจากครั้งก่อน
+  const savedInfo = restoredFromSaved.current && (currentIndex > 0 || isComplete);
+
   // ── Complete Screen ──
   if (isComplete) {
     const pct = Math.round((correctCount / cards.length) * 100);
@@ -215,9 +291,11 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
     return (
       <div className="rounded-2xl border border-slate-200/60 bg-white/80 backdrop-blur-sm overflow-hidden">
         <div className="bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 px-5 py-4">
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-white" />
-            <h2 className="text-base font-bold text-white">สรุปผลการทบทวนคำศัพท์</h2>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-white" />
+              <h2 className="text-base font-bold text-white">สรุปผลการทบทวนคำศัพท์</h2>
+            </div>
           </div>
         </div>
         <div className="p-5 space-y-4">
@@ -267,7 +345,7 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
             className="w-full flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100 transition-all active:scale-[0.98]"
           >
             <RotateCcw className="h-4 w-4" />
-            ทบทวนอีกครั้ง
+            เริ่มทบทวนใหม่
           </button>
         </div>
       </div>
@@ -286,9 +364,19 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
             <BookOpen className="h-5 w-5 text-white" />
             <h2 className="text-base font-bold text-white">ทบทวนคำศัพท์</h2>
           </div>
-          <span className="text-xs text-white/70 font-semibold bg-white/10 px-2.5 py-1 rounded-full">
-            {currentIndex + 1}/{cards.length}
-          </span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleReset}
+              className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-medium bg-white/15 text-white/80 hover:bg-white/25 hover:text-white transition-all active:scale-95"
+              title="เริ่มใหม่"
+            >
+              <RotateCcw className="h-3 w-3" />
+              เริ่มใหม่
+            </button>
+            <span className="text-xs text-white/70 font-semibold bg-white/10 px-2.5 py-1 rounded-full">
+              {currentIndex + 1}/{cards.length}
+            </span>
+          </div>
         </div>
         <div className="mt-3 h-1.5 bg-white/15 rounded-full">
           <div
@@ -297,6 +385,18 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
           />
         </div>
       </div>
+
+      {savedInfo && (
+        <div className="bg-amber-50 border-b border-amber-100 px-5 py-2.5 flex items-center justify-between">
+          <p className="text-xs text-amber-700 font-medium">กำลังทำต่อจากครั้งล่าสุด</p>
+          <button
+            onClick={handleReset}
+            className="text-xs text-amber-600 hover:text-amber-800 font-semibold underline"
+          >
+            เริ่มใหม่
+          </button>
+        </div>
+      )}
 
       <div className="p-5 space-y-4">
         <div className="space-y-3">
@@ -328,13 +428,15 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
                   <p className="text-lg font-bold text-slate-900">{card.term}</p>
                   <button
                     onClick={() => handleSpeak(card.term, card.id)}
-                    className={"inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-medium transition-all active:scale-95 " +
+                    className={"inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-medium transition-all active:scale-95 cursor-pointer " +
                       (speakingId === card.id
                         ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200"
-                        : "bg-indigo-100 text-indigo-700 hover:bg-indigo-200 cursor-pointer")}
+                        : ttsError
+                          ? "bg-rose-100 text-rose-500 hover:bg-rose-200"
+                          : "bg-indigo-100 text-indigo-700 hover:bg-indigo-200")}
                   >
-                    <Volume2 className={"h-3 w-3 " + (speakingId === card.id ? "animate-pulse" : "")} />
-                    ฟังเสียง
+                    {ttsError ? <VolumeX className="h-3 w-3" /> : <Volume2 className={"h-3 w-3 " + (speakingId === card.id ? "animate-pulse" : "")} />}
+                    {ttsError ? "ไม่มีเสียง" : "ฟังเสียง"}
                   </button>
                 </div>
 

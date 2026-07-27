@@ -8,6 +8,7 @@ import { SubjectView } from "@/components/lessons/SubjectView";
 import { LessonView } from "@/components/lessons/LessonView";
 import { QuizView } from "@/components/quiz/QuizView";
 import { QuizResult } from "@/components/quiz/QuizResult";
+import { NicknameModal } from "@/components/NicknameModal";
 
 export default function Page() {
   const { view } = useAppStore();
@@ -20,6 +21,7 @@ export default function Page() {
   // App views (with shell)
   return (
     <AppShell>
+      <NicknameModal />
       {view === "dashboard" && <Dashboard />}
       {view === "subject" && <SubjectView />}
       {view === "lesson" && <LessonView />}

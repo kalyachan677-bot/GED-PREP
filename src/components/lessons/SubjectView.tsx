@@ -1,7 +1,7 @@
 "use client";
 
 import { useAppStore, SubjectFull } from "@/lib/store";
-import { ChevronDown, ChevronRight, CheckCircle2, Circle, Clock, BookOpen } from "lucide-react";
+import { ChevronDown, ChevronRight, CheckCircle2, Circle, Clock, BookOpen, RotateCcw } from "lucide-react";
 import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BackButton } from "@/components/ui/BackButton";
@@ -12,6 +12,13 @@ const SUBJECT_GRADIENTS: Record<string, string> = {
   science: "from-emerald-600 to-teal-600",
   rla: "from-amber-600 to-orange-600",
   ss: "from-rose-600 to-pink-600",
+};
+
+const SUBJECT_DESCRIPTIONS: Record<string, string> = {
+  math: "คณิตศาสตร์เชิงการใช้เหตุผล — สมการ เรขาคณิต สถิติ และการแก้ปัญหาเชิงปริมาณ",
+  science: "วิทยาศาสตร์ — ชีววิทยา เคมี ฟิสิกส์ และวิทยาศาสตร์โลก",
+  rla: "ภาษาอังกฤษ — การอ่าน เขียน ไวยากรณ์ และการแสดงความคิดเห็น",
+  ss: "สังคมศึกษา — ประวัติศาสตร์ รัฐธรรมนูญ เศรษฐศาสตร์ และภูมิศาสตร์",
 };
 
 export function SubjectView() {
@@ -38,6 +45,7 @@ export function SubjectView() {
     0
   );
   const grad = SUBJECT_GRADIENTS[selectedSubject.code] || "from-violet-600 to-indigo-600";
+  const desc = SUBJECT_DESCRIPTIONS[selectedSubject.code] || "";
   const pct = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
   async function openLesson(lessonId: string) {
@@ -50,6 +58,15 @@ export function SubjectView() {
     } catch (e) {
       console.error("Failed to load lesson", e);
     }
+  }
+
+  function resetVocabProgress() {
+    if (!selectedSubject.id) return;
+ try {
+      localStorage.removeItem(`ged-vocab-${selectedSubject.id}`);
+    } catch { /* ignore */ }
+    // Force re-render by toggling a key
+    window.location.reload();
   }
 
   return (
@@ -66,8 +83,21 @@ export function SubjectView() {
 
       {/* Header Card */}
       <div className={`rounded-2xl bg-gradient-to-r ${grad} p-6 text-white shadow-lg`}>
-        <h1 className="text-2xl font-extrabold tracking-tight">{selectedSubject.title}</h1>
-        <div className="mt-3 flex items-center gap-5 text-sm text-white/80">
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <h1 className="text-2xl font-extrabold tracking-tight">{selectedSubject.title}</h1>
+            {desc && <p className="mt-2 text-sm text-white/70 font-medium leading-relaxed">{desc}</p>}
+          </div>
+          <button
+            onClick={resetVocabProgress}
+            className="flex items-center gap-1.5 rounded-xl bg-white/15 hover:bg-white/25 px-3 py-2 text-xs font-medium text-white/80 hover:text-white transition-all active:scale-95"
+            title="รีเซ็ตความคืบหน้าคำศัพท์"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            รีเซ็ตคำศัพท์
+          </button>
+        </div>
+        <div className="mt-4 flex items-center gap-5 text-sm text-white/80">
           <span className="flex items-center gap-1.5 font-medium">
             <BookOpen className="h-4 w-4" />
             {completedLessons}/{totalLessons} บทเรียน
@@ -87,6 +117,7 @@ export function SubjectView() {
 
       {/* Modules */}
       <div className="space-y-3">
+        <h2 className="text-lg font-extrabold text-slate-800 tracking-tight">บทเรียน</h2>
         {selectedSubject.modules.map((mod) => (
           <ModuleSection key={mod.id} module={mod} onOpenLesson={openLesson} />
         ))}

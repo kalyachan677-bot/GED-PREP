@@ -95,12 +95,12 @@ export function Dashboard() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
-            สวัสดี, {user?.firstName}
+            สวัสดี, {user?.displayName || user?.firstName}
           </h1>
           <p className="mt-1 text-sm text-slate-500 font-medium">
             {scoreTarget
-              ? `เป้าหมาย GED: ${scoreTarget} คะแนน — เริ่มต้นการเรียนวันนี้ได้เลย`
-              : "เริ่มต้นการเรียนวันนี้ได้เลย"}
+              ? `เป้าหมาย GED ${scoreTarget} คะแนน — เริ่มเรียนต่อจากเมื่อวานได้เลย ความคืบหน้าจะถูกบันทึกอัตโนมัติ`
+              : "เริ่มต้นการเรียนวันนี้ — ความคืบหน้าจะถูกบันทึกให้อัตโนมัติ"}
           </p>
         </div>
         <ScoreTargetChangeButton />

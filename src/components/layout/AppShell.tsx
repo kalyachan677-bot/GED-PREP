@@ -1,9 +1,9 @@
 "use client";
 
 import { useAppStore } from "@/lib/store";
-import { GraduationCap, LogOut, User, ChevronRight, Sparkles } from "lucide-react";
+import { GraduationCap, LogOut, User, ChevronRight, Languages, RotateCcw } from "lucide-react";
 import { LanguageToggle } from "@/components/ui/LanguageToggle";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, view, setView, logout, selectedSubject, setSelectedSubject, pendingSubjectNav, setPendingSubjectNav } = useAppStore();
@@ -18,12 +18,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
+  const displayName = user?.displayName || user?.firstName || "";
+
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+    <div className="flex min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/20">
       {/* Sidebar */}
-      <aside className="hidden lg:flex lg:w-[260px] lg:flex-col lg:fixed lg:inset-y-0 border-r border-slate-200/60 bg-white/70 backdrop-blur-xl">
-        <div className="flex h-16 items-center gap-3 px-6 border-b border-slate-100">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-200/50">
+      <aside className="hidden lg:flex lg:w-[260px] lg:flex-col lg:fixed lg:inset-y-0 border-r border-slate-200/50 bg-white/80 backdrop-blur-xl">
+        <div className="flex h-16 items-center gap-3 px-6 border-b border-slate-100/80">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-200/40">
             <GraduationCap className="h-5 w-5 text-white" />
           </div>
           <div>
@@ -41,22 +43,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             }`}
           >
             <span className="text-lg">🏠</span>
-            แดชบอร์ด
+            หน้าหลัก
           </button>
           {user && ["math", "science", "rla", "ss"].map((code) => (
             <SubjectSidebarLink key={code} code={code} />
           ))}
         </nav>
-        <div className="border-t border-slate-100 px-4 py-3">
+        <div className="border-t border-slate-100/80 px-4 py-3">
           <LanguageToggle />
         </div>
-        <div className="border-t border-slate-100 p-4">
+        <div className="border-t border-slate-100/80 p-4">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-violet-100 to-indigo-100">
               <User className="h-4 w-4 text-violet-600" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-slate-800 truncate">{user?.displayName || user?.firstName}</p>
+              <p className="text-sm font-semibold text-slate-800 truncate">{displayName}</p>
               <p className="text-[11px] text-slate-400 truncate font-medium">{user?.email}</p>
             </div>
             <button
@@ -72,7 +74,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* Main content */}
       <main className="flex-1 lg:pl-[260px] pb-20 lg:pb-0">
-        <header className="lg:hidden sticky top-0 z-30 flex h-14 items-center justify-between border-b border-slate-200/60 bg-white/80 backdrop-blur-xl px-4">
+        <header className="lg:hidden sticky top-0 z-30 flex h-14 items-center justify-between border-b border-slate-200/50 bg-white/80 backdrop-blur-xl px-4">
           <div className="flex items-center gap-2.5">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600">
               <GraduationCap className="h-4 w-4 text-white" />
@@ -139,7 +141,7 @@ function SubjectSidebarLink({ code }: { code: string }) {
 function BottomNav() {
   const { view, setView } = useAppStore();
   return (
-    <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 flex h-16 items-center justify-around border-t border-slate-200/60 bg-white/90 backdrop-blur-xl">
+    <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 flex h-16 items-center justify-around border-t border-slate-200/50 bg-white/90 backdrop-blur-xl">
       <button
         onClick={() => setView("dashboard")}
         className={`flex flex-col items-center gap-0.5 px-4 py-1 transition-colors ${
