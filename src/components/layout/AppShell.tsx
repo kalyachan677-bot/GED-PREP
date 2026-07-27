@@ -3,79 +3,17 @@
 import { useAppStore } from "@/lib/store";
 import { GraduationCap, LogOut, User, ChevronRight } from "lucide-react";
 import { LanguageToggle } from "@/components/ui/LanguageToggle";
-import { PreStudyWarning, DailyFlashcardQuiz } from "@/components/flashcard/FlashcardPopups";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useEffect } from "react";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const { user, view, setView, logout, pendingSubjectNav, setPendingSubjectNav } = useAppStore();
+  const { user, view, setView, logout, selectedSubject, setSelectedSubject, pendingSubjectNav, setPendingSubjectNav } = useAppStore();
 
-  const [preStudySubjectCode, setPreStudySubjectCode] = useState<string | null>(null);
-  const [showDailyQuiz, setShowDailyQuiz] = useState(false);
-  const [dailyQuizDone, setDailyQuizDone] = useState(false);
-
-  // Refs to persist across renders without causing re-renders
-  const pendingNavFnRef = useRef<(() => void) | null>(null);
-  const pendingSubjectCodeRef = useRef<string | null>(null);
-
-  // Check if daily quiz was already completed today
-  useEffect(() => {
-    if (!user) return;
-    const todayKey = `ged-daily-quiz-${new Date().toISOString().slice(0, 10)}`;
-    if (!localStorage.getItem(todayKey)) {
-      const t = setTimeout(() => setShowDailyQuiz(true), 600);
-      return () => clearTimeout(t);
-    } else {
-      setDailyQuizDone(true);
-    }
-  }, [user]);
-
-  // Watch for pending subject navigation from store (Dashboard clicks)
+  // Handle pending subject navigation directly (no popup)
   useEffect(() => {
     if (!pendingSubjectNav) return;
-    // Store the nav function and code in refs
-    pendingNavFnRef.current = pendingSubjectNav.navFn;
-    pendingSubjectCodeRef.current = pendingSubjectNav.code;
-    // Clear the store pending
     setPendingSubjectNav(null);
-
-    if (!dailyQuizDone) {
-      setShowDailyQuiz(true);
-    } else {
-      setPreStudySubjectCode(pendingSubjectNav.code);
-    }
-  }, [pendingSubjectNav, dailyQuizDone, setPendingSubjectNav]);
-
-  const navigateToSubject = useCallback((code: string, navFn: () => void) => {
-    // Always store both the nav function and subject code
-    pendingNavFnRef.current = navFn;
-    pendingSubjectCodeRef.current = code;
-
-    if (!dailyQuizDone) {
-      setShowDailyQuiz(true);
-    } else {
-      setPreStudySubjectCode(code);
-    }
-  }, [dailyQuizDone]);
-
-  const handlePreStudyContinue = useCallback(() => {
-    setPreStudySubjectCode(null);
-    const navFn = pendingNavFnRef.current;
-    pendingNavFnRef.current = null;
-    pendingSubjectCodeRef.current = null;
-    if (navFn) navFn();
-  }, []);
-
-  const handleDailyQuizClose = useCallback(() => {
-    setShowDailyQuiz(false);
-    if (user) {
-      localStorage.setItem(`ged-daily-quiz-${new Date().toISOString().slice(0, 10)}`, "done");
-      setDailyQuizDone(true);
-    }
-    const pendingCode = pendingSubjectCodeRef.current;
-    if (pendingCode) {
-      setTimeout(() => setPreStudySubjectCode(pendingCode), 300);
-    }
-  }, [user]);
+    pendingSubjectNav.navFn();
+  }, [pendingSubjectNav, setPendingSubjectNav]);
 
   if (view === "login" || view === "register") {
     return <>{children}</>;
@@ -101,8 +39,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <span className="text-lg">🏠</span>
             แดชบอร์ด
           </button>
-          {["math", "science", "rla", "ss"].map((code) => (
-            <SubjectSidebarLink key={code} code={code} onNavigate={navigateToSubject} />
+          {user && ["math", "science", "rla", "ss"].map((code) => (
+            <SubjectSidebarLink key={code} code={code} />
           ))}
         </nav>
         <div className="border-t border-gray-50 px-4 py-3">
@@ -141,24 +79,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="mx-auto max-w-4xl px-4 py-6 lg:px-8 lg:py-8">{children}</div>
       </main>
       <BottomNav />
-      {preStudySubjectCode && <PreStudyWarning subjectCode={preStudySubjectCode} onContinue={handlePreStudyContinue} />}
-      {showDailyQuiz && <DailyFlashcardQuiz onClose={handleDailyQuizClose} />}
     </div>
   );
 }
 
-function SubjectSidebarLink({ code, onNavigate }: { code: string; onNavigate: (code: string, navFn: () => void) => void }) {
-  const { view, selectedSubject, setView, setSelectedSubject, user } = useAppStore();
+function SubjectSidebarLink({ code }: { code: string }) {
+  const { view, selectedSubject, user, setView, setSelectedSubject } = useAppStore();
   const labels: Record<string, string> = { math: "🧮 คณิตศาสตร์", science: "🔬 วิทยาศาสตร์", rla: "📖 ภาษาอังกฤษ", ss: "🏛️ สังคมศึกษา" };
   const isActive = view === "subject" && selectedSubject?.code === code;
 
-  function handleClick() {
+  async function handleClick() {
     if (!user) return;
-    const navFn = async () => {
-      setView("subject"); setSelectedSubject(null);
-      try { const res = await fetch(`/api/subjects/${code}?userId=${user.id}`); const json = await res.json(); if (json.data) setSelectedSubject(json.data); } catch (e) { console.error(e); }
-    };
-    onNavigate(code, navFn);
+    setView("subject");
+    setSelectedSubject(null);
+    try {
+      const res = await fetch(`/api/subjects/${code}?userId=${user.id}`);
+      const json = await res.json();
+      if (json.data) setSelectedSubject(json.data);
+    } catch (e) { console.error(e); }
   }
 
   return (
@@ -173,12 +111,10 @@ function BottomNav() {
   const { view, setView } = useAppStore();
   return (
     <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 flex h-16 items-center justify-around border-t border-gray-100 bg-white/95 backdrop-blur-sm">
-      {[{ id: "dashboard", label: "หน้าหลัก", icon: "🏠" }, { id: "subject", label: "วิชาเรียน", icon: "📚" }].map((item) => (
-        <button key={item.id} onClick={() => { if (item.id === "dashboard") setView("dashboard"); else setView("dashboard"); }} className={`flex flex-col items-center gap-0.5 px-4 py-1 ${view === "dashboard" && item.id === "dashboard" ? "text-teal-600" : view !== "dashboard" && item.id === "subject" ? "text-teal-600" : "text-gray-400"}`}>
-          <span className="text-xl">{item.icon}</span>
-          <span className="text-[10px] font-medium">{item.label}</span>
-        </button>
-      ))}
+      <button onClick={() => setView("dashboard")} className={`flex flex-col items-center gap-0.5 px-4 py-1 ${view === "dashboard" ? "text-teal-600" : "text-gray-400"}`}>
+        <span className="text-xl">🏠</span>
+        <span className="text-[10px] font-medium">หน้าหลัก</span>
+      </button>
     </nav>
   );
 }
