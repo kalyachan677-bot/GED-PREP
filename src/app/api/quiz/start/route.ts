@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     }
 
     const type = quizType || "lesson_quiz";
-    const questionLimit = type === "lesson_quiz" ? 5 : 10;
+    const questionLimit = type === "subject_test" ? 10 : type === "lesson_quiz" ? 5 : 10;
 
     // Fetch questions
     const whereClause: Record<string, unknown> = {

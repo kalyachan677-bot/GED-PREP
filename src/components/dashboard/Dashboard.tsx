@@ -4,9 +4,8 @@ import { useAppStore, SubjectSummary } from "@/lib/store";
 import { SubjectCard } from "./SubjectCard";
 import { ScoreTargetModal } from "./ScoreTargetModal";
 import { AiTutorPanel, ScoreTargetChangeButton } from "./AiTutorPanel";
-import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BookOpen, BarChart3, Target, Flame, TrendingUp } from "lucide-react";
+import { BookOpen, BarChart3, Target, TrendingUp, Flame } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface DashboardData {
@@ -97,10 +96,10 @@ export function Dashboard() {
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
             สวัสดี, {user?.displayName || user?.firstName}
           </h1>
-          <p className="mt-1 text-sm text-slate-500 font-medium">
+          <p className="mt-1.5 text-sm text-slate-500 font-medium leading-relaxed">
             {scoreTarget
-              ? `เป้าหมาย GED ${scoreTarget} คะแนน — เริ่มเรียนต่อจากเมื่อวานได้เลย ความคืบหน้าจะถูกบันทึกอัตโนมัติ`
-              : "เริ่มต้นการเรียนวันนี้ — ความคืบหน้าจะถูกบันทึกให้อัตโนมัติ"}
+              ? `เป้าหมาย GED ${scoreTarget} คะแนน — เรียนต่อจากที่ค้างไว้ได้เลย ความคืบหน้าถูกบันทึกอัตโนมัติ`
+              : "เริ่มต้นการเรียนวันนี้ — เลือกวิชาที่ต้องการเรียนด้านล่าง"}
           </p>
         </div>
         <ScoreTargetChangeButton />
@@ -133,66 +132,40 @@ export function Dashboard() {
 
       {/* Stats */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-0 shadow-sm rounded-2xl bg-gradient-to-br from-violet-50 to-white border border-violet-100/50">
-          <CardContent className="pt-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">บทเรียนที่เสร็จ</p>
-                <p className="mt-1.5 text-2xl font-extrabold text-slate-900 tracking-tight">
-                  {overall.completedLessons}<span className="text-base font-medium text-slate-300">/{overall.totalLessons}</span>
-                </p>
-              </div>
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 shadow-lg shadow-violet-200/50">
-                <BookOpen className="h-5 w-5 text-white" />
-              </div>
-            </div>
-            <div className="mt-3 h-1.5 w-full rounded-full bg-violet-100">
-              <div className="h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 transition-all" style={{ width: `${overall.completionPct}%` }} />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 shadow-sm rounded-2xl bg-gradient-to-br from-amber-50 to-white border border-amber-100/50">
-          <CardContent className="pt-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">คะแนนเฉลี่ย</p>
-                <p className="mt-1.5 text-2xl font-extrabold text-slate-900 tracking-tight">{overall.avgQuizScore}<span className="text-base font-medium text-slate-300">%</span></p>
-              </div>
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg shadow-amber-200/50">
-                <BarChart3 className="h-5 w-5 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 shadow-sm rounded-2xl bg-gradient-to-br from-emerald-50 to-white border border-emerald-100/50">
-          <CardContent className="pt-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">แบบทดสอบทั้งหมด</p>
-                <p className="mt-1.5 text-2xl font-extrabold text-slate-900 tracking-tight">{overall.totalQuizAttempts}</p>
-              </div>
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-200/50">
-                <Target className="h-5 w-5 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 shadow-sm rounded-2xl bg-gradient-to-br from-rose-50 to-white border border-rose-100/50">
-          <CardContent className="pt-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">ความคืบหน้ารวม</p>
-                <p className="mt-1.5 text-2xl font-extrabold text-slate-900 tracking-tight">{overall.completionPct}<span className="text-base font-medium text-slate-300">%</span></p>
-              </div>
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 shadow-lg shadow-rose-200/50">
-                <TrendingUp className="h-5 w-5 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <StatCard
+          label="บทเรียนที่เสร็จ"
+          value={`${overall.completedLessons}`}
+          subValue={`/${overall.totalLessons}`}
+          icon={<BookOpen className="h-5 w-5 text-white" />}
+          gradient="from-violet-500 to-indigo-600"
+          shadowColor="shadow-violet-200/50"
+          progress={overall.completionPct}
+          progressColor="from-violet-500 to-indigo-500"
+        />
+        <StatCard
+          label="คะแนนเฉลี่ย"
+          value={`${overall.avgQuizScore}`}
+          subValue="%"
+          icon={<BarChart3 className="h-5 w-5 text-white" />}
+          gradient="from-amber-500 to-orange-500"
+          shadowColor="shadow-amber-200/50"
+        />
+        <StatCard
+          label="แบบทดสอบทั้งหมด"
+          value={`${overall.totalQuizAttempts}`}
+          subValue="ครั้ง"
+          icon={<Target className="h-5 w-5 text-white" />}
+          gradient="from-emerald-500 to-teal-600"
+          shadowColor="shadow-emerald-200/50"
+        />
+        <StatCard
+          label="ความคืบหน้ารวม"
+          value={`${overall.completionPct}`}
+          subValue="%"
+          icon={<TrendingUp className="h-5 w-5 text-white" />}
+          gradient="from-rose-500 to-pink-600"
+          shadowColor="shadow-rose-200/50"
+        />
       </div>
 
       {/* Subjects */}
@@ -209,32 +182,62 @@ export function Dashboard() {
       {recentQuizScores.length > 0 && (
         <div>
           <h2 className="mb-4 text-lg font-extrabold text-slate-800 tracking-tight">แบบทดสอบล่าสุด</h2>
-          <Card className="border-0 shadow-sm rounded-2xl">
-            <CardContent className="pt-4">
-              <div className="space-y-2">
-                {recentQuizScores.slice(0, 5).map((attempt) => (
-                  <div key={attempt.id} className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3.5">
-                    <div>
-                      <p className="text-sm font-semibold text-slate-700">
-                        {attempt.quizType === "lesson_quiz" ? "แบบทดสอบบทเรียน" : "แบบทดสอบวิชา"}
-                      </p>
-                      <p className="text-[11px] text-slate-400 font-medium">{attempt.totalQuestions} คำถาม</p>
-                    </div>
-                    <span
-                      className={"text-lg font-extrabold tracking-tight " +
-                        (attempt.scorePercent >= 80
-                          ? "text-emerald-600"
-                          : attempt.scorePercent >= 60
-                            ? "text-amber-600"
-                            : "text-rose-600")}
-                    >
-                      {attempt.scorePercent.toFixed(0)}%
-                    </span>
+          <div className="rounded-2xl border border-slate-200/60 bg-white/80 backdrop-blur-sm shadow-sm overflow-hidden">
+            <div className="divide-y divide-slate-100">
+              {recentQuizScores.slice(0, 5).map((attempt) => (
+                <div key={attempt.id} className="flex items-center justify-between px-5 py-3.5">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-700">
+                      {attempt.quizType === "lesson_quiz" ? "แบบทดสอบบทเรียน" : attempt.quizType === "subject_test" ? "แบบทดสอบวิชา" : "แบบทดสอบ"}
+                    </p>
+                    <p className="text-[11px] text-slate-400 font-medium mt-0.5">{attempt.totalQuestions} คำถาม</p>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                  <span
+                    className={"text-lg font-extrabold tracking-tight " +
+                      (attempt.scorePercent >= 80
+                        ? "text-emerald-600"
+                        : attempt.scorePercent >= 60
+                          ? "text-amber-600"
+                          : "text-rose-600")}
+                  >
+                    {attempt.scorePercent.toFixed(0)}%
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function StatCard({ label, value, subValue, icon, gradient, shadowColor, progress, progressColor }: {
+  label: string;
+  value: string;
+  subValue: string;
+  icon: React.ReactNode;
+  gradient: string;
+  shadowColor: string;
+  progress?: number;
+  progressColor?: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-slate-200/60 bg-white/80 backdrop-blur-sm shadow-sm p-5">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{label}</p>
+          <p className="mt-1.5 text-2xl font-extrabold text-slate-900 tracking-tight">
+            {value}<span className="text-base font-medium text-slate-300">{subValue}</span>
+          </p>
+        </div>
+        <div className={`flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br ${gradient} shadow-lg ${shadowColor}`}>
+          {icon}
+        </div>
+      </div>
+      {progress !== undefined && progressColor && (
+        <div className="mt-3 h-1.5 w-full rounded-full bg-slate-100">
+          <div className={`h-full rounded-full bg-gradient-to-r ${progressColor} transition-all`} style={{ width: `${progress}%` }} />
         </div>
       )}
     </div>

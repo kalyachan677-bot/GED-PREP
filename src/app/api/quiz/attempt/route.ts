@@ -67,11 +67,13 @@ export async function POST(request: NextRequest) {
     // Return the attempt with questions and answers (but NOT isCorrect or explanation)
     const questionsForClient = questions.map((q) => ({
       id: q.id,
+      questionText: q.questionText,
       lessonId: q.lessonId,
       questionType: q.questionType,
       difficulty: q.difficulty,
       points: q.points,
       hintText: q.hintText,
+      explanation: q.explanation,
       tags: safeJsonParse(q.tags),
       answers: q.answers.map((a) => ({
         id: a.id,

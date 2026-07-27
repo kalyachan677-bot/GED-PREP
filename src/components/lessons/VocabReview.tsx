@@ -64,7 +64,7 @@ async function speakEnglish(text: string): Promise<boolean> {
     const voices = await getVoices();
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = "en-US";
-    utter.rate = 0.85;
+    utter.rate = 0.8;
     utter.pitch = 1;
     const enVoice = voices.find((v) => v.lang.startsWith("en") && v.localService);
     if (enVoice) {
@@ -72,6 +72,27 @@ async function speakEnglish(text: string): Promise<boolean> {
     } else {
       const anyEn = voices.find((v) => v.lang.startsWith("en"));
       if (anyEn) utter.voice = anyEn;
+    }
+    window.speechSynthesis.speak(utter);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function speakThai(text: string): Promise<boolean> {
+  if (typeof window === "undefined" || !window.speechSynthesis) return false;
+  window.speechSynthesis.cancel();
+  try {
+    const voices = await getVoices();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = "th-TH";
+    utter.rate = 0.9;
+    const thVoice = voices.find((v) => v.lang.startsWith("th") && v.localService);
+    if (thVoice) utter.voice = thVoice;
+    else {
+      const anyTh = voices.find((v) => v.lang.startsWith("th"));
+      if (anyTh) utter.voice = anyTh;
     }
     window.speechSynthesis.speak(utter);
     return true;
@@ -440,9 +461,20 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
                   </button>
                 </div>
 
-                {/* ซับไตเติ้ลคำอ่าน */}
+                {/* ซับไตเติ้ลคำอ่านภาษาไทย */}
                 {card.pronunciation && (
-                  <p className="text-xs text-slate-400 italic mb-1">/{card.pronunciation}/</p>
+                  <button
+                    onClick={() => {
+                      setSpeakingId(card.id + "-pron");
+                      speakThai(card.pronunciation).then((ok) => {
+                        if (!ok) setTtsError(true);
+                        setTimeout(() => setSpeakingId(null), 2000);
+                      });
+                    }}
+                    className="text-xs text-indigo-500 hover:text-indigo-700 font-medium mb-1 transition-colors cursor-pointer"
+                  >
+                    📢 {card.pronunciation}
+                  </button>
                 )}
 
                 {/* ผลลัพธ์หลังตอบ */}

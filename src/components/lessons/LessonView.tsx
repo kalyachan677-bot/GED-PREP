@@ -175,7 +175,7 @@ export function LessonView() {
           </div>
           <Button
             onClick={handleStartQuiz}
-            className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 shadow-lg shadow-violet-200/50"
+            className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 shadow-lg shadow-violet-200/50 rounded-xl"
             size="lg"
             disabled={startingQuiz}
           >

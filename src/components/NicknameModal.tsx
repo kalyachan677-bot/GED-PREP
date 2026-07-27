@@ -1,31 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAppStore } from "@/lib/store";
 import { User, Loader2, Smile } from "lucide-react";
 
 export function NicknameModal() {
   const { user, setUser, showScoreTargetModal } = useAppStore();
-  const [nickname, setNickname] = useState(user?.displayName || "");
+  const [nickname, setNickname] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [visible, setVisible] = useState(false);
 
-  // แสดงเฉพาะเมื่อยังไม่มี displayName และยังไม่ได้แสดง ScoreTargetModal
-  if (!user || user.displayName || showScoreTargetModal) return null;
+  useEffect(() => {
+    if (user && !user.displayName) {
+      setNickname(user.firstName || "");
+      setVisible(true);
+    } else {
+      setVisible(false);
+    }
+  }, [user]);
+
+  if (!visible || !user || user.displayName) return null;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
+      const name = nickname.trim() || user.firstName;
       const res = await fetch("/api/user/nickname", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user.id, nickname: nickname.trim() || user.firstName }),
+        body: JSON.stringify({ userId: user.id, nickname: name }),
       });
       const json = await res.json();
       if (json.data) {
         setUser(json.data);
+        setVisible(false);
       } else {
         setError("เกิดข้อผิดพลาด");
       }
@@ -37,14 +48,13 @@ export function NicknameModal() {
   }
 
   function handleSkip() {
-    // บันทึกชื่อจริงเป็น displayName เพื่อไม่ให้ modal แสดงอีก
     const fallbackName = user.firstName;
     fetch("/api/user/nickname", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId: user.id, nickname: fallbackName }),
     }).then((r) => r.json()).then((json) => {
-      if (json.data) setUser(json.data);
+      if (json.data) { setUser(json.data); setVisible(false); }
     }).catch(() => {});
   }
 
@@ -90,7 +100,7 @@ export function NicknameModal() {
               </button>
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !nickname.trim()}
                 className="flex-1 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-violet-200/50 hover:shadow-lg transition-all disabled:opacity-50"
               >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin inline" />}

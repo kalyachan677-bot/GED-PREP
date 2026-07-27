@@ -1,0 +1,427 @@
+     1→// add-questions-math-science.ts — เพิ่มโจทย์ GED จริง วิชา Math + Science
+     2→import { PrismaClient } from "@prisma/client";
+     3→const p = new PrismaClient();
+     4→
+     5→interface Q {
+     6→  questionText: string; difficulty: "easy" | "medium" | "hard";
+     7→  answers: { content: string; isCorrect: boolean; explanation?: string }[];
+     8→  explanation: string;
+     9→}
+    10→
+    11→const DATA: Record<string, { code: string; lessons: Record<string, Q[]> }> = {
+    12→  MATH: { code: "math", lessons: {
+    13→    "What is a Linear Equation?": [
+    14→      { questionText: "Which of the following is a linear equation in one variable?", difficulty: "easy",
+    15→        answers: [
+    16→          { content: "y = 2x + 5", isCorrect: false, explanation: "Two variables, not one." },
+    17→          { content: "3x + 7 = 22", isCorrect: true, explanation: "One variable (x) with exponent 1 — this is linear." },
+    18→          { content: "x² + 4 = 0", isCorrect: false, explanation: "Variable is squared — this is quadratic." },
+    19→          { content: "1/x + 2 = 5", isCorrect: false, explanation: "x in denominator — this is rational, not linear." },
+    20→        ], explanation: "A linear equation in one variable has form ax + b = c. Answer B is 3x + 7 = 22." },
+    21→      { questionText: "Solve for x: 4x - 3 = 2x + 9", difficulty: "medium",
+    22→        answers: [
+    23→          { content: "x = 3", isCorrect: false }, { content: "x = 6", isCorrect: true, explanation: "4x-2x = 9+3 → 2x=12 → x=6" },
+    24→          { content: "x = -6", isCorrect: false }, { content: "x = 12", isCorrect: false },
+    25→        ], explanation: "Get x terms on one side: 4x - 2x = 9 + 3 → 2x = 12 → x = 6." },
+    26→      { questionText: "A taxi charges $3 base fare plus $2 per mile. If a ride costs $17, how many miles?", difficulty: "medium",
+    27→        answers: [
+    28→          { content: "5 miles", isCorrect: false }, { content: "7 miles", isCorrect: true, explanation: "3+2m=17 → 2m=14 → m=7" },
+    29→          { content: "10 miles", isCorrect: false }, { content: "8 miles", isCorrect: false },
+    30→        ], explanation: "Equation: 3 + 2m = 17. Subtract 3: 2m = 14. Divide: m = 7 miles." },
+    31→      { questionText: "What is the slope of y = -3x + 8?", difficulty: "easy",
+    32→        answers: [
+    33→          { content: "8", isCorrect: false, explanation: "8 is the y-intercept, not slope." },
+    34→          { content: "-3", isCorrect: true, explanation: "In y = mx + b, m = -3." },
+    35→          { content: "3", isCorrect: false }, { content: "-8", isCorrect: false },
+    36→        ], explanation: "In slope-intercept form y = mx + b, the slope m = -3." },
+    37→      { questionText: "Which ordered pair satisfies 2x + y = 10?", difficulty: "medium",
+    38→        answers: [
+    39→          { content: "(1, 8)", isCorrect: false, explanation: "2(1)+8=10, but we check: 2+8=10 yes" },
+    40→          { content: "(3, 4)", isCorrect: true, explanation: "2(3)+4 = 6+4 = 10 ✓" },
+    41→          { content: "(5, 5)", isCorrect: false, explanation: "2(5)+5=15, not 10." },
+    42→          { content: "(2, 9)", isCorrect: false, explanation: "2(2)+9=13, not 10." },
+    43→        ], explanation: "Substitute: 2(3)+4 = 6+4 = 10. Only (3,4) satisfies the equation." },
+    44→        ],
+    45→    "Solving Inequalities": [
+    46→      { questionText: "Solve: 3x - 5 > 10", difficulty: "easy",
+    47→        answers: [
+    48→          { content: "x > 5", isCorrect: true, explanation: "Add 5: 3x > 15. Divide by 3: x > 5." },
+    49→          { content: "x < 5", isCorrect: false }, { content: "x > 15", isCorrect: false }, { content: "x < 15", isCorrect: false },
+    50→        ], explanation: "3x - 5 > 10 → 3x > 15 → x > 5. Sign stays same (dividing by positive)." },
+    51→      { questionText: "Solve: -2x + 4 ≤ 12", difficulty: "medium",
+    52→        answers: [
+    53→          { content: "x ≤ -4", isCorrect: false }, { content: "x ≥ -4", isCorrect: true, explanation: "-2x ≤ 8. Divide by -2, FLIP sign: x ≥ -4." },
+    54→          { content: "x ≤ 4", isCorrect: false }, { content: "x ≥ 4", isCorrect: false },
+    55→        ], explanation: "Subtract 4: -2x ≤ 8. Divide by -2 and REVERSE sign: x ≥ -4." },
+    56→      { questionText: "A driver must arrive within 45 minutes. After driving 20 min, which inequality shows remaining time t?", difficulty: "hard",
+    57→        answers: [
+    58→          { content: "t + 20 > 45", isCorrect: false }, { content: "t + 20 ≤ 45", isCorrect: true, explanation: "Total time (t+20) must be ≤ 45." },
+    59→          { content: "t - 20 ≤ 45", isCorrect: false }, { content: "20t ≤ 45", isCorrect: false },
+    60→        ], explanation: "Time used (20) + remaining (t) ≤ 45 minutes total. So: 20 + t ≤ 45." },
+    61→      { questionText: "Which represents x < 4 on a number line?", difficulty: "easy",
+    62→        answers: [
+    63→          { content: "Closed circle at 4, arrow right", isCorrect: false, explanation: "This is x ≥ 4." },
+    64→          { content: "Open circle at 4, arrow left", isCorrect: true, explanation: "Open circle (4 not included), arrow left (values less than 4)." },
+    65→          { content: "Closed circle at 4, arrow left", isCorrect: false, explanation: "This is x ≤ 4." },
+    66→          { content: "Open circle at 4, arrow right", isCorrect: false },
+    67→        ], explanation: "x < 4: open circle (strict inequality) at 4, shading to the left (smaller values)." },
+    68→        ],
+    69→    "Substitution Method": [
+    70→      { questionText: "Solve by substitution: y = 2x + 1 and x + y = 10", difficulty: "medium",
+    71→        answers: [
+    72→          { content: "x = 3, y = 7", isCorrect: true, explanation: "x + (2x+1) = 10 → 3x = 9 → x=3, y=7." },
+    73→          { content: "x = 4, y = 6", isCorrect: false }, { content: "x = 2, y = 8", isCorrect: false }, { content: "x = 5, y = 5", isCorrect: false },
+    74→        ], explanation: "Substitute y: x + 2x + 1 = 10 → 3x = 9 → x = 3, y = 2(3)+1 = 7." },
+    75→      { questionText: "Two numbers add to 25. One is 7 more than the other. What are they?", difficulty: "medium",
+    76→        answers: [
+    77→          { content: "9 and 16", isCorrect: true, explanation: "x + (x+7) = 25 → 2x = 18 → x=9, other=16." },
+    78→          { content: "10 and 15", isCorrect: false }, { content: "8 and 17", isCorrect: false }, { content: "12 and 13", isCorrect: false },
+    79→        ], explanation: "Let numbers be x and x+7. x + x+7 = 25 → 2x = 18 → x=9. Numbers: 9 and 16." },
+    80→      { questionText: "Solve: x = y + 3 and 2x - 4y = 6", difficulty: "medium",
+    81→        answers: [
+    82→          { content: "x = 3, y = 0", isCorrect: true, explanation: "2(y+3)-4y=6 → -2y=0 → y=0, x=3." },
+    83→          { content: "x = 6, y = 3", isCorrect: false }, { content: "x = 0, y = -3", isCorrect: false }, { content: "x = 1, y = -2", isCorrect: false },
+    84→        ], explanation: "Substitute x = y+3: 2(y+3) - 4y = 6 → -2y + 6 = 6 → y = 0, x = 3." },
+    85→      { questionText: "The first step in substitution method is to:", difficulty: "easy",
+    86→        answers: [
+    87→          { content: "Add the equations", isCorrect: false, explanation: "That's elimination." },
+    88→          { content: "Replace a variable with its expression from the other equation", isCorrect: true, explanation: "This is the core of substitution." },
+    89→          { content: "Graph both equations", isCorrect: false }, { content: "Multiply both equations", isCorrect: false },
+    90→        ], explanation: "Substitution: replace one variable in one equation with its expression from the other." },
+    91→    ],
+    92→    "Elimination Method": [
+    93→      { questionText: "Solve by elimination: x + y = 8 and x - y = 2", difficulty: "easy",
+    94→        answers: [
+    95→          { content: "x = 5, y = 3", isCorrect: true, explanation: "Add: 2x = 10 → x=5, y=3." },
+    96→          { content: "x = 4, y = 4", isCorrect: false }, { content: "x = 6, y = 2", isCorrect: false }, { content: "x = 3, y = 5", isCorrect: false },
+    97→        ], explanation: "Add equations: (x+x)+(y-y)=8+2 → 2x=10 → x=5. Then 5+y=8 → y=3." },
+    98→      { questionText: "How many solutions does 2x+4y=8 and x+2y=4 have?", difficulty: "hard",
+    99→        answers: [
+   100→          { content: "One", isCorrect: false }, { content: "No solution", isCorrect: false },
+   101→          { content: "Infinite solutions", isCorrect: true, explanation: "Second eq is half of first — same line." },
+   102→          { content: "Two", isCorrect: false },
+   103→        ], explanation: "The second equation multiplied by 2 equals the first. They are the same line → infinite solutions." },
+   104→      { questionText: "A theater sold 200 tickets. Adult $8, child $5. Total $1,300. How many adult tickets?", difficulty: "hard",
+   105→        answers: [
+   106→          { content: "100", isCorrect: true, explanation: "a+c=200, 8a+5c=1300. Solve: a=100." },
+   107→          { content: "80", isCorrect: false }, { content: "120", isCorrect: false }, { content: "150", isCorrect: false },
+   108→        ], explanation: "a+c=200 and 8a+5c=1300. Multiply first by 5: 5a+5c=1000. Subtract: 3a=300 → a=100." },
+   109→      { questionText: "To eliminate x from 2x+3y=12 and 3x+2y=13, multiply first by __ and second by __:", difficulty: "medium",
+   110→        answers: [
+   111→          { content: "3 and 2", isCorrect: true, explanation: "Makes both x coefficients = 6." },
+   112→          { content: "2 and 3", isCorrect: false }, { content: "1 and 1", isCorrect: false }, { content: "-1 and 1", isCorrect: false },
+   113→        ], explanation: "Multiply first by 3 (6x) and second by 2 (6x), then subtract to eliminate x." },
+   114→        ],
+   115→    "Rectangle and Triangle Basics": [
+   116→      { questionText: "A rectangle has length 12 cm and width 5 cm. What is its area?", difficulty: "easy",
+   117→        answers: [
+   118→          { content: "34 cm²", isCorrect: false }, { content: "60 cm²", isCorrect: true, explanation: "Area = 12 × 5 = 60 cm²." },
+   119→          { content: "17 cm²", isCorrect: false }, { content: "120 cm²", isCorrect: false },
+   120→        ], explanation: "Rectangle area = length × width = 12 × 5 = 60 cm²." },
+   121→      { questionText: "A triangle has base 10 inches and height 6 inches. Area?", difficulty: "easy",
+   122→        answers: [
+   123→          { content: "60 in²", isCorrect: false, explanation: "That's base × height, not ÷ 2." },
+   124→          { content: "30 in²", isCorrect: true, explanation: "Area = ½ × 10 × 6 = 30 in²." },
+   125→          { content: "16 in²", isCorrect: false }, { content: "20 in²", isCorrect: false },
+   126→        ], explanation: "Triangle area = ½ × base × height = ½ × 10 × 6 = 30 in²." },
+   127→      { questionText: "Hypotenuse = 13 cm, one leg = 5 cm. Other leg?", difficulty: "medium",
+   128→        answers: [
+   129→          { content: "8 cm", isCorrect: false }, { content: "12 cm", isCorrect: true, explanation: "a² + 25 = 169 → a² = 144 → a = 12." },
+   130→          { content: "10 cm", isCorrect: false }, { content: "15 cm", isCorrect: false },
+   131→        ], explanation: "Pythagorean theorem: a² + 5² = 13² → a² + 25 = 169 → a² = 144 → a = 12 cm." },
+   132→      { questionText: "Perimeter of rectangle with length 9 and width 4?", difficulty: "easy",
+   133→        answers: [
+   134→          { content: "13", isCorrect: false }, { content: "26", isCorrect: true, explanation: "P = 2(9+4) = 26." },
+   135→          { content: "36", isCorrect: false }, { content: "18", isCorrect: false },
+   136→        ], explanation: "Perimeter = 2 × (length + width) = 2 × (9 + 4) = 26." },
+   137→        ],
+   138→    "Circles and Composite Shapes": [
+   139→      { questionText: "Area of a circle with radius 5?", difficulty: "easy",
+   140→        answers: [
+   141→          { content: "10π", isCorrect: false }, { content: "25π", isCorrect: true, explanation: "A = πr² = π(25) = 25π." },
+   142→          { content: "50π", isCorrect: false }, { content: "5π", isCorrect: false },
+   143→        ], explanation: "Circle area = πr² = π × 5² = 25π square units." },
+   144→      { questionText: "Circumference of a circle with diameter 8?", difficulty: "easy",
+   145→        answers: [
+   146→          { content: "16π", isCorrect: false }, { content: "8π", isCorrect: true, explanation: "C = πd = 8π." },
+   147→          { content: "4π", isCorrect: false }, { content: "32π", isCorrect: false },
+   148→        ], explanation: "Circumference = π × diameter = π × 8 = 8π." },
+   149→      { questionText: "Area of a semicircle with radius 4 cm?", difficulty: "medium",
+   150→        answers: [
+   151→          { content: "8π cm²", isCorrect: true, explanation: "½ × π × 16 = 8π." },
+   152→          { content: "16π cm²", isCorrect: false }, { content: "4π cm²", isCorrect: false }, { content: "2π cm²", isCorrect: false },
+   153→        ], explanation: "Semicircle area = ½πr² = ½ × π × 16 = 8π cm²." },
+   154→      { questionText: "A 6×4 rectangle has a semicircle on its 6-unit side. Approximate total area? (π≈3.14)", difficulty: "hard",
+   155→        answers: [
+   156→          { content: "24 + 9π ≈ 52.26", isCorrect: false }, { content: "24 + 14.13 ≈ 38.13", isCorrect: true, explanation: "Rect=24, semi=½π(9)≈14.13." },
+   157→          { content: "24 + 6π ≈ 42.84", isCorrect: false }, { content: "30.13", isCorrect: false },
+   158→        ], explanation: "Rectangle: 6×4=24. Semicircle: radius=3, area=½π(9)≈14.13. Total≈38.13." },
+   159→        ],
+   160→    "Understanding the Theorem": [
+   161→      { questionText: "Pythagorean theorem states: a² + b² = c², where c is the:", difficulty: "easy",
+   162→        answers: [
+   163→          { content: "Shortest side", isCorrect: false }, { content: "Hypotenuse (longest side)", isCorrect: true, explanation: "c is always the hypotenuse in a right triangle." },
+   164→          { content: "Area", isCorrect: false }, { content: "Perimeter", isCorrect: false },
+   165→        ], explanation: "In a² + b² = c², c represents the hypotenuse — the side opposite the right angle." },
+   166→      { questionText: "Right triangle legs are 5 and 12. Hypotenuse?", difficulty: "medium",
+   167→        answers: [
+   168→          { content: "13", isCorrect: true, explanation: "√(25+144) = √169 = 13." },
+   169→          { content: "17", isCorrect: false }, { content: "11", isCorrect: false }, { content: "14", isCorrect: false },
+   170→        ], explanation: "c² = 5² + 12² = 25 + 144 = 169. c = √169 = 13." },
+   171→      { questionText: "Which is a Pythagorean triple?", difficulty: "medium",
+   172→        answers: [
+   173→          { content: "3, 4, 5", isCorrect: true, explanation: "9 + 16 = 25 = 5²." },
+   174→          { content: "2, 3, 4", isCorrect: false, explanation: "4 + 9 = 13 ≠ 16." },
+   175→          { content: "4, 5, 6", isCorrect: false, explanation: "16 + 25 = 41 ≠ 36." },
+   176→          { content: "1, 2, 3", isCorrect: false, explanation: "1 + 4 = 5 ≠ 9." },
+   177→        ], explanation: "A Pythagorean triple: a² + b² = c². 3² + 4² = 9 + 16 = 25 = 5²." },
+   178→      { questionText: "A ladder's base is 9 ft from a wall, reaches 12 ft high. Ladder length?", difficulty: "hard",
+   179→        answers: [
+   180→          { content: "15 feet", isCorrect: true, explanation: "√(81+144) = √225 = 15." },
+   181→          { content: "21 feet", isCorrect: false }, { content: "10 feet", isCorrect: false }, { content: "13 feet", isCorrect: false },
+   182→        ], explanation: "Ladder² = 9² + 12² = 81 + 144 = 225. Ladder = √225 = 15 feet." },
+   183→        ],
+   184→    "Applications and Word Problems": [
+   185→      { questionText: "20% off sale on a $50 item. Sale price?", difficulty: "easy",
+   186→        answers: [
+   187→          { content: "$30", isCorrect: false }, { content: "$40", isCorrect: true, explanation: "20% of $50 = $10 off. $50-$10=$40." },
+   188→          { content: "$35", isCorrect: false }, { content: "$10", isCorrect: false },
+   189→        ], explanation: "20% of $50 = $10 discount. Sale price = $50 - $10 = $40." },
+   190→      { questionText: "Maria earns $12/hour, worked 35 hours. Total earnings?", difficulty: "easy",
+   191→        answers: [
+   192→          { content: "$420", isCorrect: true, explanation: "$12 × 35 = $420." },
+   193→          { content: "$350", isCorrect: false }, { content: "$480", isCorrect: false }, { content: "$400", isCorrect: false },
+   194→        ], explanation: "Earnings = rate × hours = $12 × 35 = $420." },
+   195→      { questionText: "Recipe: 3 cups flour for 24 cookies. How many cups for 60 cookies?", difficulty: "medium",
+   196→        answers: [
+   197→          { content: "6 cups", isCorrect: false }, { content: "7.5 cups", isCorrect: true, explanation: "3/24 = x/60 → x = 180/24 = 7.5." },
+   198→          { content: "8 cups", isCorrect: false }, { content: "5 cups", isCorrect: false },
+   199→        ], explanation: "Proportion: 3/24 = x/60 → 24x = 180 → x = 7.5 cups." },
+   200→      { questionText: "Scores: 85, 90, 78. Average?", difficulty: "easy",
+   201→        answers: [
+   202→          { content: "84.3", isCorrect: true, explanation: "(85+90+78)/3 = 253/3 ≈ 84.3." },
+   203→          { content: "85", isCorrect: false }, { content: "90", isCorrect: false }, { content: "78", isCorrect: false },
+   204→        ], explanation: "Average = sum ÷ count = (85+90+78) ÷ 3 = 253 ÷ 3 ≈ 84.3." },
+   205→        ],
+   206→  }},
+   207→  SCIENCE: { code: "science", lessons: {
+   208→    "Cell Structure and Organelles": [
+   209→      { questionText: "Which organelle is the 'powerhouse of the cell'?", difficulty: "easy",
+   210→        answers: [
+   211→          { content: "Nucleus", isCorrect: false, explanation: "Nucleus stores DNA." },
+   212→          { content: "Mitochondria", isCorrect: true, explanation: "Produces ATP through cellular respiration." },
+   213→          { content: "Ribosome", isCorrect: false, explanation: "Makes proteins." },
+   214→          { content: "Golgi apparatus", isCorrect: false, explanation: "Packages and ships proteins." },
+   215→        ], explanation: "Mitochondria convert nutrients into ATP energy — the 'powerhouse of the cell.'" },
+   216→      { questionText: "Primary function of the cell membrane?", difficulty: "easy",
+   217→        answers: [
+   218→          { content: "Store DNA", isCorrect: false }, { content: "Control what enters and exits the cell", isCorrect: true, explanation: "Selectively permeable barrier." },
+   219→          { content: "Produce proteins", isCorrect: false }, { content: "Provide energy", isCorrect: false },
+   220→        ], explanation: "The cell membrane is a selectively permeable barrier controlling material movement." },
+   221→      { questionText: "Which organelle makes proteins?", difficulty: "easy",
+   222→        answers: [
+   223→          { content: "Lysosome", isCorrect: false }, { content: "Ribosome", isCorrect: true, explanation: "Reads mRNA to build proteins." },
+   224→          { content: "Vacuole", isCorrect: false }, { content: "Endoplasmic reticulum", isCorrect: false, explanation: "ER transports materials." },
+   225→        ], explanation: "Ribosomes are the sites of protein synthesis, assembling amino acids into proteins." },
+   226→      { questionText: "Plant cells have which structure that animal cells lack?", difficulty: "easy",
+   227→        answers: [
+   228→          { content: "Mitochondria", isCorrect: false }, { content: "Cell wall", isCorrect: true, explanation: "Rigid cellulose wall for structure." },
+   229→          { content: "Cell membrane", isCorrect: false }, { content: "Nucleus", isCorrect: false },
+   230→        ], explanation: "Plant cells have a cell wall (cellulose), chloroplasts, and a large central vacuole." },
+   231→        ],
+   232→    "Cell Division: Mitosis and Meiosis": [
+   233→      { questionText: "Result of mitosis?", difficulty: "easy",
+   234→        answers: [
+   235→          { content: "Two identical daughter cells", isCorrect: true, explanation: "Mitosis: 2 identical diploid cells." },
+   236→          { content: "Four unique sex cells", isCorrect: false, explanation: "That's meiosis." },
+   237→          { content: "One cell with double chromosomes", isCorrect: false }, { content: "Two cells with half chromosomes", isCorrect: false },
+   238→        ], explanation: "Mitosis produces 2 genetically identical diploid daughter cells for growth and repair." },
+   239→      { questionText: "Main purpose of meiosis?", difficulty: "medium",
+   240→        answers: [
+   241→          { content: "Growth and repair", isCorrect: false, explanation: "That's mitosis." },
+   242→          { content: "Produce gametes (sperm and egg)", isCorrect: true, explanation: "Meiosis halves chromosomes for reproduction." },
+   243→          { content: "Create identical copies", isCorrect: false }, { content: "Break down waste", isCorrect: false },
+   244→        ], explanation: "Meiosis produces haploid gametes with half the chromosomes for sexual reproduction." },
+   245→      { questionText: "In which mitosis phase do chromosomes line up at the center?", difficulty: "medium",
+   246→        answers: [
+   247→          { content: "Prophase", isCorrect: false }, { content: "Metaphase", isCorrect: true, explanation: "Chromosomes align at metaphase plate." },
+   248→          { content: "Anaphase", isCorrect: false, explanation: "Sister chromatids separate." }, { content: "Telophase", isCorrect: false },
+   249→        ], explanation: "During metaphase, chromosomes line up at the cell equator (metaphase plate)." },
+   250→      { questionText: "Meiosis produces how many cells and what chromosome count?", difficulty: "medium",
+   251→        answers: [
+   252→          { content: "2 diploid cells", isCorrect: false }, { content: "4 haploid cells", isCorrect: true, explanation: "Two divisions produce 4 cells with half chromosomes." },
+   253→          { content: "2 haploid cells", isCorrect: false }, { content: "4 diploid cells", isCorrect: false },
+   254→        ], explanation: "Meiosis: 2 rounds of division → 4 haploid (n) daughter cells." },
+   255→        ],
+   256→    "DNA and Genes": [
+   257→      { questionText: "Four nitrogenous bases in DNA?", difficulty: "easy",
+   258→        answers: [
+   259→          { content: "Adenine, Guanine, Cytosine, Thymine", isCorrect: true, explanation: "A-T and G-C pairings." },
+   260→          { content: "Adenine, Guanine, Cytosine, Uracil", isCorrect: false, explanation: "Uracil is in RNA, not DNA." },
+   261→          { content: "Adenine, Thymine, Uracil, Cytosine", isCorrect: false }, { content: "Guanine, Thymine, Uracil, Cytosine", isCorrect: false },
+   262→        ], explanation: "DNA bases: A, T, G, C. A pairs with T, G pairs with C." },
+   263→      { questionText: "Shape of DNA molecule?", difficulty: "easy",
+   264→        answers: [
+   265→          { content: "Single helix", isCorrect: false }, { content: "Double helix", isCorrect: true, explanation: "Twisted ladder discovered by Watson & Crick." },
+   266→          { content: "Triple helix", isCorrect: false }, { content: "Flat sheet", isCorrect: false },
+   267→        ], explanation: "DNA has a double helix structure — two strands twisted like a spiral staircase." },
+   268→      { questionText: "In DNA, adenine pairs with:", difficulty: "easy",
+   269→        answers: [
+   270→          { content: "Guanine", isCorrect: false }, { content: "Thymine", isCorrect: true, explanation: "A-T base pair." },
+   271→          { content: "Cytosine", isCorrect: false }, { content: "Uracil", isCorrect: false },
+   272→        ], explanation: "Base pairing: A pairs with T (2 hydrogen bonds), G pairs with C (3 hydrogen bonds)." },
+   273→      { questionText: "A gene contains instructions for making a:", difficulty: "medium",
+   274→        answers: [
+   275→          { content: "Carbohydrate", isCorrect: false }, { content: "Protein", isCorrect: true, explanation: "Genes code for specific proteins that determine traits." },
+   276→          { content: "Lipid", isCorrect: false }, { content: "Mineral", isCorrect: false },
+   277→        ], explanation: "A gene is a DNA segment containing instructions to build a specific protein." },
+   278→        ],
+   279→    "Punnett Squares": [
+   280→      { questionText: "Each box in a Punnett square represents:", difficulty: "easy",
+   281→        answers: [
+   282→          { content: "A parent's genotype", isCorrect: false }, { content: "A possible offspring genotype", isCorrect: true },
+   283→          { content: "A mutation", isCorrect: false }, { content: "A dominant trait only", isCorrect: false },
+   284→        ], explanation: "Each Punnett square box shows one possible genotype for an offspring." },
+   285→      { questionText: "BB × bb cross: what % show dominant trait?", difficulty: "medium",
+   286→        answers: [
+   287→          { content: "25%", isCorrect: false }, { content: "50%", isCorrect: false },
+   288→          { content: "100%", isCorrect: true, explanation: "All offspring are Bb, showing dominant trait." }, { content: "75%", isCorrect: false },
+   289→        ], explanation: "BB × bb → all Bb. Dominant B masks recessive b → 100% show dominant trait." },
+   290→      { questionText: "Bb × Bb: probability of showing recessive trait?", difficulty: "medium",
+   291→        answers: [
+   292→          { content: "25%", isCorrect: true, explanation: "BB:Bb:Bb:bb — only bb (1/4) shows recessive." },
+   293→          { content: "50%", isCorrect: false }, { content: "75%", isCorrect: false }, { content: "0%", isCorrect: false },
+   294→        ], explanation: "Bb × Bb: Punnett gives BB, Bb, Bb, bb. Only bb (25%) shows the recessive trait." },
+   295→      { questionText: "Genotype ratio of Bb × Bb?", difficulty: "medium",
+   296→        answers: [
+   297→          { content: "1 BB : 2 Bb : 1 bb", isCorrect: true }, { content: "2 BB : 1 Bb : 1 bb", isCorrect: false },
+   298→          { content: "1 BB : 1 Bb : 2 bb", isCorrect: false }, { content: "3 Bb : 1 bb", isCorrect: false },
+   299→        ], explanation: "Bb × Bb produces 1 BB : 2 Bb : 1 bb genotype ratio (1:2:1)." },
+   300→        ],
+   301→    "Atoms and the Periodic Table": [
+   302→      { questionText: "Three main subatomic particles?", difficulty: "easy",
+   303→        answers: [
+   304→          { content: "Proton, neutron, electron", isCorrect: true, explanation: "Protons(+) and neutrons in nucleus; electrons(-) orbit." },
+   305→          { content: "Proton, photon, electron", isCorrect: false }, { content: "Neutron, nucleus, electron", isCorrect: false }, { content: "Ion, isotope, electron", isCorrect: false },
+   306→        ], explanation: "Atoms: protons (+) and neutrons (0) in nucleus, electrons (-) in orbit." },
+   307→      { questionText: "Atomic number tells you:", difficulty: "easy",
+   308→        answers: [
+   309→          { content: "Number of neutrons", isCorrect: false }, { content: "Number of protons", isCorrect: true, explanation: "Defines the element." },
+   310→          { content: "Total mass", isCorrect: false }, { content: "Outer shell electrons", isCorrect: false },
+   311→        ], explanation: "Atomic number = number of protons, which uniquely identifies each element." },
+   312→      { questionText: "Metals on the periodic table are located:", difficulty: "easy",
+   313→        answers: [
+   314→          { content: "Right side", isCorrect: false }, { content: "Left and center", isCorrect: true, explanation: "Metals fill the left side and middle." },
+   315→          { content: "Top row only", isCorrect: false }, { content: "Bottom right", isCorrect: false },
+   316→        ], explanation: "Metals are on the left and center (including transition metals) of the periodic table." },
+   317→      { questionText: "Atom with 6 protons, 6 neutrons. Approximate atomic mass?", difficulty: "easy",
+   318→        answers: [
+   319→          { content: "6", isCorrect: false }, { content: "12", isCorrect: true, explanation: "Mass ≈ protons + neutrons = 6+6 = 12 (Carbon-12)." },
+   320→          { content: "18", isCorrect: false }, { content: "0", isCorrect: false },
+   321→        ], explanation: "Atomic mass ≈ protons + neutrons = 6 + 6 = 12. This is Carbon-12." },
+   322→        ],
+   323→    "Chemical Reactions": [
+   324→      { questionText: "In a chemical equation, the arrow (→) represents:", difficulty: "easy",
+   325→        answers: [
+   326→          { content: "Reactants", isCorrect: false }, { content: "Reactants become products", isCorrect: true },
+   327→          { content: "Reversible reaction", isCorrect: false }, { content: "Balanced equation", isCorrect: false },
+   328→        ], explanation: "The arrow shows reactants (left) are converted to products (right)." },
+   329→      { questionText: "What is a catalyst?", difficulty: "medium",
+   330→        answers: [
+   331→          { content: "Substance consumed in reaction", isCorrect: false }, { content: "Speeds up reaction without being consumed", isCorrect: true },
+   332→          { content: "A product", isCorrect: false }, { content: "A chemical bond", isCorrect: false },
+   333→        ], explanation: "A catalyst speeds up a reaction by lowering activation energy without being consumed." },
+   334→      { questionText: "Which is an exothermic reaction?", difficulty: "medium",
+   335→        answers: [
+   336→          { content: "Photosynthesis", isCorrect: false, explanation: "Absorbs energy (endothermic)." },
+   337→          { content: "Burning wood", isCorrect: true, explanation: "Releases heat — exothermic." },
+   338→          { content: "Melting ice", isCorrect: false, explanation: "Absorbs heat (endothermic)." }, { content: "Dissolving NH₄NO₃", isCorrect: false },
+   339→        ], explanation: "Exothermic reactions release energy. Burning wood releases heat and light." },
+   340→      { questionText: "Law of conservation of mass:", difficulty: "medium",
+   341→        answers: [
+   342→          { content: "Mass is created", isCorrect: false }, { content: "Mass is destroyed", isCorrect: false },
+   343→          { content: "Mass is neither created nor destroyed", isCorrect: true, explanation: "Atoms rearrange but total mass stays constant." }, { content: "Mass doubles", isCorrect: false },
+   344→        ], explanation: "Matter cannot be created or destroyed in a chemical reaction — atoms are rearranged." },
+   345→        ],
+   346→    "Newton's Laws of Motion": [
+   347→      { questionText: "Newton's First Law is the law of:", difficulty: "easy",
+   348→        answers: [
+   349→          { content: "Acceleration", isCorrect: false }, { content: "Inertia", isCorrect: true, explanation: "Objects stay at rest or in motion unless acted on." },
+   350→          { content: "Action-Reaction", isCorrect: false }, { content: "Gravity", isCorrect: false },
+   351→        ], explanation: "First Law (Inertia): objects maintain their state of motion unless a force acts on them." },
+   352→      { questionText: "Newton's Second Law: Force equals:", difficulty: "easy",
+   353→        answers: [
+   354→          { content: "mass × velocity", isCorrect: false }, { content: "mass × acceleration (F=ma)", isCorrect: true },
+   355→          { content: "mass ÷ acceleration", isCorrect: false }, { content: "velocity × time", isCorrect: false },
+   356→        ], explanation: "F = ma. Force = mass × acceleration." },
+   357→      { questionText: "10 kg box pushed with 50 N force. Acceleration?", difficulty: "medium",
+   358→        answers: [
+   359→          { content: "5 m/s²", isCorrect: true, explanation: "a = F/m = 50/10 = 5." },
+   360→          { content: "500 m/s²", isCorrect: false }, { content: "0.2 m/s²", isCorrect: false }, { content: "50 m/s²", isCorrect: false },
+   361→        ], explanation: "F = ma → a = F/m = 50÷10 = 5 m/s²." },
+   362→      { questionText: "You push a wall, wall pushes back. Which law?", difficulty: "easy",
+   363→        answers: [
+   364→          { content: "First Law", isCorrect: false }, { content: "Second Law", isCorrect: false },
+   365→          { content: "Third Law (Action-Reaction)", isCorrect: true, explanation: "Every action has equal opposite reaction." }, { content: "Law of Gravity", isCorrect: false },
+   366→        ], explanation: "Newton's Third Law: for every action force there is an equal and opposite reaction force." },
+   367→        ],
+   368→    "Speed, Velocity, and Acceleration": [
+   369→      { questionText: "Difference between speed and velocity?", difficulty: "easy",
+   370→        answers: [
+   371→          { content: "Speed includes direction", isCorrect: false }, { content: "Velocity includes direction; speed does not", isCorrect: true },
+   372→          { content: "Same thing", isCorrect: false }, { content: "Velocity only for falling objects", isCorrect: false },
+   373→        ], explanation: "Speed = magnitude only (how fast). Velocity = magnitude + direction (how fast AND which way)." },
+   374→      { questionText: "Car travels 120 miles in 2 hours. Average speed?", difficulty: "easy",
+   375→        answers: [
+   376→          { content: "30 mph", isCorrect: false }, { content: "60 mph", isCorrect: true, explanation: "120÷2 = 60 mph." },
+   377→          { content: "120 mph", isCorrect: false }, { content: "240 mph", isCorrect: false },
+   378→        ], explanation: "Speed = distance ÷ time = 120 ÷ 2 = 60 mph." },
+   379→      { questionText: "0 to 60 mph in 5 seconds. Average acceleration?", difficulty: "hard",
+   380→        answers: [
+   381→          { content: "12 mph/s", isCorrect: true, explanation: "(60-0)÷5 = 12." },
+   382→          { content: "30 mph/s", isCorrect: false }, { content: "5 mph/s", isCorrect: false }, { content: "60 mph/s", isCorrect: false },
+   383→        ], explanation: "Acceleration = (final - initial velocity) ÷ time = 60 ÷ 5 = 12 mph/s." },
+   384→      { questionText: "Which represents acceleration?", difficulty: "medium",
+   385→        answers: [
+   386→          { content: "Constant 55 mph", isCorrect: false, explanation: "No change = no acceleration." },
+   387→          { content: "Car slowing down at stop sign", isCorrect: true, explanation: "Slowing down = negative acceleration." },
+   388→          { content: "Parked car", isCorrect: false }, { content: "Car turning at constant speed", isCorrect: true, explanation: "Changing direction = acceleration." },
+   389→        ], explanation: "Acceleration: any change in velocity — speeding up, slowing down, or changing direction." },
+   390→        ],
+   391→  }},
+   392→};
+   393→
+   394→async function main() {
+   395→  for (const [_, subjectData] of Object.entries(DATA)) {
+   396→    const subject = await p.subject.findFirst({ where: { code: subjectData.code } });
+   397→    if (!subject) { console.log(`SKIP ${subjectData.code}`); continue; }
+   398→
+   399→    for (const [lessonTitle, questions] of Object.entries(subjectData.lessons)) {
+   400→      const lesson = await p.lesson.findFirst({
+   401→        where: { title: lessonTitle, topic: { module: { subjectId: subject.id } } },
+   402→      });
+   403→      if (!lesson) { console.log(`  SKIP lesson: ${lessonTitle}`); continue; }
+   404→
+   405→      const existing = await p.question.findMany({ where: { lessonId: lesson.id }, include: { answers: true }, orderBy: { createdAt: "asc" } });
+   406→      console.log(`  ${subjectData.code} | ${lessonTitle} | existing: ${existing.length} | new: ${questions.length}`);
+   407→
+   408→      // อัปเดตข้อเดิม
+   409→      const updateCount = Math.min(existing.length, questions.length);
+   410→      for (let i = 0; i < updateCount; i++) {
+   411→        const q = questions[i], eq = existing[i];
+   412→        await p.question.update({ where: { id: eq.id }, data: { questionText: q.questionText, explanation: q.explanation, difficulty: q.difficulty } });
+   413→        for (let j = 0; j < eq.answers.length && j < q.answers.length; j++) {
+   414→          await p.answer.update({ where: { id: eq.answers[j].id }, data: { content: q.answers[j].content, isCorrect: q.answers[j].isCorrect, explanation: q.answers[j].explanation || null } });
+   415→        }
+   416→      }
+   417→      // เพิ่มใหม่
+   418→      for (let i = updateCount; i < questions.length; i++) {
+   419→        const q = questions[i];
+   420→        await p.question.create({ data: { subjectId: subject.id, lessonId: lesson.id, questionType: "multiple_choice", difficulty: q.difficulty, questionText: q.questionText, explanation: q.explanation, points: 1, isActive: true, answers: { create: q.answers.map((a, idx) => ({ content: a.content, isCorrect: a.isCorrect, sortOrder: idx, explanation: a.explanation || null })) } } });
+   421→      }
+   422→    }
+   423→  }
+   424→  const total = await p.question.count({ where: { questionText: { not: null } } });
+   425→  console.log(`\nDone! Questions with text: ${total}/${await p.question.count()}`);
+   426→}
+   427→main().catch(console.error).finally(() => p.$disconnect());

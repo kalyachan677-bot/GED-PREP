@@ -1,9 +1,9 @@
 "use client";
 
 import { useAppStore } from "@/lib/store";
-import { GraduationCap, LogOut, User, ChevronRight, Languages, RotateCcw } from "lucide-react";
+import { GraduationCap, LogOut, User, ChevronRight } from "lucide-react";
 import { LanguageToggle } from "@/components/ui/LanguageToggle";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, view, setView, logout, selectedSubject, setSelectedSubject, pendingSubjectNav, setPendingSubjectNav } = useAppStore();
@@ -23,7 +23,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/20">
       {/* Sidebar */}
-      <aside className="hidden lg:flex lg:w-[260px] lg:flex-col lg:fixed lg:inset-y-0 border-r border-slate-200/50 bg-white/80 backdrop-blur-xl">
+      <aside className="hidden lg:flex lg:w-[260px] lg:flex-col lg:fixed lg:inset-y-0 border-r border-slate-200/50 bg-white/90 backdrop-blur-xl">
         <div className="flex h-16 items-center gap-3 px-6 border-b border-slate-100/80">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-200/40">
             <GraduationCap className="h-5 w-5 text-white" />
@@ -42,7 +42,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
             }`}
           >
-            <span className="text-lg">🏠</span>
+            <span className="text-lg">{"\u{1F3E0}"}</span>
             หน้าหลัก
           </button>
           {user && ["math", "science", "rla", "ss"].map((code) => (
@@ -96,15 +96,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 }
 
 const SUBJECT_META: Record<string, { label: string; icon: string; gradient: string }> = {
-  math: { label: "คณิตศาสตร์", icon: "🧮", gradient: "from-blue-500 to-cyan-500" },
-  science: { label: "วิทยาศาสตร์", icon: "🔬", gradient: "from-emerald-500 to-teal-500" },
-  rla: { label: "ภาษาอังกฤษ", icon: "📖", gradient: "from-amber-500 to-orange-500" },
-  ss: { label: "สังคมศึกษา", icon: "🏛️", gradient: "from-rose-500 to-pink-500" },
+  math: { label: "คณิตศาสตร์", icon: "\u{1F9EE}", gradient: "from-blue-500 to-cyan-500" },
+  science: { label: "วิทยาศาสตร์", icon: "\u{1F52C}", gradient: "from-emerald-500 to-teal-500" },
+  rla: { label: "ภาษาอังกฤษ", icon: "\u{1F4D6}", gradient: "from-amber-500 to-orange-500" },
+  ss: { label: "สังคมศึกษา", icon: "\u{1F3DB}\uFE0F", gradient: "from-rose-500 to-pink-500" },
 };
 
 function SubjectSidebarLink({ code }: { code: string }) {
   const { view, selectedSubject, user, setView, setSelectedSubject } = useAppStore();
-  const meta = SUBJECT_META[code] || { label: code, icon: "📚", gradient: "from-slate-400 to-slate-500" };
+  const meta = SUBJECT_META[code] || { label: code, icon: "\u{1F4DA}", gradient: "from-slate-400 to-slate-500" };
   const isActive = view === "subject" && selectedSubject?.code === code;
 
   async function handleClick() {
@@ -139,18 +139,49 @@ function SubjectSidebarLink({ code }: { code: string }) {
 }
 
 function BottomNav() {
-  const { view, setView } = useAppStore();
+  const { view, setView, user, setSelectedSubject, selectedSubject } = useAppStore();
+  const subjectCodes = ["math", "science", "rla", "ss"];
+
+  async function navSubject(code: string) {
+    if (!user) return;
+    setView("subject");
+    setSelectedSubject(null);
+    try {
+      const res = await fetch(`/api/subjects/${code}?userId=${user.id}`);
+      const json = await res.json();
+      if (json.data) setSelectedSubject(json.data);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   return (
-    <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 flex h-16 items-center justify-around border-t border-slate-200/50 bg-white/90 backdrop-blur-xl">
+    <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 flex h-16 items-center justify-around border-t border-slate-200/50 bg-white/90 backdrop-blur-xl px-1">
       <button
         onClick={() => setView("dashboard")}
-        className={`flex flex-col items-center gap-0.5 px-4 py-1 transition-colors ${
+        className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-xl transition-colors ${
           view === "dashboard" ? "text-violet-600" : "text-slate-400"
         }`}
       >
-        <span className="text-xl">🏠</span>
+        <span className="text-xl">{"\u{1F3E0}"}</span>
         <span className="text-[10px] font-semibold">หน้าหลัก</span>
       </button>
+      {subjectCodes.map((code) => {
+        const meta = SUBJECT_META[code];
+        const isActive = view === "subject" && selectedSubject?.code === code;
+        return (
+          <button
+            key={code}
+            onClick={() => navSubject(code)}
+            className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-xl transition-colors ${
+              isActive ? "text-violet-600" : "text-slate-400"
+            }`}
+          >
+            <span className="text-lg">{meta.icon}</span>
+            <span className="text-[10px] font-semibold">{meta.label}</span>
+          </button>
+        );
+      })}
     </nav>
   );
 }

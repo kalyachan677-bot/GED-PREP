@@ -2,10 +2,9 @@
 
 import { useAppStore, QuizQuestion } from "@/lib/store";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { ChevronLeft, ChevronRight, Flag, Clock, Send, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Flag, Clock, Send, Loader2, HelpCircle } from "lucide-react";
 import { BackButton } from "@/components/ui/BackButton";
 import { TranslatingIndicator } from "@/components/ui/LanguageToggle";
 import { useTranslation } from "@/lib/useTranslation";
@@ -169,6 +168,13 @@ export function QuizView() {
 
   const answeredCount = Object.keys(selectedAnswers).length;
 
+  // ดึงข้อความโจทย์
+  const questionDisplayText = question?.questionText
+    ? tr(question.questionText)
+    : question?.hintText
+      ? tr(question.hintText)
+      : `โจทย์คำถามที่ ${currentIdx + 1}`;
+
   return (
     <div className="space-y-4">
       {/* Exit confirm dialog */}
@@ -183,13 +189,13 @@ export function QuizView() {
             <div className="mt-5 flex gap-3">
               <button
                 onClick={() => setShowExitConfirm(false)}
-                className="flex-1 rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-all"
               >
                 ทำต่อ
               </button>
               <button
                 onClick={confirmExit}
-                className="flex-1 rounded-lg bg-rose-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-rose-600"
+                className="flex-1 rounded-xl bg-rose-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-rose-600 transition-all"
               >
                 ออกจากแบบทดสอบ
               </button>
@@ -214,7 +220,7 @@ export function QuizView() {
       <div className="flex items-center gap-3">
         <div className="h-2 flex-1 rounded-full bg-gray-100">
           <div
-            className="h-full rounded-full bg-teal-500 transition-all"
+            className="h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 transition-all"
             style={{ width: `${((currentIdx + 1) / totalQ) * 100}%` }}
           />
         </div>
@@ -231,9 +237,9 @@ export function QuizView() {
             onClick={() => { setCurrentIdx(i); setQuestionStart(Date.now()); }}
             className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-medium transition-colors ${
               i === currentIdx
-                ? "bg-teal-500 text-white"
+                ? "bg-violet-500 text-white shadow-md"
                 : selectedAnswers[q.id]
-                ? "bg-teal-50 text-teal-700 border border-teal-200"
+                ? "bg-violet-50 text-violet-700 border border-violet-200"
                 : flagged.has(q.id)
                 ? "bg-amber-50 text-amber-700 border border-amber-200"
                 : "bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100"
@@ -246,61 +252,77 @@ export function QuizView() {
 
       {/* Question card */}
       {question && (
-        <Card className="border-0 shadow-sm">
-          <CardContent className="pt-6">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-teal-100 text-sm font-bold text-teal-700">
-                  {currentIdx + 1}
-                </span>
-                <Badge variant="outline" className="text-xs">
-                  {question.difficulty === "easy" ? "ง่าย" : question.difficulty === "medium" ? "ปานกลาง" : "ยาก"}
-                </Badge>
-              </div>
-              <button
-                onClick={toggleFlag}
-                className={`p-1.5 rounded-lg transition-colors ${
-                  flagged.has(question.id)
-                    ? "text-amber-500 bg-amber-50"
-                    : "text-gray-300 hover:text-gray-500 hover:bg-gray-50"
+        <div className="rounded-2xl border border-slate-200/60 bg-white shadow-sm overflow-hidden">
+          {/* Question header */}
+          <div className="flex items-center justify-between px-5 py-3 bg-slate-50/80 border-b border-slate-100">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 text-sm font-bold text-white shadow-sm">
+                {currentIdx + 1}
+              </span>
+              <Badge
+                variant="outline"
+                className={`text-xs font-medium ${
+                  question.difficulty === "easy"
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                    : question.difficulty === "medium"
+                      ? "border-amber-200 bg-amber-50 text-amber-700"
+                      : "border-rose-200 bg-rose-50 text-rose-700"
                 }`}
               >
-                <Flag className="h-4 w-4" />
-              </button>
+                {question.difficulty === "easy" ? "ง่าย" : question.difficulty === "medium" ? "ปานกลาง" : "ยาก"}
+              </Badge>
             </div>
+            <button
+              onClick={toggleFlag}
+              className={`p-2 rounded-xl transition-all ${
+                flagged.has(question.id)
+                  ? "text-amber-500 bg-amber-50"
+                  : "text-gray-300 hover:text-gray-500 hover:bg-gray-50"
+              }`}
+            >
+              <Flag className="h-4 w-4" />
+            </button>
+          </div>
 
-            {/* Question text */}
-            <p className="text-base font-medium text-gray-900 mb-6">
-              {tr(question.questionText) || tr(question.hintText) || `คำถามที่ ${currentIdx + 1}`}
-            </p>
+          {/* Question text — PROMINENT */}
+          <div className="px-5 py-5 bg-gradient-to-br from-violet-50/50 to-indigo-50/30 border-b border-slate-100">
+            <div className="flex items-start gap-3">
+              <HelpCircle className="h-5 w-5 text-violet-400 mt-0.5 shrink-0" />
+              <p className="text-base font-semibold text-slate-900 leading-relaxed">
+                {questionDisplayText}
+              </p>
+            </div>
+          </div>
 
-            {/* Answers */}
-            <div className="space-y-3">
-              {question.answers.map((answer, i) => (
+          {/* Answers */}
+          <div className="p-5 space-y-3">
+            {question.answers.map((answer, i) => {
+              const isSelected = selectedAnswers[question.id] === answer.id;
+              return (
                 <button
                   key={answer.id}
                   onClick={() => selectAnswer(answer.id)}
-                  className={`flex w-full items-center gap-3 rounded-xl border-2 px-4 py-3.5 text-left transition-all ${
-                    selectedAnswers[question.id] === answer.id
-                      ? "border-teal-500 bg-teal-50 ring-1 ring-teal-200"
-                      : "border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50"
+                  className={`flex w-full items-center gap-3.5 rounded-xl border-2 px-4 py-3.5 text-left transition-all duration-200 ${
+                    isSelected
+                      ? "border-violet-500 bg-violet-50 ring-1 ring-violet-200 shadow-sm"
+                      : "border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50"
                   }`}
                 >
                   <span
-                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-medium ${
-                      selectedAnswers[question.id] === answer.id
-                        ? "bg-teal-500 text-white"
-                        : "bg-gray-100 text-gray-500"
+                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition-all ${
+                      isSelected
+                        ? "bg-violet-500 text-white shadow-sm"
+                        : "bg-slate-100 text-slate-500"
                     }`}
                   >
                     {String.fromCharCode(65 + i)}
                   </span>
-                  <span className="text-sm text-gray-700">{tr(answer.content)}</span>
+                  <span className="text-sm text-slate-700 font-medium">{tr(answer.content)}</span>
                 </button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+              );
+            })}
+          </div>
+        </div>
       )}
 
       {/* Navigation */}
@@ -309,6 +331,7 @@ export function QuizView() {
           variant="outline"
           onClick={goPrev}
           disabled={currentIdx === 0}
+          className="rounded-xl"
         >
           <ChevronLeft className="mr-1 h-4 w-4" />
           ก่อนหน้า
@@ -318,7 +341,7 @@ export function QuizView() {
           <Button
             onClick={handleSubmit}
             disabled={submitting || answeredCount < totalQ}
-            className="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700"
+            className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 rounded-xl shadow-lg shadow-violet-200/50"
           >
             {submitting ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -328,7 +351,7 @@ export function QuizView() {
             ส่งคำตอบ ({answeredCount}/{totalQ})
           </Button>
         ) : (
-          <Button onClick={goNext} variant="outline">
+          <Button onClick={goNext} variant="outline" className="rounded-xl">
             ถัดไป
             <ChevronRight className="ml-1 h-4 w-4" />
           </Button>
@@ -343,9 +366,9 @@ export function QuizView() {
             onClick={() => { setCurrentIdx(i); setQuestionStart(Date.now()); }}
             className={`h-2.5 w-2.5 rounded-full transition-colors ${
               i === currentIdx
-                ? "bg-teal-500"
+                ? "bg-violet-500"
                 : selectedAnswers[q.id]
-                ? "bg-teal-300"
+                ? "bg-violet-300"
                 : flagged.has(q.id)
                 ? "bg-amber-400"
                 : "bg-gray-200"
