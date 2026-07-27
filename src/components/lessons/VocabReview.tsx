@@ -70,20 +70,13 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
     if (!input.trim() || !cards[currentIndex]) return;
     const card = cards[currentIndex];
     const answer = input.trim().toLowerCase();
-    // ตรวจสอบคำตอบ: ผู้เรียนพิมพ์ความหมายเป็นภาษาไทย หรือคำศัพท์ภาษาอังกฤษก็ได้
+    // ตรวจสอบคำตอบ: ผู้เรียนพิมพ์คำแปลภาษาไทย
     const thaiWords = card.translation.toLowerCase().split(/[/,]/).map((w) => w.trim());
-    const meaningWords = card.meaning.toLowerCase().split(/[\s,\.]/).filter((w) => w.length > 2);
-    const engTerm = card.term.toLowerCase().split("/")[0].split("(")[0].trim();
-
-    // ตรวจว่าคำตอบตรงกับคำแปลไทย หรือมีคำสำคัญใน meaning หรือตรงกับคำศัพท์อังกฤษ
-    const isCorrect =
-      thaiWords.some((tw) => {
-        const mainWord = tw.split(" ")[0];
-        return answer.includes(mainWord) || mainWord.includes(answer);
-      }) ||
-      meaningWords.some((mw) => answer.includes(mw) && mw.length > 3) ||
-      answer === engTerm ||
-      engTerm.includes(answer);
+    const isCorrect = thaiWords.some((tw) => {
+      const clean = tw.replace(/\s+/g, "");
+      const ansClean = answer.replace(/\s+/g, "");
+      return clean.includes(ansClean) || ansClean.includes(clean);
+    });
 
     const newAnswers = [...answers];
     newAnswers[currentIndex] = {
@@ -250,20 +243,17 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
                   )}
                 </div>
 
-                {/* ซับไตเติ้ล: คำแปลภาษาไทย */}
-                <p className="text-sm text-gray-500 mb-2">
-                  <span className="text-gray-400">แปลว่า:</span> {card.translation}
-                </p>
+                {/* ซับไตเติ้ล: คำอ่าน — ซ่อนคำแปลไว้ เพราะให้ผู้เรียนเป็นคนแปลเอง */}
 
                 {/* ถ้าตอบแล้ว - แสดงผล */}
                 {isPast && (
                   <div className={"rounded-lg px-3 py-2 text-xs " + (ans.isCorrect ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800")}>
                     {ans.isCorrect ? (
-                      <p>ถูกต้อง! {card.meaning}</p>
+                      <p>ถูกต้อง! {card.translation}</p>
                     ) : (
                       <div>
                         <p className="text-rose-600">คุณตอบ: &ldquo;{ans.userInput}&rdquo;</p>
-                        <p className="mt-1 font-medium">ความหมาย: {card.meaning}</p>
+                        <p className="mt-1 font-medium">คำแปล: {card.translation}</p>
                       </div>
                     )}
                   </div>
@@ -273,7 +263,7 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
                 {isCurrent && !ans.submitted && (
                   <div className="mt-3">
                     <p className="text-xs text-indigo-600 font-medium mb-1.5">
-                      พิมพ์ความหมายของ &ldquo;{card.term}&rdquo; ในภาษาอังกฤษหรือไทยก็ได้:
+                      &ldquo;{card.term}&rdquo; แปลว่าอะไร?
                     </p>
                     <div className="flex gap-2">
                       <input
@@ -282,7 +272,7 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
                         value={i === currentIndex ? input : ""}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        placeholder="Type the meaning..."
+                        placeholder="พิมพ์คำแปลภาษาไทย..."
                         className="flex-1 rounded-lg border border-indigo-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-300 placeholder:text-gray-300"
                       />
                       <button
@@ -301,7 +291,7 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
         </div>
 
         <div className="border-t border-gray-100 pt-3 flex items-center justify-between">
-          <p className="text-xs text-gray-400">พิมพ์ความหมายของคำศัพท์ แล้วกด Enter เพื่อส่ง</p>
+          <p className="text-xs text-gray-400">พิมพ์คำแปลภาษาไทย แล้วกด Enter เพื่อส่ง</p>
           {correctCount > 0 && <span className="text-xs font-medium text-emerald-600">{correctCount} ถูกต้อง</span>}
         </div>
       </div>
