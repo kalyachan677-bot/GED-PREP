@@ -211,10 +211,10 @@ export function SubjectView() {
       )}
 
       {/* Subject Quiz Button */}
-      <div className="rounded-2xl border border-violet-200/60 bg-gradient-to-r from-violet-50 to-indigo-50 p-5">
-        <div className="flex items-center justify-between">
+      <div className="rounded-2xl border border-violet-200/60 bg-gradient-to-r from-violet-50 to-indigo-50 p-4 sm:p-5">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 shadow-md shadow-violet-200/50">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 shadow-md shadow-violet-200/50">
               <Brain className="h-5 w-5 text-white" />
             </div>
             <div>
@@ -223,12 +223,12 @@ export function SubjectView() {
             </div>
           </div>
           {quizBlockedByVocab ? (
-            <div className="flex items-center gap-1.5 rounded-xl bg-amber-100 border border-amber-200 px-4 py-2.5">
+            <div className="flex items-center gap-1.5 rounded-xl bg-amber-100 border border-amber-200 px-4 py-2.5 self-start sm:self-auto">
               <Lock className="h-4 w-4 text-amber-600" />
               <span className="text-xs font-semibold text-amber-700">ต้องทำ Flashcards ก่อน</span>
             </div>
           ) : quizLockedByScore ? (
-            <div className="flex items-center gap-1.5 rounded-xl bg-rose-100 border border-rose-200 px-4 py-2.5">
+            <div className="flex items-center gap-1.5 rounded-xl bg-rose-100 border border-rose-200 px-4 py-2.5 self-start sm:self-auto">
               <ShieldAlert className="h-4 w-4 text-rose-600" />
               <span className="text-xs font-semibold text-rose-700">คะแนนต่ำเกินไป — ล็อค</span>
             </div>
@@ -236,7 +236,7 @@ export function SubjectView() {
             <button
               onClick={handleSubjectQuiz}
               disabled={startingQuiz}
-              className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-200/50 hover:shadow-xl hover:shadow-violet-300/50 transition-all active:scale-95 disabled:opacity-50"
+              className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-200/50 hover:shadow-xl hover:shadow-violet-300/50 transition-all active:scale-95 disabled:opacity-50 self-start sm:self-auto"
             >
               {startingQuiz ? (
                 <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

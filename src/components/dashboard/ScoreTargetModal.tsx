@@ -59,13 +59,13 @@ export function ScoreTargetModal() {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={handleSkip} />
 
-      {/* Modal */}
-      <div className="relative w-full max-w-lg animate-in fade-in zoom-in-95 duration-200">
-        <Card className="border-0 shadow-2xl">
+      {/* Modal — bottom sheet on mobile, centered on desktop */}
+      <div className="relative w-full max-w-lg mx-4 mb-0 sm:mb-0 max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl animate-in slide-in-from-bottom sm:zoom-in-95 duration-200">
+        <Card className="border-0 shadow-2xl rounded-t-2xl sm:rounded-2xl">
           <CardHeader className="text-center pb-2">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 shadow-lg shadow-teal-200">
               <Target className="h-7 w-7 text-white" />

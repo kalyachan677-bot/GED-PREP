@@ -141,9 +141,9 @@ export function ScoreTargetChangeButton() {
   return (
     <button
       onClick={() => setShowScoreTargetModal(true)}
-      className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-teal-600 transition-colors"
+      className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-teal-600 transition-colors px-2 py-1.5 rounded-lg hover:bg-teal-50 active:scale-95"
     >
-      <Settings className="h-3 w-3" />
+      <Settings className="h-3.5 w-3.5" />
       {scoreTarget ? `เป้าหมาย: ${scoreTarget} คะแนน` : "ตั้งเป้าหมายคะแนน"}
     </button>
   );
