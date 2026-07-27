@@ -253,7 +253,7 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
                     ) : (
                       <div>
                         <p className="text-rose-600">คุณตอบ: &ldquo;{ans.userInput}&rdquo;</p>
-                        <p className="mt-1 font-medium">คำแปล: {card.translation}</p>
+                        <p className="mt-1 font-medium">เฉลย: {card.translation}</p>
                       </div>
                     )}
                   </div>
@@ -291,7 +291,7 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
         </div>
 
         <div className="border-t border-gray-100 pt-3 flex items-center justify-between">
-          <p className="text-xs text-gray-400">พิมพ์คำแปลภาษาไทย แล้วกด Enter เพื่อส่ง</p>
+          <p className="text-xs text-gray-400">พิมพ์คำแปล แล้วกด Enter</p>
           {correctCount > 0 && <span className="text-xs font-medium text-emerald-600">{correctCount} ถูกต้อง</span>}
         </div>
       </div>
