@@ -268,7 +268,7 @@ function RigorDailyStatus() {
 
   return (
     <div className={`rounded-2xl border-2 ${rigorConfig.borderColor} ${rigorConfig.bgColor} overflow-hidden`}>
-      <div className="px-5 py-3 flex items-center justify-between border-b ${rigorConfig.borderColor} bg-white/50">
+      <div className={`px-5 py-3 flex items-center justify-between border-b ${rigorConfig.borderColor} bg-white/50`}>
         <div className="flex items-center gap-2.5">
           <span className="text-xl">{rigorConfig.iconEmoji}</span>
           <div>

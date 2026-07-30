@@ -280,7 +280,7 @@ function RigorBanner({ config, rigorState, warnings, vocabDoneToday, quizDoneTod
   return (
     <div className={`rounded-2xl border-2 ${levelConfig.border} ${levelConfig.bg} overflow-hidden`}>
       {/* Header */}
-      <div className="px-5 py-3 flex items-center justify-between border-b ${levelConfig.border} bg-white/50">
+      <div className={`px-5 py-3 flex items-center justify-between border-b ${levelConfig.border} bg-white/50`}>
         <div className="flex items-center gap-3">
           <span className="text-2xl">{config.iconEmoji}</span>
           <div>

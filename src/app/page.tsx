@@ -9,6 +9,7 @@ import { LessonView } from "@/components/lessons/LessonView";
 import { QuizView } from "@/components/quiz/QuizView";
 import { QuizResult } from "@/components/quiz/QuizResult";
 import { NicknameModal } from "@/components/NicknameModal";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export default function Page() {
   const { view } = useAppStore();
@@ -18,15 +19,17 @@ export default function Page() {
     return <AuthSwitch />;
   }
 
-  // App views (with shell)
+  // App views (with shell + error boundary)
   return (
     <AppShell>
-      <NicknameModal />
-      {view === "dashboard" && <Dashboard />}
-      {view === "subject" && <SubjectView />}
-      {view === "lesson" && <LessonView />}
-      {view === "quiz" && <QuizView />}
-      {view === "quiz-result" && <QuizResult />}
+      <ErrorBoundary>
+        <NicknameModal />
+        {view === "dashboard" && <Dashboard />}
+        {view === "subject" && <SubjectView />}
+        {view === "lesson" && <LessonView />}
+        {view === "quiz" && <QuizView />}
+        {view === "quiz-result" && <QuizResult />}
+      </ErrorBoundary>
     </AppShell>
   );
 }
