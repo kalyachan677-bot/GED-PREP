@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAppStore } from "@/lib/store";
+import { useText } from "@/lib/ui-texts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +11,7 @@ import { GraduationCap, Loader2, Eye, EyeOff, ArrowLeft } from "lucide-react";
 
 export function RegisterForm() {
   const { setUser, setView } = useAppStore();
+  const { tx } = useText();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,11 +25,11 @@ export function RegisterForm() {
     setError("");
 
     if (password.length < 6) {
-      setError("รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร");
+      setError(tx("passwordMin6"));
       return;
     }
     if (password !== confirmPassword) {
-      setError("รหัสผ่านไม่ตรงกัน");
+      setError(tx("passwordMismatch"));
       return;
     }
 
@@ -41,7 +43,7 @@ export function RegisterForm() {
       const json = await res.json();
 
       if (!res.ok) {
-        setError(json.error || "การสมัครสมาชิกล้มเหลว");
+        setError(json.error || tx("registerFailed"));
         setLoading(false);
         return;
       }
@@ -49,7 +51,7 @@ export function RegisterForm() {
       setUser(json.data);
       setView("dashboard");
     } catch {
-      setError("เกิดข้อผิดพลาด กรุณาลองอีกครั้ง");
+      setError(tx("errorRetry"));
     } finally {
       setLoading(false);
     }
@@ -64,13 +66,13 @@ export function RegisterForm() {
             <GraduationCap className="h-8 w-8 text-white" />
           </div>
           <h1 className="mt-4 text-2xl font-bold text-gray-900">GED Prep</h1>
-          <p className="mt-1 text-sm text-gray-500">สร้างบัญชีผู้เข้าเรียน</p>
+          <p className="mt-1 text-sm text-gray-500">{tx("registerTitle")}</p>
         </div>
 
         <Card className="border-0 shadow-xl shadow-gray-200/50">
           <CardHeader className="pb-4 text-center">
-            <CardTitle className="text-xl">สมัครสมาชิก</CardTitle>
-            <CardDescription>กรอกข้อมูลเพื่อเริ่มต้นการเรียน</CardDescription>
+            <CardTitle className="text-xl">{tx("register")}</CardTitle>
+            <CardDescription>{tx("registerDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -81,10 +83,10 @@ export function RegisterForm() {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="name">ชื่อผู้เข้าเรียน</Label>
+                <Label htmlFor="name">{tx("studentName")}</Label>
                 <Input
                   id="name"
-                  placeholder="ชื่อ-นามสกุล"
+                  placeholder={tx("fullName")}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
@@ -92,7 +94,7 @@ export function RegisterForm() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="reg-email">อีเมล</Label>
+                <Label htmlFor="reg-email">{tx("email")}</Label>
                 <Input
                   id="reg-email"
                   type="email"
@@ -104,12 +106,12 @@ export function RegisterForm() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="reg-password">รหัสผ่าน</Label>
+                <Label htmlFor="reg-password">{tx("password")}</Label>
                 <div className="relative">
                   <Input
                     id="reg-password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="อย่างน้อย 6 ตัวอักษร"
+                    placeholder={tx("min6Chars")}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -125,11 +127,11 @@ export function RegisterForm() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">ยืนยันรหัสผ่าน</Label>
+                <Label htmlFor="confirmPassword">{tx("confirmPassword")}</Label>
                 <Input
                   id="confirmPassword"
                   type="password"
-                  placeholder="กรอกรหัสผ่านอีกครั้ง"
+                  placeholder={tx("confirmPasswordPh")}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
@@ -142,7 +144,7 @@ export function RegisterForm() {
                 disabled={loading}
               >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                สมัครสมาชิก
+                {tx("register")}
               </Button>
 
               <div className="text-center text-sm">
@@ -152,7 +154,7 @@ export function RegisterForm() {
                   className="inline-flex items-center gap-1 font-medium text-teal-600 hover:text-teal-700"
                 >
                   <ArrowLeft className="h-3.5 w-3.5" />
-                  กลับไปเข้าสู่ระบบ
+                  {tx("backToLogin")}
                 </button>
               </div>
             </form>

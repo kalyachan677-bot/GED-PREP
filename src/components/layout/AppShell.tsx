@@ -1,6 +1,7 @@
 "use client";
 
 import { useAppStore } from "@/lib/store";
+import { useText } from "@/lib/ui-texts";
 import { GraduationCap, LogOut, User, ChevronRight, RotateCcw, Languages, Globe } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 
@@ -20,7 +21,7 @@ function resetAllProgress() {
 const LANG_OPTIONS: { code: "en" | "th" | "my"; flag: string; label: string; sub: string }[] = [
   { code: "en", flag: "\u{1F1FA}\u{1F1F8}", label: "English", sub: "EN" },
   { code: "th", flag: "\u{1F1F9}\u{1F1ED}", label: "\u{0E44}\u{0E17}\u{0E22}", sub: "TH" },
-  { code: "my", flag: "\u{1F1F2}\u{1F1F1}", label: "\u{1000}\u{103C}\u{1019}\u{103A}\u{1018}\u{102C}", sub: "MY" },
+  { code: "my", flag: "\u{1F1F2}\u{1F1F1}", label: "\u{1000}\u{103C}\u{1019}\u{103A}\u{1018}\u{102C}", sub: "MM" },
 ];
 
 /* ═══════════════ DESKTOP LANG TOGGLE (full-width sidebar button + dropdown) ═══════════════ */
@@ -102,16 +103,17 @@ function MobileLangToggle() {
 }
 
 /* ═══════════════ SUBJECT META ═══════════════ */
-const SUBJECT_META: Record<string, { label: string; icon: string; gradient: string }> = {
-  math: { label: "\u{0E04}\u{0E13}\u{0E34}\u{0E15}\u{0E28}\u{0E32}\u{0E2A}\u{0E15}\u{0E23}\u{0E4C}", icon: "\u{1F9EE}", gradient: "from-blue-500 to-cyan-500" },
-  science: { label: "\u{0E27}\u{0E34}\u{0E17}\u{0E22}\u{0E32}\u{0E28}\u{0E32}\u{0E2A}\u{0E15}\u{0E23}\u{0E4C}", icon: "\u{1F52C}", gradient: "from-emerald-500 to-teal-500" },
-  rla: { label: "\u{0E20}\u{0E32}\u{0E29}\u{0E32}\u{0E2D}\u{0E31}\u{0E07}\u{0E01}\u{0E24}\u{0E29}", icon: "\u{1F4D6}", gradient: "from-amber-500 to-orange-500" },
-  ss: { label: "\u{0E2A}\u{0E31}\u{0E07}\u{0E04}\u{0E21}\u{0E28}\u{0E36}\u{0E01}\u{0E29}\u{0E32}", icon: "\u{1F3DB}\uFE0F", gradient: "from-rose-500 to-pink-500" },
+const SUBJECT_META: Record<string, { icon: string; gradient: string }> = {
+  math: { icon: "\u{1F9EE}", gradient: "from-blue-500 to-cyan-500" },
+  science: { icon: "\u{1F52C}", gradient: "from-emerald-500 to-teal-500" },
+  rla: { icon: "\u{1F4D6}", gradient: "from-amber-500 to-orange-500" },
+  ss: { icon: "\u{1F3DB}\uFE0F", gradient: "from-rose-500 to-pink-500" },
 };
 
 /* ═══════════════ MAIN SHELL ═══════════════ */
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, view, setView, logout, selectedSubject, setSelectedSubject, pendingSubjectNav, setPendingSubjectNav } = useAppStore();
+  const { tx } = useText();
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   useEffect(() => {
@@ -152,7 +154,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             }`}
           >
             <span className="text-lg">{"\u{1F3E0}"}</span>
-            {"\u{0E2B}\u{0E19}\u{0E49}\u{0E32}\u{0E2B}\u{0E25}\u{0E31}\u{0E01}"}
+            {tx("home")}
           </button>
           {user && ["math", "science", "rla", "ss"].map((code) => (
             <SubjectSidebarLink key={code} code={code} />
@@ -168,21 +170,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="px-3 pb-3">
           {showResetConfirm ? (
             <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 space-y-2">
-              <p className="text-xs font-semibold text-rose-700">{"\u{0E15}\u{0E49}\u{0E2D}\u{0E07}\u{0E01}\u{0E32}\u{0E23}\u{0E23}\u{0E35}\u{0E40}\u{0E0B}\u{0E15}\u{0E02}\u{0E49}\u{0E2D}\u{0E21}\u{0E39}\u{0E25}\u{0E17}\u{0E31}\u{0E49}\u{0E07}\u{0E2B}\u{0E21}\u{0E14}?"}</p>
-              <p className="text-[11px] text-rose-500">{"\u{0E04}\u{0E27}\u{0E32}\u{0E21}\u{0E04}\u{0E37}\u{0E1A}\u{0E2B}\u{0E19}\u{0E49}\u{0E32} \u{0E41}\u{0E25}\u{0E30} \u{0E04}\u{0E33}\u{0E28}\u{0E31}\u{0E1E}\u{0E17}\u{0E4C}\u{0E17}\u{0E31}\u{0E49}\u{0E07}\u{0E2B}\u{0E21}\u{0E14} \u{0E08}\u{0E30}\u{0E16}\u{0E39}\u{0E01}\u{0E25}\u{0E1A}"}</p>
+              <p className="text-xs font-semibold text-rose-700">{tx("resetConfirm")}</p>
+              <p className="text-[11px] text-rose-500">{tx("resetDesc")}</p>
               <div className="flex gap-2">
                 <button
                   onClick={() => { resetAllProgress(); }}
                   className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 transition-all active:scale-95"
                 >
                   <RotateCcw className="h-3 w-3" />
-                  {"\u{0E22}\u{0E37}\u{0E22}\u{0E31}\u{0E19}\u{0E23}\u{0E35}\u{0E40}\u{0E0B}\u{0E15}"}
+                  {tx("confirmReset")}
                 </button>
                 <button
                   onClick={() => setShowResetConfirm(false)}
                   className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 transition-all"
                 >
-                  {"\u{0E22}\u{0E01}\u{0E40}\u{0E25}\u{0E34}\u{0E01}"}
+                  {tx("cancel")}
                 </button>
               </div>
             </div>
@@ -192,7 +194,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200/60 bg-white/60 px-3 py-2.5 text-xs font-semibold text-slate-500 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50/50 transition-all active:scale-[0.98]"
             >
               <RotateCcw className="h-3.5 w-3.5" />
-              {"\u{0E23}\u{0E35}\u{0E40}\u{0E0B}\u{0E15}\u{0E02}\u{0E49}\u{0E2D}\u{0E21}\u{0E39}\u{0E25}\u{0E01}\u{0E32}\u{0E23}\u{0E40}\u{0E23}\u{0E35}\u{0E22}\u{0E19}"}
+              {tx("resetProgress")}
             </button>
           )}
         </div>
@@ -210,7 +212,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <button
               onClick={logout}
               className="shrink-0 p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all"
-              title={"\u{0E2D}\u{0E2D}\u{0E01}\u{0E08}\u{0E32}\u{0E01}\u{0E23}\u{0E30}\u{0E1A}\u{0E1A}"}
+              title={tx("logout")}
             >
               <LogOut className="h-4 w-4" />
             </button>
@@ -235,14 +237,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <button
               onClick={() => setShowResetConfirm(true)}
               className="flex items-center justify-center w-9 h-9 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all active:scale-95"
-              title={"\u{0E23}\u{0E35}\u{0E40}\u{0E0B}\u{0E15}\u{0E02}\u{0E49}\u{0E2D}\u{0E21}\u{0E39}\u{0E25}\u{0E01}\u{0E32}\u{0E23}\u{0E40}\u{0E23}\u{0E35}\u{0E22}\u{0E19}"}
+              title={tx("resetProgress")}
             >
               <RotateCcw className="h-4 w-4" />
             </button>
             <button
               onClick={logout}
               className="flex items-center justify-center w-9 h-9 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all active:scale-95"
-              title={"\u{0E2D}\u{0E2D}\u{0E01}\u{0E08}\u{0E32}\u{0E01}\u{0E23}\u{0E30}\u{0E1A}\u{0E1A}"}
+              title={tx("logout")}
             >
               <LogOut className="h-4 w-4" />
             </button>
@@ -256,22 +258,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <div className="relative w-full max-w-md mx-4 sm:mx-0 rounded-t-2xl sm:rounded-2xl bg-white border-t sm:border border-slate-200 p-5 space-y-3 animate-in slide-in-from-bottom duration-200">
               <div className="flex items-center gap-2">
                 <RotateCcw className="h-5 w-5 text-rose-600" />
-                <p className="text-sm font-bold text-slate-800">{"\u{0E23}\u{0E35}\u{0E40}\u{0E0B}\u{0E15}\u{0E02}\u{0E49}\u{0E2D}\u{0E21}\u{0E39}\u{0E25}\u{0E01}\u{0E32}\u{0E23}\u{0E40}\u{0E23}\u{0E35}\u{0E22}\u{0E19}\u{0E17}\u{0E31}\u{0E49}\u{0E07}\u{0E2B}\u{0E21}\u{0E14}?"}</p>
+                <p className="text-sm font-bold text-slate-800">{tx("resetConfirm")}</p>
               </div>
-              <p className="text-xs text-slate-500">{"\u{0E04}\u{0E27}\u{0E32}\u{0E21}\u{0E04}\u{0E37}\u{0E1A}\u{0E2B}\u{0E19}\u{0E49}\u{0E32}\u{0E04}\u{0E33}\u{0E28}\u{0E31}\u{0E1E}\u{0E17}\u{0E4C} \u{0E41}\u{0E25}\u{0E30} \u{0E02}\u{0E49}\u{0E2D}\u{0E21}\u{0E39}\u{0E25}\u{0E17}\u{0E31}\u{0E49}\u{0E07}\u{0E2B}\u{0E21}\u{0E14} \u{0E08}\u{0E30}\u{0E16}\u{0E39}\u{0E01}\u{0E25}\u{0E1A} \u{0E04}\u{0E38}\u{0E13}\u{0E15}\u{0E49}\u{0E2D}\u{0E07}\u{0E40}\u{0E23}\u{0E34}\u{0E48}\u{0E21}\u{0E40}\u{0E23}\u{0E35}\u{0E22}\u{0E19}\u{0E43}\u{0E2B}\u{0E21}\u{0E48}"}</p>
+              <p className="text-xs text-slate-500">{tx("resetDesc")}</p>
               <div className="flex gap-2 pt-1">
                 <button
                   onClick={() => { resetAllProgress(); }}
                   className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-rose-600 px-4 py-3 text-sm font-semibold text-white hover:bg-rose-700 transition-all active:scale-95"
                 >
                   <RotateCcw className="h-4 w-4" />
-                  {"\u{0E22}\u{0E37}\u{0E22}\u{0E31}\u{0E19}\u{0E23}\u{0E35}\u{0E40}\u{0E0B}\u{0E15}"}
+                  {tx("confirmReset")}
                 </button>
                 <button
                   onClick={() => setShowResetConfirm(false)}
                   className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-all"
                 >
-                  {"\u{0E22}\u{0E01}\u{0E40}\u{0E25}\u{0E34}\u{0E01}"}
+                  {tx("cancel")}
                 </button>
               </div>
             </div>
@@ -288,7 +290,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 /* ═══════════════ SUBJECT SIDEBAR LINK ═══════════════ */
 function SubjectSidebarLink({ code }: { code: string }) {
   const { view, selectedSubject, user, setView, setSelectedSubject } = useAppStore();
-  const meta = SUBJECT_META[code] || { label: code, icon: "\u{1F4DA}", gradient: "from-slate-400 to-slate-500" };
+  const { tx } = useText();
+  const meta = SUBJECT_META[code] || { icon: "\u{1F4DA}", gradient: "from-slate-400 to-slate-500" };
   const isActive = view === "subject" && selectedSubject?.code === code;
 
   async function handleClick() {
@@ -315,7 +318,7 @@ function SubjectSidebarLink({ code }: { code: string }) {
     >
       <div className="flex items-center gap-3">
         <span className="text-base">{meta.icon}</span>
-        <span className="font-medium">{meta.label}</span>
+        <span className="font-medium">{tx(code)}</span>
       </div>
       <ChevronRight className={`h-3.5 w-3.5 ${isActive ? "text-white/60" : "text-slate-300"}`} />
     </button>
@@ -325,6 +328,7 @@ function SubjectSidebarLink({ code }: { code: string }) {
 /* ═══════════════ BOTTOM NAV (Mobile/Tablet) ═══════════════ */
 function BottomNav() {
   const { view, setView, user, setSelectedSubject, selectedSubject } = useAppStore();
+  const { tx } = useText();
   const subjectCodes = ["math", "science", "rla", "ss"];
 
   async function navSubject(code: string) {
@@ -351,7 +355,7 @@ function BottomNav() {
           }`}
         >
           <span className="text-xl">{"\u{1F3E0}"}</span>
-          <span className="text-[10px] font-semibold">{"\u{0E2B}\u{0E19}\u{0E49}\u{0E32}\u{0E2B}\u{0E25}\u{0E31}\u{0E01}"}</span>
+          <span className="text-[10px] font-semibold">{tx("home")}</span>
         </button>
         {subjectCodes.map((code) => {
           const meta = SUBJECT_META[code];
@@ -365,7 +369,7 @@ function BottomNav() {
               }`}
             >
               <span className="text-lg">{meta.icon}</span>
-              <span className="text-[10px] font-semibold">{meta.label}</span>
+              <span className="text-[10px] font-semibold">{tx(code)}</span>
             </button>
           );
         })}

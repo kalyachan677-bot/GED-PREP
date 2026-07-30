@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAppStore } from "@/lib/store";
+import { useText } from "@/lib/ui-texts";
 import { RegisterForm } from "./RegisterForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,7 @@ import { GraduationCap, Loader2, Eye, EyeOff, Sparkles } from "lucide-react";
 
 export function LoginForm() {
   const { setUser, setView } = useAppStore();
+  const { tx } = useText();
   const [email, setEmail] = useState("demo@ged.com");
   const [password, setPassword] = useState("demo1234");
   const [showPassword, setShowPassword] = useState(false);
@@ -29,14 +31,14 @@ export function LoginForm() {
       });
       const json = await res.json();
       if (!res.ok) {
-        setError(json.error || "การเข้าสู่ระบบล้มเหลว");
+        setError(json.error || tx("loginFailed"));
         setLoading(false);
         return;
       }
       setUser(json.data);
       setView("dashboard");
     } catch {
-      setError("เกิดข้อผิดพลาด กรุณาลองอีกครั้ง");
+      setError(tx("errorRetry"));
     } finally {
       setLoading(false);
     }
@@ -56,12 +58,12 @@ export function LoginForm() {
             <GraduationCap className="h-8 w-8 text-white" />
           </div>
           <h1 className="mt-4 text-2xl font-extrabold text-slate-900 tracking-tight">GED Prep</h1>
-          <p className="mt-1 text-sm text-slate-500 font-medium">Smart Learning Platform — เตรียมสอบ GED อย่างมืออาชีพ</p>
+          <p className="mt-1 text-sm text-slate-500 font-medium">Smart Learning Platform — {tx("loginSubtitle")}</p>
         </div>
         <Card className="border-0 shadow-2xl shadow-slate-200/50 rounded-2xl">
           <CardHeader className="pb-4 text-center">
-            <CardTitle className="text-xl font-bold text-slate-800">เข้าสู่ระบบ</CardTitle>
-            <CardDescription className="text-slate-400">กรอกอีเมลและรหัสผ่านเพื่อเริ่มต้นการเรียน</CardDescription>
+            <CardTitle className="text-xl font-bold text-slate-800">{tx("loginTitle")}</CardTitle>
+            <CardDescription className="text-slate-400">{tx("loginDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -69,7 +71,7 @@ export function LoginForm() {
                 <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-600 font-medium">{error}</div>
               )}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-600 font-semibold text-xs uppercase tracking-wider">อีเมล</Label>
+                <Label htmlFor="email" className="text-slate-600 font-semibold text-xs uppercase tracking-wider">{tx("email")}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -81,7 +83,7 @@ export function LoginForm() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-slate-600 font-semibold text-xs uppercase tracking-wider">รหัสผ่าน</Label>
+                <Label htmlFor="password" className="text-slate-600 font-semibold text-xs uppercase tracking-wider">{tx("password")}</Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -107,12 +109,12 @@ export function LoginForm() {
                 disabled={loading}
               >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                เข้าสู่ระบบ
+                {tx("loginBtn")}
               </Button>
               <div className="text-center text-sm">
-                <span className="text-slate-500">ยังไม่มีบัญชี? </span>
+                <span className="text-slate-500">{tx("noAccount")}</span>
                 <button type="button" onClick={() => setView("register")} className="font-semibold text-violet-600 hover:text-violet-700">
-                  สมัครสมาชิก
+                  {tx("registerBtn")}
                 </button>
               </div>
             </form>
@@ -120,14 +122,14 @@ export function LoginForm() {
             <div className="mt-5 rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-3 text-center">
               <div className="flex items-center justify-center gap-1.5 mb-1.5">
                 <Sparkles className="h-3 w-3 text-violet-500" />
-                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">ทดลองใช้งาน</p>
+                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{tx("tryDemo")}</p>
               </div>
               <button
                 type="button"
                 onClick={() => { setEmail("demo@ged.com"); setPassword("demo1234"); }}
                 className="text-xs text-violet-600 hover:text-violet-700 font-medium"
               >
-                ใช้บัญชี Demo: demo@ged.com / demo1234
+                {tx("demoAccount")}
               </button>
             </div>
           </CardContent>

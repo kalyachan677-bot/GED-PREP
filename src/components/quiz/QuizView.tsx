@@ -8,9 +8,11 @@ import { ChevronLeft, ChevronRight, Flag, Clock, Send, Loader2, HelpCircle } fro
 import { BackButton } from "@/components/ui/BackButton";
 import { TranslatingIndicator } from "@/components/ui/LanguageToggle";
 import { useTranslation } from "@/lib/useTranslation";
+import { useText } from "@/lib/ui-texts";
 
 export function QuizView() {
   const { quizAttempt, quizQuestions, user, setQuizResult, clearQuiz, setView } = useAppStore();
+  const { tx } = useText();
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({});
   const [flagged, setFlagged] = useState<Set<string>>(new Set());
@@ -22,7 +24,7 @@ export function QuizView() {
 
   const { language, translateBatch, isTranslating } = useTranslation();
 
-  // ดึงข้อความที่ต้องแปลจากทุกคำถาม
+  // Extract all texts to translate from each question
   const allTexts = useMemo(() => {
     const texts: string[] = [];
     for (const q of quizQuestions) {
@@ -168,12 +170,12 @@ export function QuizView() {
 
   const answeredCount = Object.keys(selectedAnswers).length;
 
-  // ดึงข้อความโจทย์
+  // Extract question text
   const questionDisplayText = question?.questionText
     ? tr(question.questionText)
     : question?.hintText
       ? tr(question.hintText)
-      : `โจทย์คำถามที่ ${currentIdx + 1}`;
+      : tx("questionN", { n: currentIdx + 1 });
 
   return (
     <div className="space-y-4">
@@ -182,22 +184,22 @@ export function QuizView() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowExitConfirm(false)} />
           <div className="relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
-            <h3 className="text-lg font-bold text-gray-900">ออกจากแบบทดสอบ?</h3>
+            <h3 className="text-lg font-bold text-gray-900">{tx("exitQuiz")}</h3>
             <p className="mt-2 text-sm text-gray-600">
-              คุณตอบไปแล้ว {Object.keys(selectedAnswers).length} ข้อจาก {totalQ} ข้อ หากออกตอนนี้คะแนนจะไม่ถูกบันทึก
+              {tx("exitQuizMsg", { n: Object.keys(selectedAnswers).length, m: totalQ })}
             </p>
             <div className="mt-5 flex gap-3">
               <button
                 onClick={() => setShowExitConfirm(false)}
                 className="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-all"
               >
-                ทำต่อ
+                {tx("continue")}
               </button>
               <button
                 onClick={confirmExit}
                 className="flex-1 rounded-xl bg-rose-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-rose-600 transition-all"
               >
-                ออกจากแบบทดสอบ
+                {tx("exitQuizBtn")}
               </button>
             </div>
           </div>
@@ -206,7 +208,7 @@ export function QuizView() {
 
       {/* Header */}
       <div className="flex items-center justify-between">
-        <BackButton label="บทเรียน" onClick={handleExit} />
+        <BackButton label={tx("backToLesson")} onClick={handleExit} />
         <div className="flex items-center gap-2">
           <TranslatingIndicator isTranslating={isTranslating} />
           <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -269,7 +271,7 @@ export function QuizView() {
                       : "border-rose-200 bg-rose-50 text-rose-700"
                 }`}
               >
-                {question.difficulty === "easy" ? "ง่าย" : question.difficulty === "medium" ? "ปานกลาง" : "ยาก"}
+                {question.difficulty === "easy" ? tx("easy") : question.difficulty === "medium" ? tx("medium") : tx("hard")}
               </Badge>
             </div>
             <button
@@ -334,7 +336,7 @@ export function QuizView() {
           className="rounded-xl"
         >
           <ChevronLeft className="mr-1 h-4 w-4" />
-          ก่อนหน้า
+          {tx("previous")}
         </Button>
 
         {currentIdx === totalQ - 1 ? (
@@ -348,11 +350,11 @@ export function QuizView() {
             ) : (
               <Send className="mr-2 h-4 w-4" />
             )}
-            ส่งคำตอบ ({answeredCount}/{totalQ})
+            {tx("submitAnswer", { n: answeredCount, m: totalQ })}
           </Button>
         ) : (
           <Button onClick={goNext} variant="outline" className="rounded-xl">
-            ถัดไป
+            {tx("next")}
             <ChevronRight className="ml-1 h-4 w-4" />
           </Button>
         )}

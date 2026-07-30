@@ -6,6 +6,7 @@ import { useState, useMemo, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BackButton } from "@/components/ui/BackButton";
 import { VocabReview } from "./VocabReview";
+import { useText } from "@/lib/ui-texts";
 
 const SUBJECT_GRADIENTS: Record<string, string> = {
   math: "from-blue-600 to-cyan-600",
@@ -14,11 +15,11 @@ const SUBJECT_GRADIENTS: Record<string, string> = {
   ss: "from-rose-500 to-pink-600",
 };
 
-const SUBJECT_DESCRIPTIONS: Record<string, string> = {
-  math: "คณิตศาสตร์เชิงการใช้เหตุผล — สมการ เรขาคณิต สถิติ และการแก้ปัญหาเชิงปริมาณ",
-  science: "วิทยาศาสตร์ — ชีววิทยา เคมี ฟิสิกส์ และวิทยาศาสตร์โลก",
-  rla: "ภาษาอังกฤษ — การอ่าน เขียน ไวยากรณ์ และการแสดงความคิดเห็น",
-  ss: "สังคมศึกษา — ประวัติศาสตร์ รัฐธรรมนูญ เศรษฐศาสตร์ และภูมิศาสตร์",
+const SUBJECT_DESCRIPTION_KEYS: Record<string, string> = {
+  math: "mathDesc",
+  science: "scienceDesc",
+  rla: "rlaDesc",
+  ss: "ssDesc",
 };
 
 const SUBJECT_ICONS: Record<string, string> = {
@@ -30,6 +31,7 @@ const SUBJECT_ICONS: Record<string, string> = {
 
 export function SubjectView() {
   const { selectedSubject, setView, setSelectedLesson, user, startQuiz, rigorConfig, rigorState } = useAppStore();
+  const { tx } = useText();
   const [startingQuiz, setStartingQuiz] = useState(false);
   const [vocabComplete, setVocabComplete] = useState(false);
 
@@ -53,7 +55,7 @@ export function SubjectView() {
     ),
   );
   const grad = SUBJECT_GRADIENTS[selectedSubject.code] || "from-violet-600 to-indigo-600";
-  const desc = SUBJECT_DESCRIPTIONS[selectedSubject.code] || "";
+  const desc = tx(SUBJECT_DESCRIPTION_KEYS[selectedSubject.code] || "", {});
   const icon = SUBJECT_ICONS[selectedSubject.code] || "\u{1F4DA}";
   const pct = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
@@ -149,9 +151,9 @@ export function SubjectView() {
     <div className="space-y-6">
       {/* Breadcrumb */}
       <div className="flex items-center justify-between">
-        <BackButton label="แดชบอร์ด" onClick={() => { setView("dashboard"); setSelectedSubject(null); }} />
+        <BackButton label={tx("backToDashboard")} onClick={() => { setView("dashboard"); setSelectedSubject(null); }} />
         <div className="flex items-center gap-1.5 text-sm">
-          <span className="text-slate-400 font-medium">แดชบอร์ด</span>
+          <span className="text-slate-400 font-medium">{tx("backToDashboard")}</span>
           <ChevronRight className="h-3.5 w-3.5 text-slate-300" />
           <span className="font-semibold text-slate-800">{selectedSubject.title}</span>
         </div>
@@ -177,20 +179,20 @@ export function SubjectView() {
           <button
             onClick={resetVocabProgress}
             className="flex items-center gap-1.5 rounded-xl bg-white/15 hover:bg-white/25 px-3 py-2 text-xs font-medium text-white/80 hover:text-white transition-all active:scale-95 shrink-0"
-            title="รีเซ็ตความคืบหน้าคำศัพท์"
+            title={tx("resetVocabTitle")}
           >
             <RotateCcw className="h-3.5 w-3.5" />
-            เริ่มใหม่
+            {tx("restart")}
           </button>
         </div>
         <div className="relative mt-4 flex items-center gap-5 text-sm text-white/80 font-medium">
           <span className="flex items-center gap-1.5">
             <BookOpen className="h-4 w-4" />
-            {completedLessons}/{totalLessons} บทเรียน
+            {completedLessons}/{totalLessons} {tx("lessons")}
           </span>
           <span className="flex items-center gap-1.5">
             <CheckCircle2 className="h-4 w-4" />
-            {pct}% สำเร็จ
+            {pct}% {tx("completed")}
           </span>
         </div>
         <div className="relative mt-3 h-1.5 w-full rounded-full bg-white/20">
@@ -198,7 +200,7 @@ export function SubjectView() {
         </div>
       </div>
 
-      {/* ═══════ ทบทวนคำศัพท์ ═══════ */}
+      {/* ═══════ Vocab Review ═══════ */}
       {selectedSubject.id && (
         <div>
           <VocabReviewWrapper
@@ -218,19 +220,19 @@ export function SubjectView() {
               <Brain className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-sm font-bold text-slate-800">แบบทดสอบวิชา</p>
-              <p className="text-xs text-slate-400 font-medium">ทดสอบความเข้าใจรวมทุกบทเรียนในวิชานี้</p>
+              <p className="text-sm font-bold text-slate-800">{tx("subjectQuiz")}</p>
+              <p className="text-xs text-slate-400 font-medium">{tx("subjectTestDesc")}</p>
             </div>
           </div>
           {quizBlockedByVocab ? (
             <div className="flex items-center gap-1.5 rounded-xl bg-amber-100 border border-amber-200 px-4 py-2.5 self-start sm:self-auto">
               <Lock className="h-4 w-4 text-amber-600" />
-              <span className="text-xs font-semibold text-amber-700">ต้องทำ Flashcards ก่อน</span>
+              <span className="text-xs font-semibold text-amber-700">{tx("flashcardsFirst")}</span>
             </div>
           ) : quizLockedByScore ? (
             <div className="flex items-center gap-1.5 rounded-xl bg-rose-100 border border-rose-200 px-4 py-2.5 self-start sm:self-auto">
               <ShieldAlert className="h-4 w-4 text-rose-600" />
-              <span className="text-xs font-semibold text-rose-700">คะแนนต่ำเกินไป — ล็อค</span>
+              <span className="text-xs font-semibold text-rose-700">{tx("scoreTooLow")}</span>
             </div>
           ) : (
             <button
@@ -243,7 +245,7 @@ export function SubjectView() {
               ) : (
                 <Play className="h-4 w-4" />
               )}
-              เริ่มทำแบบทดสอบ
+              {tx("startTest")}
             </button>
           )}
         </div>
@@ -251,7 +253,7 @@ export function SubjectView() {
 
       {/* Modules — with rigor locking */}
       <div className="space-y-3">
-        <h2 className="text-lg font-extrabold text-slate-800 tracking-tight">บทเรียน</h2>
+        <h2 className="text-lg font-extrabold text-slate-800 tracking-tight">{tx("lessons")}</h2>
         {selectedSubject.modules.map((mod) => (
           <ModuleSection key={mod.id} module={mod} onOpenLesson={openLesson} lockedIds={lockedLessonIds} rigorLevel={rigorConfig?.level ?? null} />
         ))}
@@ -268,6 +270,7 @@ function RigorBanner({ config, rigorState, warnings, vocabDoneToday, quizDoneTod
   vocabDoneToday: boolean;
   quizDoneToday: boolean;
 }) {
+  const { tx } = useText();
   const levelConfig = {
     1: { bg: "bg-emerald-50", border: "border-emerald-200", icon: <Shield className="h-5 w-5 text-emerald-600" />, badgeBg: "bg-emerald-100 text-emerald-800" },
     2: { bg: "bg-amber-50", border: "border-amber-200", icon: <Zap className="h-5 w-5 text-amber-600" />, badgeBg: "bg-amber-100 text-amber-800" },
@@ -282,15 +285,15 @@ function RigorBanner({ config, rigorState, warnings, vocabDoneToday, quizDoneTod
           <span className="text-2xl">{config.iconEmoji}</span>
           <div>
             <div className="flex items-center gap-2">
-              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${levelConfig.badgeBg}`}>ระดับ {config.level}</span>
+              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${levelConfig.badgeBg}`}>{tx("level", { level: config.level })}</span>
               <span className={`text-sm font-bold ${config.color}`}>{config.shortLabel}</span>
             </div>
-            <p className="text-[11px] text-slate-500 mt-0.5">AI ติวเตอร์: {config.personality}</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">{tx("aiTutorLabel")} {config.personality}</p>
           </div>
         </div>
         {config.level === 3 && rigorState && (
           <div className="text-right">
-            <p className="text-[10px] text-slate-400">คะแนนวินัย</p>
+            <p className="text-[10px] text-slate-400">{tx("disciplineScore")}</p>
             <p className={`text-lg font-bold leading-none ${rigorState.disciplineScore >= 80 ? "text-emerald-600" : rigorState.disciplineScore >= 50 ? "text-amber-600" : "text-rose-600"}`}>
               {rigorState.disciplineScore}
             </p>
@@ -312,10 +315,10 @@ function RigorBanner({ config, rigorState, warnings, vocabDoneToday, quizDoneTod
         {/* Daily Checklist (level 2+) */}
         {config.level >= 2 && (
           <div className="border-t border-slate-200/50 pt-3 space-y-2">
-            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">ภารกิจประจำวัน</p>
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">{tx("dailyMission")}</p>
             <div className="grid grid-cols-2 gap-2">
-              <DailyCheckItem label="ทบทวน Flashcards" done={vocabDoneToday} icon={<BookCheck className="h-3.5 w-3.5" />} />
-              <DailyCheckItem label="ทำแบบทดสอบ" done={quizDoneToday} icon={<PenTool className="h-3.5 w-3.5" />} />
+              <DailyCheckItem label={tx("reviewFlashcards")} done={vocabDoneToday} icon={<BookCheck className="h-3.5 w-3.5" />} />
+              <DailyCheckItem label={tx("doQuiz")} done={quizDoneToday} icon={<PenTool className="h-3.5 w-3.5" />} />
             </div>
           </div>
         )}
@@ -337,11 +340,12 @@ function RigorBanner({ config, rigorState, warnings, vocabDoneToday, quizDoneTod
 }
 
 function DailyCheckItem({ label, done, icon }: { label: string; done: boolean; icon: React.ReactNode }) {
+  const { tx } = useText();
   return (
     <div className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${done ? "bg-emerald-100/80 text-emerald-700" : "bg-white/60 text-slate-500"}`}>
       {done ? <CheckCircle2 className="h-3.5 w-3.5" /> : icon}
       {label}
-      {done && <span className="ml-auto text-[10px] font-bold">เสร็จ</span>}
+      {done && <span className="ml-auto text-[10px] font-bold">{tx("done")}</span>}
     </div>
   );
 }
@@ -353,6 +357,7 @@ function VocabReviewWrapper({ subjectId, rigorLevel, isRequired, onVocabComplete
   isRequired: boolean;
   onVocabComplete: () => void;
 }) {
+  const { tx } = useText();
   const [localComplete, setLocalComplete] = useState(false);
   const prevCompleteRef = useState(false);
 
@@ -373,7 +378,7 @@ function VocabReviewWrapper({ subjectId, rigorLevel, isRequired, onVocabComplete
             <Zap className="h-4 w-4 text-amber-500" />
           )}
           <span className={`text-xs font-bold ${rigorLevel === 3 ? "text-rose-600" : "text-amber-600"}`}>
-            {rigorLevel === 3 ? "บังคับ" : "จำเป็น"} — ต้องทำให้เสร็จก่อนเริ่มแบบทดสอบ
+            {tx("mustComplete")}
           </span>
         </div>
       )}
@@ -429,6 +434,7 @@ function ModuleSection({ module, onOpenLesson, lockedIds, rigorLevel }: {
   lockedIds: Set<string>;
   rigorLevel: number | null;
 }) {
+  const { tx } = useText();
   const [open, setOpen] = useState(true);
   const totalLessons = module.topics.reduce((s, t) => s + t.lessons.length, 0);
   const hasLocked = module.topics.some((t) => t.lessons.some((l) => lockedIds.has(l.id)));
@@ -442,14 +448,14 @@ function ModuleSection({ module, onOpenLesson, lockedIds, rigorLevel }: {
         <div className="flex items-center gap-2">
           <div>
             <p className="font-bold text-slate-800">{module.title}</p>
-            <p className="mt-0.5 text-[11px] text-slate-400 font-semibold uppercase tracking-wider">{totalLessons} บทเรียน</p>
+            <p className="mt-0.5 text-[11px] text-slate-400 font-semibold uppercase tracking-wider">{tx("lessonsCount", { count: totalLessons })}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           {hasLocked && (
             <span className="flex items-center gap-1 text-[10px] font-bold text-rose-500 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-full">
               <Lock className="h-3 w-3" />
-              ล็อค
+              {tx("locked")}
             </span>
           )}
           {open ? (
@@ -493,6 +499,7 @@ function LessonRow({ lesson, isLocked, rigorLevel, onOpen }: {
   rigorLevel: number | null;
   onOpen: () => void;
 }) {
+  const { tx } = useText();
   if (isLocked) {
     return (
       <div className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 opacity-50">
@@ -501,16 +508,16 @@ function LessonRow({ lesson, isLocked, rigorLevel, onOpen }: {
           <p className="text-sm font-medium text-slate-400 truncate">{lesson.title}</p>
           <p className="text-[10px] text-rose-400 font-semibold mt-0.5">
             {rigorLevel === 3
-              ? "ล็อค — ต้องทำคะแนนให้ผ่านเกณฑ์ก่อน"
+              ? tx("lockReasonScore")
               : rigorLevel === 2
-                ? "ล็อค — ทำแบบทดสอบให้คะแนนผ่าน 155+ ก่อน"
-                : "ล็อค — ทำบทเรียนก่อนหน้าให้เสร็จก่อน"
+                ? tx("lockReasonQuizScore")
+                : tx("lockReasonLesson")
             }
           </p>
         </div>
         <span className="flex items-center gap-1 text-[11px] text-slate-300 font-medium shrink-0">
           <Clock className="h-3 w-3" />
-          {lesson.durationMinutes} นาที
+          {lesson.durationMinutes} {tx("minutes")}
         </span>
       </div>
     );
@@ -533,7 +540,7 @@ function LessonRow({ lesson, isLocked, rigorLevel, onOpen }: {
       </div>
       <span className="flex items-center gap-1 text-[11px] text-slate-400 font-medium shrink-0">
         <Clock className="h-3 w-3" />
-        {lesson.durationMinutes} นาที
+        {lesson.durationMinutes} {tx("minutes")}
       </span>
     </button>
   );

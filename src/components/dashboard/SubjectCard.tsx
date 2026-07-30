@@ -1,6 +1,7 @@
 "use client";
 
 import { SubjectSummary } from "@/lib/store";
+import { useText } from "@/lib/ui-texts";
 import { ChevronRight, BookOpen, BarChart3 } from "lucide-react";
 
 const SUBJECT_ICONS: Record<string, string> = {
@@ -10,18 +11,18 @@ const SUBJECT_ICONS: Record<string, string> = {
   ss: "🏛️",
 };
 
-const SUBJECT_LABELS: Record<string, string> = {
-  math: "คณิตศาสตร์",
-  science: "วิทยาศาสตร์",
-  rla: "ภาษาอังกฤษ",
-  ss: "สังคมศึกษา",
+const SUBJECT_LABEL_KEYS: Record<string, string> = {
+  math: "math",
+  science: "science",
+  rla: "rla",
+  ss: "ss",
 };
 
-const SUBJECT_DESCS: Record<string, string> = {
-  math: "สมการ เรขาคณิต สถิติ และการแก้ปัญหาเชิงปริมาณ",
-  science: "ชีววิทยา เคมี ฟิสิกส์ และวิทยาศาสตร์โลก",
-  rla: "การอ่าน การเขียน ไวยากรณ์ และการแสดงความคิดเห็น",
-  ss: "ประวัติศาสตร์ รัฐธรรมนูญ เศรษฐศาสตร์ และภูมิศาสตร์",
+const SUBJECT_DESC_KEYS: Record<string, string> = {
+  math: "mathDesc",
+  science: "scienceDesc",
+  rla: "rlaDesc",
+  ss: "ssDesc",
 };
 
 interface SubjectCardProps {
@@ -30,6 +31,8 @@ interface SubjectCardProps {
 }
 
 export function SubjectCard({ subject, onClick }: SubjectCardProps) {
+  const { tx } = useText();
+
   return (
     <div
       className="group cursor-pointer rounded-2xl border border-slate-200/60 bg-white/80 backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 overflow-hidden"
@@ -51,13 +54,13 @@ export function SubjectCard({ subject, onClick }: SubjectCardProps) {
             </div>
             <div className="min-w-0">
               <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                {SUBJECT_LABELS[subject.code] || subject.code}
+                {tx(SUBJECT_LABEL_KEYS[subject.code] || "math")}
               </p>
               <p className="mt-0.5 text-sm font-bold text-slate-900 leading-tight">
                 {subject.title}
               </p>
               <p className="mt-1.5 text-xs text-slate-400 leading-relaxed">
-                {SUBJECT_DESCS[subject.code] || ""}
+                {tx(SUBJECT_DESC_KEYS[subject.code] || "")}
               </p>
             </div>
           </div>
@@ -67,12 +70,12 @@ export function SubjectCard({ subject, onClick }: SubjectCardProps) {
         <div className="mt-4 flex items-center gap-4 text-xs text-slate-500 font-medium">
           <span className="flex items-center gap-1">
             <BookOpen className="h-3.5 w-3.5" />
-            {subject.completedLessons}/{subject.totalLessons} บทเรียน
+            {subject.completedLessons}/{subject.totalLessons} {tx("lessons")}
           </span>
           {subject.totalAttempts > 0 && (
             <span className="flex items-center gap-1">
               <BarChart3 className="h-3.5 w-3.5" />
-              เฉลี่ย {subject.avgScore}%
+              {tx("avg")} {subject.avgScore}%
             </span>
           )}
         </div>
@@ -88,7 +91,7 @@ export function SubjectCard({ subject, onClick }: SubjectCardProps) {
           />
         </div>
         <p className="mt-1.5 text-right text-xs text-slate-400 font-semibold">
-          {subject.completionPct}% สำเร็จ
+          {subject.completionPct}% {tx("completed")}
         </p>
       </div>
     </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { BookOpen, Send, CheckCircle2, XCircle, RotateCcw, Sparkles, Volume2, VolumeX } from "lucide-react";
+import { useText } from "@/lib/ui-texts";
 
 interface VocabCard {
   id: string;
@@ -24,7 +25,7 @@ function getRotationOffset(): number {
   return daysSinceEpoch % 3;
 }
 
-// ── TTS: ออกเสียงคำภาษาอังกฤษ (รอ voices โหลดเสร็จ) ──
+// ── TTS: Speak English words (wait for voices to load) ──
 let voicesReady = false;
 let voicesPromise: Promise<SpeechSynthesisVoice[]> | null = null;
 
@@ -101,7 +102,7 @@ async function speakThai(text: string): Promise<boolean> {
   }
 }
 
-// ตรวจสอบความหมายคำแปลแบบผ่อนปรน (fuzzy matching)
+// Fuzzy matching for meaning comparison
 function isMeaningMatch(userInput: string, correctTranslation: string): boolean {
   const ans = userInput.trim().toLowerCase().replace(/\s+/g, "");
   if (!ans) return false;
@@ -164,6 +165,7 @@ function clearVocabProgress(subjectId: string) {
 }
 
 export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll?: boolean }) {
+  const { tx } = useText();
   const [cards, setCards] = useState<VocabCard[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -176,7 +178,7 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
   const inputRef = useRef<HTMLInputElement>(null);
   const restoredFromSaved = useRef(false);
 
-  // โหลดเสียง speech synthesis
+  // Load speech synthesis voices
   useEffect(() => {
     if (typeof window !== "undefined" && window.speechSynthesis) {
       getVoices(); // preload
@@ -201,7 +203,7 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
           }
           setCards(flashcards);
 
-          // ลองโหลด saved progress
+          // Try loading saved progress
           const saved = getVocabProgress(subjectId);
           if (saved && saved.answers && saved.answers.length === flashcards.length) {
             setCurrentIndex(saved.currentIndex);
@@ -218,7 +220,7 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
       .finally(() => setLoading(false));
   }, [subjectId, showAll]);
 
-  // บันทึก progress ทุกครั้งที่มีการเปลี่ยนแปลง
+  // Save progress on every change
   useEffect(() => {
     if (!subjectId || cards.length === 0) return;
     saveVocabProgress(subjectId, { currentIndex, answers, correctCount, isComplete });
@@ -298,11 +300,11 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600">
             <BookOpen className="h-4 w-4 text-white" />
           </div>
-          <h2 className="text-lg font-bold text-slate-800">ทบทวนคำศัพท์</h2>
+          <h2 className="text-lg font-bold text-slate-800">{tx("vocabReview")}</h2>
         </div>
         <div className="flex items-center justify-center py-8">
           <div className="animate-spin h-5 w-5 border-2 border-violet-300 border-t-violet-600 rounded-full mr-3" />
-          <span className="text-sm text-slate-400">กำลังโหลดคำศัพท์...</span>
+          <span className="text-sm text-slate-400">{tx("vocabLoading")}</span>
         </div>
       </div>
     );
@@ -310,7 +312,7 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
 
   if (cards.length === 0) return null;
 
-  // แสดงข้อความว่ากำลังทำต่อจากครั้งก่อน
+  // Show resuming message
   const savedInfo = restoredFromSaved.current && (currentIndex > 0 || isComplete);
 
   // ── Complete Screen ──
@@ -319,9 +321,9 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
     const wrongItems = answers
       .map((a, i) => ({ ...a, card: cards[i] }))
       .filter((a) => a.submitted && !a.isCorrect);
-    let msg = "ควรทบทวนคำศัพท์เพิ่มเติม ลองอีกครั้งนะ";
-    if (pct >= 80) msg = "ยอดเยี่ยม! คุณจดจำคำศัพท์ได้ดีมาก พร้อมเรียนบทต่อไป!";
-    else if (pct >= 50) msg = "พอใช้ได้ ลองทบทวนคำที่ผิดอีกสักครั้ง";
+    let msg = tx("vocabMsgLow");
+    if (pct >= 80) msg = tx("vocabMsgHigh");
+    else if (pct >= 50) msg = tx("vocabMsgMid");
 
     return (
       <div className="rounded-2xl border border-slate-200/60 bg-white/80 backdrop-blur-sm overflow-hidden">
@@ -329,7 +331,7 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-white" />
-              <h2 className="text-base font-bold text-white">สรุปผลการทบทวนคำศัพท์</h2>
+              <h2 className="text-base font-bold text-white">{tx("vocabSummaryTitle")}</h2>
             </div>
           </div>
         </div>
@@ -356,7 +358,7 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
 
           {wrongItems.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">คำที่ต้องทบทวนเพิ่มเติม</p>
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{tx("vocabNeedsReview")}</p>
               {wrongItems.map((item, i) => (
                 <div
                   key={i}
@@ -365,9 +367,9 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
                   <XCircle className="h-4 w-4 text-rose-400 mt-0.5 shrink-0" />
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-slate-800">{item.card.term}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">คำแปล: {item.card.translation}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{tx("vocabTranslationLabel")} {item.card.translation}</p>
                     {item.userInput && (
-                      <p className="text-xs text-rose-500 mt-0.5">คุณตอบ: &ldquo;{item.userInput}&rdquo;</p>
+                      <p className="text-xs text-rose-500 mt-0.5">{tx("vocabYouAnswered")} &ldquo;{item.userInput}&rdquo;</p>
                     )}
                   </div>
                 </div>
@@ -380,7 +382,7 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
             className="w-full flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100 transition-all active:scale-[0.98]"
           >
             <RotateCcw className="h-4 w-4" />
-            เริ่มทบทวนใหม่
+            {tx("vocabReviewAgain")}
           </button>
         </div>
       </div>
@@ -397,16 +399,16 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <BookOpen className="h-5 w-5 text-white" />
-            <h2 className="text-base font-bold text-white">ทบทวนคำศัพท์</h2>
+            <h2 className="text-base font-bold text-white">{tx("vocabReview")}</h2>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={handleReset}
               className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-medium bg-white/15 text-white/80 hover:bg-white/25 hover:text-white transition-all active:scale-95"
-              title="เริ่มใหม่"
+              title={tx("restart")}
             >
               <RotateCcw className="h-3 w-3" />
-              เริ่มใหม่
+              {tx("restart")}
             </button>
             <span className="text-xs text-white/70 font-semibold bg-white/10 px-2.5 py-1 rounded-full">
               {currentIndex + 1}/{cards.length}
@@ -423,12 +425,12 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
 
       {savedInfo && (
         <div className="bg-amber-50 border-b border-amber-100 px-5 py-2.5 flex items-center justify-between">
-          <p className="text-xs text-amber-700 font-medium">กำลังทำต่อจากครั้งล่าสุด</p>
+          <p className="text-xs text-amber-700 font-medium">{tx("vocabResuming")}</p>
           <button
             onClick={handleReset}
             className="text-xs text-amber-600 hover:text-amber-800 font-semibold underline"
           >
-            เริ่มใหม่
+            {tx("restart")}
           </button>
         </div>
       )}
@@ -450,15 +452,15 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
             return (
               <div key={card.id} className={"rounded-xl border p-4 transition-all duration-300 " + borderCls}>
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">คำที่ {i + 1}</span>
+                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{tx("vocabWordN", { n: i + 1 })}</span>
                   <div className="flex items-center gap-1.5">
                     {isPast && ans.isCorrect && <CheckCircle2 className="h-4 w-4 text-emerald-500" />}
                     {isPast && !ans.isCorrect && <XCircle className="h-4 w-4 text-rose-500" />}
-                    {isCurrent && <span className="text-[11px] text-indigo-600 font-semibold animate-pulse">กำลังถาม</span>}
+                    {isCurrent && <span className="text-[11px] text-indigo-600 font-semibold animate-pulse">{tx("vocabAsking")}</span>}
                   </div>
                 </div>
 
-                {/* คำศัพท์ภาษาอังกฤษ + ปุ่มออกเสียง */}
+                {/* English vocabulary + speak button */}
                 <div className="flex items-center gap-2.5 mb-1">
                   <p className="text-lg font-bold text-slate-900">{card.term}</p>
                   <button
@@ -471,11 +473,11 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
                           : "bg-indigo-100 text-indigo-700 hover:bg-indigo-200")}
                   >
                     {ttsError ? <VolumeX className="h-3 w-3" /> : <Volume2 className={"h-3 w-3 " + (speakingId === card.id ? "animate-pulse" : "")} />}
-                    {ttsError ? "ไม่มีเสียง" : "ฟังเสียง"}
+                    {ttsError ? tx("vocabNoAudio") : tx("vocabListen")}
                   </button>
                 </div>
 
-                {/* ซับไตเติ้ลคำอ่านภาษาไทย */}
+                {/* Thai pronunciation subtitle */}
                 {card.pronunciation && (
                   <button
                     onClick={() => {
@@ -491,7 +493,7 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
                   </button>
                 )}
 
-                {/* ผลลัพธ์หลังตอบ */}
+                {/* Result after answering */}
                 {isPast && (
                   <div
                     className={"rounded-lg px-3 py-2.5 text-xs font-medium " +
@@ -500,21 +502,21 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
                         : "bg-rose-100/80 text-rose-800")}
                   >
                     {ans.isCorrect ? (
-                      <p>ถูกต้อง! {card.translation}</p>
+                      <p>{tx("vocabCorrectBang")} {card.translation}</p>
                     ) : (
                       <div>
-                        <p className="text-rose-600">คุณตอบ: &ldquo;{ans.userInput}&rdquo;</p>
-                        <p className="mt-1 font-semibold">เฉลย: {card.translation}</p>
+                        <p className="text-rose-600">{tx("vocabYouAnswered")} &ldquo;{ans.userInput}&rdquo;</p>
+                        <p className="mt-1 font-semibold">{tx("vocabAnswer")} {card.translation}</p>
                       </div>
                     )}
                   </div>
                 )}
 
-                {/* Input สำหรับคำปัจจุบัน */}
+                {/* Input for current word */}
                 {isCurrent && !ans.submitted && (
                   <div className="mt-3">
                     <p className="text-xs text-indigo-600 font-semibold mb-2">
-                      &ldquo;{card.term}&rdquo; แปลว่าอะไร?
+                      {tx("vocabTranslateHint", { term: card.term })}
                     </p>
                     <div className="flex gap-2">
                       <input
@@ -523,7 +525,7 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
                         value={i === currentIndex ? input : ""}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        placeholder="พิมพ์คำแปลภาษาไทย..."
+                        placeholder={tx("vocabTypeTranslation")}
                         className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 placeholder:text-slate-300 transition-all"
                       />
                       <button
@@ -534,7 +536,7 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
                         <Send className="h-4 w-4" />
                       </button>
                     </div>
-                    <p className="mt-2 text-[11px] text-slate-400">พิมพ์คำแปลแล้วกด Enter — สะกดผิดเล็กน้อยไม่เป็นไร ขอแค่ความหมายใกล้เคียงก็ผ่าน</p>
+                    <p className="mt-2 text-[11px] text-slate-400">{tx("vocabTypeHint")}</p>
                   </div>
                 )}
               </div>

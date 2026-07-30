@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowLeft } from "lucide-react";
+import { useText } from "@/lib/ui-texts";
 
 interface BackButtonProps {
   label?: string;
@@ -10,11 +11,13 @@ interface BackButtonProps {
 }
 
 export function BackButton({
-  label = "ย้อนกลับ",
+  label,
   onClick,
   variant = "default",
   className = "",
 }: BackButtonProps) {
+  const { tx } = useText();
+  const displayLabel = label ?? tx("backBtn");
   return (
     <button
       onClick={onClick}
@@ -25,7 +28,7 @@ export function BackButton({
       } ${className}`}
     >
       <ArrowLeft className="h-4 w-4" />
-      {label}
+      {displayLabel}
     </button>
   );
 }

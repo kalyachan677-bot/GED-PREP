@@ -3,16 +3,18 @@
 import { useState, useEffect } from "react";
 import { useAppStore } from "@/lib/store";
 import { User, Loader2, Smile } from "lucide-react";
+import { useText } from "@/lib/ui-texts";
 
 export function NicknameModal() {
   const { user, setUser } = useAppStore();
+  const { tx } = useText();
   const [nickname, setNickname] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [visible, setVisible] = useState(false);
   const promptedRef = useState(false);
 
-  // แสดง modal ทุกครั้งที่ล็อกอินครั้งใหม่ (เช็ค session ไม่ใช่ displayName)
+  // Show modal on every new login (check session, not displayName)
   useEffect(() => {
     if (user && !promptedRef[0]) {
       promptedRef[1](true);
@@ -39,10 +41,10 @@ export function NicknameModal() {
         setUser(json.data);
         setVisible(false);
       } else {
-        setError("เกิดข้อผิดพลาด");
+        setError(tx("error"));
       }
     } catch {
-      setError("เกิดข้อผิดพลาด กรุณาลองอีกครั้ง");
+      setError(tx("errorRetry"));
     } finally {
       setLoading(false);
     }
@@ -60,9 +62,9 @@ export function NicknameModal() {
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 shadow-lg shadow-violet-200">
             <User className="h-7 w-7 text-white" />
           </div>
-          <h2 className="mt-4 text-lg font-bold text-slate-800">ตั้งชื่อเล่นของคุณ</h2>
+          <h2 className="mt-4 text-lg font-bold text-slate-800">{tx("setNickname")}</h2>
           <p className="mt-1 text-sm text-slate-500">
-            ชื่อเล่นจะแสดงในระบบแทนชื่อจริง
+            {tx("nicknameDesc")}
           </p>
         </div>
 
@@ -90,7 +92,7 @@ export function NicknameModal() {
               disabled={loading}
               className="flex-1 rounded-xl border border-slate-200 px-4 py-3.5 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-all active:scale-[0.98]"
             >
-              ข้าม
+              {tx("skip")}
             </button>
             <button
               type="submit"
@@ -98,7 +100,7 @@ export function NicknameModal() {
               className="flex-1 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-4 py-3.5 text-sm font-semibold text-white shadow-md shadow-violet-200/50 hover:shadow-lg transition-all disabled:opacity-50 active:scale-[0.98]"
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin inline" />}
-              บันทึก
+              {tx("save")}
             </button>
           </div>
         </form>

@@ -6,13 +6,15 @@ import { CheckCircle2, XCircle, Clock, Trophy, RotateCcw, ArrowLeft, HelpCircle 
 import { BackButton } from "@/components/ui/BackButton";
 import { TranslatingIndicator } from "@/components/ui/LanguageToggle";
 import { useTranslation } from "@/lib/useTranslation";
+import { useText } from "@/lib/ui-texts";
 import { useEffect, useMemo, useState, useCallback } from "react";
 
 export function QuizResult() {
   const { quizResult, quizQuestions, setView, clearQuiz } = useAppStore();
   const { language, translateBatch, isTranslating } = useTranslation();
+  const { tx } = useText();
 
-  // ดึงข้อความที่ต้องแปล: questionText + explanations + answer contents
+  // Extract texts to translate: questionText + explanations + answer contents
   const allTexts = useMemo(() => {
     if (!quizResult) return [];
     const texts: string[] = [];
@@ -100,7 +102,7 @@ export function QuizResult() {
     <div className="space-y-6">
       {/* Back button + indicator */}
       <div className="flex items-center justify-between">
-        <BackButton label="บทเรียน" onClick={handleBackToLesson} />
+        <BackButton label={tx("backToLesson")} onClick={handleBackToLesson} />
         <TranslatingIndicator isTranslating={isTranslating} />
       </div>
 
@@ -142,7 +144,7 @@ export function QuizResult() {
           <div className="mt-4 flex items-center gap-6 text-sm text-slate-500 font-medium">
             <span className="flex items-center gap-1.5">
               <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-              {attempt.correctCount}/{attempt.totalQuestions} ถูกต้อง
+              {attempt.correctCount}/{attempt.totalQuestions} {tx("correct")}
             </span>
             <span className="flex items-center gap-1.5">
               <Clock className="h-4 w-4 text-slate-400" />
@@ -157,14 +159,14 @@ export function QuizResult() {
               className="rounded-xl"
             >
               <ArrowLeft className="mr-1 h-4 w-4" />
-              กลับบทเรียน
+              {tx("backToLessonBtn")}
             </Button>
             <Button
               onClick={handleRetry}
               className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 rounded-xl shadow-lg shadow-violet-200/50"
             >
               <RotateCcw className="mr-1 h-4 w-4" />
-              ลองอีกครั้ง
+              {tx("tryAgain")}
             </Button>
           </div>
         </div>
@@ -172,13 +174,13 @@ export function QuizResult() {
 
       {/* Question review */}
       <div>
-        <h2 className="mb-4 text-lg font-extrabold text-slate-800 tracking-tight">ทบทวนคำตอบ</h2>
+        <h2 className="mb-4 text-lg font-extrabold text-slate-800 tracking-tight">{tx("reviewAnswers")}</h2>
         <div className="space-y-3">
           {results.map((result, i) => {
             const q = quizQuestions[i];
             const questionText = q?.questionText
               ? tr(q.questionText)
-              : `คำถามที่ ${i + 1}`;
+              : tx("questionN", { n: i + 1 });
             return (
               <div
                 key={result.questionId}
@@ -208,7 +210,7 @@ export function QuizResult() {
                   {/* Your answer */}
                   {result.selectedAnswerIds.length > 0 && (
                     <div>
-                      <p className="text-xs text-slate-400 font-medium mb-1">คำตอบของคุณ:</p>
+                      <p className="text-xs text-slate-400 font-medium mb-1">{tx("yourAnswer")}</p>
                       {result.allAnswers
                         .filter((a) => result.selectedAnswerIds.includes(a.id))
                         .map((a) => (
@@ -229,7 +231,7 @@ export function QuizResult() {
                   {/* Correct answer (show if wrong) */}
                   {!result.isCorrect && (
                     <div>
-                      <p className="text-xs text-slate-400 font-medium mb-1">คำตอบที่ถูกต้อง:</p>
+                      <p className="text-xs text-slate-400 font-medium mb-1">{tx("correctAnswer")}</p>
                       {result.allAnswers
                         .filter((a) => result.correctAnswerIds.includes(a.id))
                         .map((a) => (

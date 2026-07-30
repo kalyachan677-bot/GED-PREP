@@ -1,6 +1,7 @@
 "use client";
 
 import { useAppStore, SubjectSummary, getRigorWarnings, loadRigorState, RigorDailyState } from "@/lib/store";
+import { useText } from "@/lib/ui-texts";
 import { SubjectCard } from "./SubjectCard";
 import { ScoreTargetModal } from "./ScoreTargetModal";
 import { AiTutorPanel, ScoreTargetChangeButton } from "./AiTutorPanel";
@@ -30,6 +31,7 @@ interface DashboardData {
 
 export function Dashboard() {
   const { user, scoreTarget, setView, setSelectedSubject, setPendingSubjectNav } = useAppStore();
+  const { tx } = useText();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -94,12 +96,12 @@ export function Dashboard() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
-            สวัสดี, {user?.displayName || user?.firstName}
+            {tx("hello")}, {user?.displayName || user?.firstName}
           </h1>
           <p className="mt-1.5 text-sm text-slate-500 font-medium leading-relaxed">
             {scoreTarget
-              ? `เป้าหมาย GED ${scoreTarget} คะแนน — เรียนต่อจากที่ค้างไว้ได้เลย ความคืบหน้าถูกบันทึกอัตโนมัติ`
-              : "เริ่มต้นการเรียนวันนี้ — เลือกวิชาที่ต้องการเรียนด้านล่าง"}
+              ? tx("scoreTargetMsg", { score: scoreTarget })
+              : tx("startLearning")}
           </p>
         </div>
         <ScoreTargetChangeButton />
@@ -123,10 +125,10 @@ export function Dashboard() {
             </div>
             <div>
               <p className="text-sm font-bold text-slate-700 group-hover:text-violet-700 transition-colors">
-                ตั้งค่าเป้าหมายคะแนน GED ของคุณ
+                {tx("setTargetTitle")}
               </p>
               <p className="text-xs text-slate-400 mt-0.5">
-                เลือกคะแนนเป้าหมาย 145-200 และให้ AI ติวเตอร์ปรับแผนการเรียนให้ตามระดับ
+                {tx("setTargetDashDesc")}
               </p>
             </div>
           </div>
@@ -136,7 +138,7 @@ export function Dashboard() {
       {/* Stats */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          label="บทเรียนที่เสร็จ"
+          label={tx("lessonsCompleted")}
           value={`${overall.completedLessons}`}
           subValue={`/${overall.totalLessons}`}
           icon={<BookOpen className="h-5 w-5 text-white" />}
@@ -146,7 +148,7 @@ export function Dashboard() {
           progressColor="from-violet-500 to-indigo-500"
         />
         <StatCard
-          label="คะแนนเฉลี่ย"
+          label={tx("avgScore")}
           value={`${overall.avgQuizScore}`}
           subValue="%"
           icon={<BarChart3 className="h-5 w-5 text-white" />}
@@ -154,15 +156,15 @@ export function Dashboard() {
           shadowColor="shadow-amber-200/50"
         />
         <StatCard
-          label="แบบทดสอบทั้งหมด"
+          label={tx("totalQuizzes")}
           value={`${overall.totalQuizAttempts}`}
-          subValue="ครั้ง"
+          subValue={tx("times")}
           icon={<Target className="h-5 w-5 text-white" />}
           gradient="from-emerald-500 to-teal-600"
           shadowColor="shadow-emerald-200/50"
         />
         <StatCard
-          label="ความคืบหน้ารวม"
+          label={tx("overallProgress")}
           value={`${overall.completionPct}`}
           subValue="%"
           icon={<TrendingUp className="h-5 w-5 text-white" />}
@@ -173,7 +175,7 @@ export function Dashboard() {
 
       {/* Subjects */}
       <div>
-        <h2 className="mb-4 text-lg font-extrabold text-slate-800 tracking-tight">วิชาเรียน GED</h2>
+        <h2 className="mb-4 text-lg font-extrabold text-slate-800 tracking-tight">{tx("gedSubjects")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           {subjects.map((subject) => (
             <SubjectCard key={subject.id} subject={subject} onClick={() => requestSubjectNav(subject.code)} />
@@ -184,16 +186,16 @@ export function Dashboard() {
       {/* Recent scores */}
       {recentQuizScores.length > 0 && (
         <div>
-          <h2 className="mb-4 text-lg font-extrabold text-slate-800 tracking-tight">แบบทดสอบล่าสุด</h2>
+          <h2 className="mb-4 text-lg font-extrabold text-slate-800 tracking-tight">{tx("recentQuizzes")}</h2>
           <div className="rounded-2xl border border-slate-200/60 bg-white/80 backdrop-blur-sm shadow-sm overflow-hidden">
             <div className="divide-y divide-slate-100">
               {recentQuizScores.slice(0, 5).map((attempt) => (
                 <div key={attempt.id} className="flex items-center justify-between px-5 py-3.5">
                   <div>
                     <p className="text-sm font-semibold text-slate-700">
-                      {attempt.quizType === "lesson_quiz" ? "แบบทดสอบบทเรียน" : attempt.quizType === "subject_test" ? "แบบทดสอบวิชา" : "แบบทดสอบ"}
+                      {attempt.quizType === "lesson_quiz" ? tx("lessonQuiz") : attempt.quizType === "subject_test" ? tx("subjectTest") : tx("quiz")}
                     </p>
-                    <p className="text-[11px] text-slate-400 font-medium mt-0.5">{attempt.totalQuestions} คำถาม</p>
+                    <p className="text-[11px] text-slate-400 font-medium mt-0.5">{attempt.totalQuestions} {tx("questions")}</p>
                   </div>
                   <span
                     className={"text-lg font-extrabold tracking-tight " +
@@ -250,6 +252,7 @@ function StatCard({ label, value, subValue, icon, gradient, shadowColor, progres
 /* ═══════════════ RIGOR DAILY STATUS ═══════════════ */
 function RigorDailyStatus() {
   const { rigorConfig, rigorState } = useAppStore();
+  const { tx } = useText();
   const [state, setState] = useState<RigorDailyState | null>(rigorState);
 
   useEffect(() => {
@@ -269,13 +272,13 @@ function RigorDailyStatus() {
         <div className="flex items-center gap-2.5">
           <span className="text-xl">{rigorConfig.iconEmoji}</span>
           <div>
-            <p className={`text-sm font-bold ${rigorConfig.color}`}>สถานะภารกิจประจำวัน — ระดับ {rigorConfig.level}</p>
+            <p className={`text-sm font-bold ${rigorConfig.color}`}>{tx("dailyMission")} — {tx("level", { level: rigorConfig.level })}</p>
             <p className="text-[11px] text-slate-400">{new Date().toLocaleDateString("th-TH", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
           </div>
         </div>
         {rigorConfig.level === 3 && (
           <div className="text-right">
-            <p className="text-[10px] text-slate-400">คะแนนวินัย</p>
+            <p className="text-[10px] text-slate-400">{tx("disciplineScore")}</p>
             <p className={`text-xl font-extrabold leading-none ${state.disciplineScore >= 80 ? "text-emerald-600" : state.disciplineScore >= 50 ? "text-amber-600" : "text-rose-600"}`}>
               {state.disciplineScore}<span className="text-xs font-medium text-slate-300">/100</span>
             </p>
@@ -287,15 +290,15 @@ function RigorDailyStatus() {
         {/* Daily Checklist */}
         <div className="grid grid-cols-2 gap-2">
           <CheckItem
-            label="ทบทวน Flashcards"
+            label={tx("reviewFlashcards")}
             done={vocabCount >= 4}
-            sub={rigorConfig.level >= 2 ? `${vocabCount}/4 วิชา` : `${vocabCount}/4 วิชา`}
+            sub={`${vocabCount}/4 ${tx("subjects_done")}`}
             required={rigorConfig.flashcardRequired}
           />
           <CheckItem
-            label="ทำแบบทดสอบ"
+            label={tx("doQuiz")}
             done={state.quizDoneToday}
-            sub={state.quizDoneToday ? "เสร็จแล้ว" : "ยังไม่ได้ทำ"}
+            sub={state.quizDoneToday ? tx("done") : tx("notDone")}
             required={rigorConfig.dailyQuizRequired}
           />
         </div>
@@ -313,8 +316,8 @@ function RigorDailyStatus() {
             <span className={`text-xs font-semibold ${
               state.consecutiveMissDays >= rigorConfig.missPenaltyDays ? "text-rose-700" : "text-amber-700"
             }`}>
-              ขาดเรียน {state.consecutiveMissDays} วันติดกัน
-              {rigorConfig.scoreDeductionOnMiss && " — คะแนนวินัยถูกตัด"}
+              {tx("missedDays", { days: state.consecutiveMissDays })}
+              {rigorConfig.scoreDeductionOnMiss && tx("scoreDeducted")}
             </span>
           </div>
         )}
@@ -324,7 +327,7 @@ function RigorDailyStatus() {
           <div className="flex items-center gap-2 rounded-lg bg-rose-100/80 px-3 py-2">
             <Flame className="h-4 w-4 text-rose-500" />
             <span className="text-xs font-semibold text-rose-700">
-              โหมดชดเชย 2x เท่าวันนี้ — ตารางเรียนเพิ่มเติม
+              {tx("doubleMode")}
             </span>
           </div>
         )}
