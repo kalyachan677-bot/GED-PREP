@@ -180,6 +180,17 @@ export const UI: Record<string, Record<Lang, string>> = {
   setNickname:      { en: "Set Your Nickname", th: "ตั้งชื่อเล่นของคุณ", my: "သင့် အမည်သတ်မှတ်ပါ" },
   nicknameDesc:     { en: "This will be displayed instead of your real name", th: "ชื่อเล่นจะแสดงในระบบแทนชื่อจริง", my: "အမည်တွင်းကို တိုက်ရိုက် အမည် အစစ် အစရာ ထုတ်ယူပါသည်" },
   backBtn:          { en: "Go Back",       th: "ย้อนกลับ",             my: "နောက်သွား" },
+
+  // -- Handbook / Study Guide --
+  studyGuide:        { en: "Study Guide & Handbook", th: "คลังคู่มือเรียน", my: "ပညာရေးကျွန်ုပ် မှတ်တမ်း" },
+  examHandbook:     { en: "GED Exam Handbook", th: "คู่มือก่อนสอบ GED", my: "GED စမ်းပြဿနာ မှတ်တမ်း" },
+  coreTextbook:     { en: "Core Concept Textbook", th: "ตำราเนื้อหาบทเรียน", my: "အချက်အလွယ် သုံးပြုပိုင်မှတ်တမ်း" },
+  readConceptGuide: { en: "Read Concept Guide", th: "อ่านคู่มือเรื่องนี้", my: "အချက်အလွယ် ဖတ်ရန်" },
+  keyTakeaways:     { en: "Key Takeaways", th: "สรุปสิ่งสำคัญ", my: "အဓိက အပြည့်အစုံ" },
+  formulasAndRules:  { en: "Formulas & Rules", th: "สูตรและกฎสำคัญ", my: "ပုံသွင်းနှင့် စည်မာ" },
+  noHandbookYet:     { en: "Handbook content coming soon for this subject", th: "เนื้อหาคู่มือจะเพิ่มเร็วๆ นี้", my: "မှတ်တမ်း အကြောင်း မတွေ့သေးပါ" },
+  handbookEmpty:     { en: "No content yet", th: "ยังไม่มีเนื้อหา", my: "အကြောင်းအရာ မရှိသေးပါ" },
+  openHandbook:      { en: "Open Study Guide", th: "เปิดคลังคู่มือ", my: "ပညာရေးကျွန်ုပ် မှတ်တမ်း ဖွင့်ပါ" },
 };
 
 /**

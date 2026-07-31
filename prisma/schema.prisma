@@ -72,6 +72,7 @@ model Subject {
   readinessHistory ReadinessHistory[]
   flashcards       Flashcard[]
   topicCategories  TopicCategory[]
+  handbookTopics   HandbookTopic[]
 }
 
 // ---------------------------------------------------------------------------
@@ -184,22 +185,69 @@ model Question {
   explanation   String?
   hintText      String?
   isActive      Boolean  @default(true)
-  sourceTag     String?
-  tags          String   @default("[]")          // JSON array of strings
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  sourceTag        String?
+  tags             String   @default("[]")          // JSON array of strings
+  relatedConceptId String?                            // FK -> HandbookTopic.id
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  lesson        Lesson?  @relation(fields: [lessonId], references: [id], onDelete: SetNull)
-  subject       Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-  answers       Answer[]
-  quizAnswers   QuizAttemptAnswer[]
+  lesson            Lesson?          @relation(fields: [lessonId], references: [id], onDelete: SetNull)
+  subject           Subject          @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  answers           Answer[]
+  quizAnswers       QuizAttemptAnswer[]
   spacedRepetitions SpacedRepetition[]
+  relatedConcept    HandbookTopic?   @relation(fields: [relatedConceptId], references: [id], onDelete: SetNull)
 
   @@index([lessonId])
   @@index([subjectId])
   @@index([questionType])
   @@index([difficulty])
   @@index([isActive])
+  @@index([relatedConceptId])
+}
+
+// ---------------------------------------------------------------------------
+// HANDBOOK TOPICS (GED Knowledge Base — subject-specific concept categories)
+// ---------------------------------------------------------------------------
+model HandbookTopic {
+  id           String   @id @default(cuid())
+  subjectId    String
+  title        String                              // English title
+  titleTh      String   @default("")               // Thai title
+  titleMm      String   @default("")               // Myanmar title
+  categoryType String   @default("core")            // handbook (A) or textbook (B)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  subject  Subject          @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  contents HandbookContent[]
+  questions Question[]
+
+  @@index([subjectId])
+  @@index([subjectId, categoryType])
+  @@index([subjectId, sortOrder])
+}
+
+// ---------------------------------------------------------------------------
+// HANDBOOK CONTENTS (Detailed knowledge base entries)
+// ---------------------------------------------------------------------------
+model HandbookContent {
+  id             String   @id @default(cuid())
+  topicId        String
+  contentBodyEn  String   @default("")            // English content body (Markdown)
+  contentBodyTh  String   @default("")            // Thai content body (Markdown)
+  contentBodyMm  String   @default("")            // Myanmar content body (Markdown)
+  keyTakeaways   String   @default("[]")            // JSON array of strings
+  formulaOrRules String   @default("[]")            // JSON array: key formulas, rules, theorems
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  topic HandbookTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@index([topicId])
+  @@index([topicId, sortOrder])
 }
 
 // ---------------------------------------------------------------------------

@@ -6,7 +6,7 @@ import { SubjectCard } from "./SubjectCard";
 import { ScoreTargetModal } from "./ScoreTargetModal";
 import { AiTutorPanel, ScoreTargetChangeButton } from "./AiTutorPanel";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BookOpen, BarChart3, Target, TrendingUp, Flame, AlertTriangle, ShieldAlert, CheckCircle2 } from "lucide-react";
+import { BookOpen, BarChart3, Target, TrendingUp, Flame, AlertTriangle, ShieldAlert, CheckCircle2, GraduationCap } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
 
 interface DashboardData {
@@ -182,6 +182,20 @@ export function Dashboard() {
           ))}
         </div>
       </div>
+
+      {/* Study Guide & Handbook Button */}
+      <button
+        onClick={() => { useAppStore.getState().setSelectedHandbookSubjectId("math"); useAppStore.getState().setView("handbook"); }}
+        className="w-full rounded-2xl border-2 border-violet-200/60 bg-gradient-to-r from-violet-50 to-indigo-50 p-5 flex items-center gap-4 hover:from-violet-100 hover:to-indigo-100 transition-all group"
+      >
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 shadow-lg shadow-violet-200/50">
+          <GraduationCap className="h-6 w-6 text-white" />
+        </div>
+        <div className="text-left">
+          <p className="text-sm font-bold text-slate-800 group-hover:text-violet-700 transition-colors">{tx("studyGuide")}</p>
+          <p className="text-xs text-slate-400 font-medium mt-0.5">GED Knowledge Base & Official Handbook</p>
+        </div>
+      </button>
 
       {/* Recent scores */}
       {recentQuizScores.length > 0 && (

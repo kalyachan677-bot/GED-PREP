@@ -2,9 +2,10 @@
 
 import { useAppStore, markQuizDone } from "@/lib/store";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, XCircle, Clock, Trophy, RotateCcw, ArrowLeft, HelpCircle } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, Trophy, RotateCcw, ArrowLeft, HelpCircle, BookOpen } from "lucide-react";
 import { BackButton } from "@/components/ui/BackButton";
 import { TranslatingIndicator } from "@/components/ui/LanguageToggle";
+import { ConceptGuidePanel } from "@/components/handbook/HandbookView";
 import { useTranslation } from "@/lib/useTranslation";
 import { useText } from "@/lib/ui-texts";
 import { useEffect, useMemo, useState, useCallback } from "react";

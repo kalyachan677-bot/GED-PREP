@@ -84,6 +84,7 @@ export interface QuizQuestion {
   points: number;
   hintText?: string;
   answers: { id: string; content: string }[];
+  relatedConceptId?: string | null;
 }
 
 export interface QuizAttemptData {
@@ -450,7 +451,8 @@ export type ViewState =
   | "subject"
   | "lesson"
   | "quiz"
-  | "quiz-result";
+  | "quiz-result"
+  | "handbook";
 
 export type AppLanguage = "en" | "th" | "my";
 
@@ -503,6 +505,10 @@ interface AppStore {
   setPendingSubjectNav: (nav: { code: string; navFn: () => void } | null) => void;
 
   // Actions
+  // Handbook
+  selectedHandbookSubjectId: string | null;
+  setSelectedHandbookSubjectId: (id: string | null) => void;
+
   logout: () => void;
 }
 
@@ -563,6 +569,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
 
   pendingSubjectNav: null,
   setPendingSubjectNav: (nav) => set({ pendingSubjectNav: nav }),
+
+  selectedHandbookSubjectId: null,
+  setSelectedHandbookSubjectId: (id) => set({ selectedHandbookSubjectId: id }),
 
   logout: () =>
     set({

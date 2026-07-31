@@ -8,6 +8,7 @@ import { SubjectView } from "@/components/lessons/SubjectView";
 import { LessonView } from "@/components/lessons/LessonView";
 import { QuizView } from "@/components/quiz/QuizView";
 import { QuizResult } from "@/components/quiz/QuizResult";
+import { HandbookView } from "@/components/handbook/HandbookView";
 import { NicknameModal } from "@/components/NicknameModal";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
@@ -29,6 +30,7 @@ export default function Page() {
         {view === "lesson" && <LessonView />}
         {view === "quiz" && <QuizView />}
         {view === "quiz-result" && <QuizResult />}
+        {view === "handbook" && <HandbookView />}
       </ErrorBoundary>
     </AppShell>
   );
