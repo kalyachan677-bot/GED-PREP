@@ -159,12 +159,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           {user && ["math", "science", "rla", "ss"].map((code) => (
             <SubjectSidebarLink key={code} code={code} />
           ))}
-        </nav>
-
-        {/* ★ ปุ่มแปลภาษา — เต็มความกว้าง ไม่ชิดขอบ */}
-        <div className="px-3 pb-2">
+          {/* ★ ปุ่มแปลภาษา — ข้างล่างวิชาศังคม */}
           <DesktopLangToggle />
-        </div>
+        </nav>
 
         {/* ★ ปุ่มรีเซ็ตทั้งแพลตฟอร์ม */}
         <div className="px-3 pb-3">
