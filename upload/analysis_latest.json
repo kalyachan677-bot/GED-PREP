@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "This screenshot shows a **language selection dropdown menu** from a web application. Here is a detailed breakdown:\n\n## UI Language\nThe interface is primarily in **Thai** (with English labels for the header and language names).\n\n## Detailed Description of Elements\n\n**Header Section:**\n- Text: \"**ภาษา / LANGUAGE**\" (meaning \"Language\" in Thai)\n- This appears as the section title with a light gray background\n\n**Language Options (3 visible):**\n\n1. **First option:**\n   - Country code: `us`\n   - Language name: `English`\n   - Status: Unselected (white background)\n\n2. **Second option (Currently Selected):**\n   - Country code: **`TH`** (displayed in bold purple/magenta text)\n   - Language name: **`ไทย`** (Thai language name, also in purple)\n   - Status indicator: A rounded badge on the right showing **\"TH\"** in purple text on a light lavender/purple background\n   - Background: Light lavender/purple highlight indicating this is the active selection\n\n3. **Third option:**\n   - Country code: `ML`\n   - Language name: **`မြန်မာ`** (Burmese/Myanmar script)\n   - Status: Unselected\n\n## Current State & Issue\n**Current State:** The application is currently set to **Thai language** (`ไทย`). The Thai option is visually highlighted with purple coloring to indicate it is the active selection.\n\n**No Error Messages:** There are no error messages, warnings, or loading states visible. This appears to be a standard, functional language picker component.\n\n**Design Notes:**\n- The dropdown uses a clean, modern card-style design with rounded corners\n- Color coding is used strategically: purple indicates the active/selected state\n- Each option displays both the country code and native language name for clarity\n- The inclusion of Burmese (Myanmar) suggests this application may be targeted at Southeast Asian users or has regional relevance to Thailand and Myanmar",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1785495166,
+  "id": "20260731185241d6a322d42a204b06",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "20260731185241d6a322d42a204b06",
+  "usage": {
+    "completion_tokens": 430,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 146,
+    "prompt_tokens_details": {
+      "cached_tokens": 4
+    },
+    "total_tokens": 576
+  }
+}

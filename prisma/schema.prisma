@@ -1,13 +1,7 @@
 // ============================================================================
-// GED Prep Platform — Prisma Schema (SQLite adapter)
+// GED Prep Platform — Prisma Schema (PostgreSQL adapter)
 // ============================================================================
-// NOTE: Production uses PostgreSQL + MongoDB. This Prisma schema mirrors
-// the PostgreSQL DDL from Loop 1, adapted for SQLite in the dev sandbox.
-// - UUID → String @id @default(cuid())
-// - ARRAY → String (JSON-encoded)
-// - ENUM → String
-// - JSONB → String (JSON)
-// - lesson body_content → String (JSON, mirrors MongoDB LessonContent)
+// Production PostgreSQL schema for Supabase / Vercel deployment.
 // ============================================================================
 
 generator client {
@@ -15,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

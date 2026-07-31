@@ -96,7 +96,11 @@ export function HandbookView() {
           <div>
             <h1 className="text-2xl font-extrabold tracking-tight">{tx("studyGuide")}</h1>
             <p className="mt-1 text-sm text-white/70 font-medium">
-              {language === "en" ? "GED Knowledge Base & Official Handbook" : language === "my" ? "GED \u{101D}\u{103B}\u{1019}\u{103A}\u{1039} \u{1015}\u{103D}\u{102F}\u{1004}\u{103A} & Official Handbook" : "\u{0E04}\u{0E25}\u{0E31}\u{0E07}\u{0E04}\u{0E27}\u{0E32}\u{0E21}\u{0E23}\u{0E39}\u{0E49 GED \u{0E41}\u{0E25}\u{0E30}\u{0E04}\u{0E39}\u{0E48}\u{0E21}\u{0E37}\u{0E40}\u{0E23}\u{0E35}\u{0E22}\u{0E19}"}
+              {language === "en"
+                ? "GED Knowledge Base & Official Handbook"
+                : language === "my"
+                  ? "GED မ္ဟာ ပြည့်မြောက် & Official Handbook"
+                  : "คลังความรู้ GED และคู่มือเรียน"}
             </p>
           </div>
         </div>

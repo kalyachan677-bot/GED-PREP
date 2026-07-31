@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "This screenshot displays a **Vercel** web page prompting the user to set up **Two-Factor Authentication (2FA)**.\n\n**Key Details:**\n\n*   **Web Page:** Vercel account security setup screen.\n*   **UI Language:** English.\n*   **Visible Issue/Bug:** There is a **broken image icon** (or missing asset) located at the top center of the card, directly above the \"Secure Your Account with 2FA\" heading. It appears to be a placeholder where the main illustration or logo should be.\n*   **Elements Needing Attention:**\n    *   The **missing/broken image asset** at the top needs to be fixed or replaced.\n    *   The **\"Set Up Authenticator App\"** button (primary action).\n    *   The **\"Skip securing my account\"** link (secondary action).",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1785495269,
+  "id": "20260731185426b2b6e4f4204c46e0",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "20260731185426b2b6e4f4204c46e0",
+  "usage": {
+    "completion_tokens": 179,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 830,
+    "prompt_tokens_details": {
+      "cached_tokens": 2
+    },
+    "total_tokens": 1009
+  }
+}
