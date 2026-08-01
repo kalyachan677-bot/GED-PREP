@@ -1,7 +1,8 @@
 // ============================================================================
-// GED Prep Platform — Prisma Schema (PostgreSQL adapter)
+// GED Prep Platform — Prisma Schema (PostgreSQL adapter for production)
 // ============================================================================
-// Production PostgreSQL schema for Supabase / Vercel deployment.
+// NOTE: For local dev with SQLite, change provider to "sqlite" and set
+// DATABASE_URL=file:./db/custom.db in .env
 // ============================================================================
 
 generator client {
@@ -9,7 +10,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
