@@ -14,6 +14,7 @@ export function QuizResult() {
   const { quizResult, quizQuestions, setView, clearQuiz } = useAppStore();
   const { language, translateBatch, isTranslating } = useTranslation();
   const { tx } = useText();
+  const [expandedWrong, setExpandedWrong] = useState<string | null>(null);
 
   // Extract texts to translate: questionText + explanations + answer contents
   const allTexts = useMemo(() => {
@@ -254,6 +255,11 @@ export function QuizResult() {
                       </p>
                     </div>
                   )}
+                  {result.isCorrect ? null : q?.relatedConceptId ? (
+                    <div className="pt-1">
+                      <ConceptGuidePanel conceptId={q.relatedConceptId} />
+                    </div>
+                  ) : null}
                 </div>
               </div>
             );

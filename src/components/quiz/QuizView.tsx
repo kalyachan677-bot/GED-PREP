@@ -4,7 +4,7 @@ import { useAppStore, QuizQuestion } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { ChevronLeft, ChevronRight, Flag, Clock, Send, Loader2, HelpCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, Flag, Clock, Send, Loader2, HelpCircle, BookOpen } from "lucide-react";
 import { BackButton } from "@/components/ui/BackButton";
 import { TranslatingIndicator } from "@/components/ui/LanguageToggle";
 import { useTranslation } from "@/lib/useTranslation";
@@ -21,6 +21,9 @@ export function QuizView() {
   const [elapsed, setElapsed] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const [showConceptPanel, setShowConceptPanel] = useState(false);
+  const [conceptData, setConceptData] = useState<any>(null);
+  const [loadingConcept, setLoadingConcept] = useState(false);
 
   const { language, translateBatch, isTranslating } = useTranslation();
 
@@ -166,6 +169,20 @@ export function QuizView() {
     return () => window.removeEventListener("keydown", handleKey);
   });
 
+  async function openConceptGuide(conceptId: string) {
+    setShowConceptPanel(true);
+    setLoadingConcept(true);
+    try {
+      const res = await fetch(`/api/handbook/concept/${conceptId}`);
+      const json = await res.json();
+      if (json.data) setConceptData(json.data);
+    } catch (e) {
+      console.error('Failed to load concept', e);
+    } finally {
+      setLoadingConcept(false);
+    }
+  }
+
   if (!quizAttempt || quizQuestions.length === 0) return null;
 
   const answeredCount = Object.keys(selectedAnswers).length;
@@ -290,9 +307,20 @@ export function QuizView() {
           <div className="px-5 py-5 bg-gradient-to-br from-violet-50/50 to-indigo-50/30 border-b border-slate-100">
             <div className="flex items-start gap-3">
               <HelpCircle className="h-5 w-5 text-violet-400 mt-0.5 shrink-0" />
-              <p className="text-base font-semibold text-slate-900 leading-relaxed">
-                {questionDisplayText}
-              </p>
+              <div className="flex-1">
+                <p className="text-base font-semibold text-slate-900 leading-relaxed">
+                  {questionDisplayText}
+                </p>
+                {question.relatedConceptId && (
+                  <button
+                    onClick={() => openConceptGuide(question.relatedConceptId!)}
+                    className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-blue-50 border border-blue-200 px-3 py-1.5 text-xs font-medium text-blue-700 hover:bg-blue-100 transition-all"
+                  >
+                    <BookOpen className="h-3.5 w-3.5" />
+                    {tx("readConceptGuide")}
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
@@ -378,6 +406,63 @@ export function QuizView() {
           />
         ))}
       </div>
+
+      {/* Concept Guide Panel */}
+      {showConceptPanel && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowConceptPanel(false)} />
+          <div className="relative w-full sm:max-w-lg max-h-[80vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl bg-white shadow-2xl">
+            <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-4 rounded-t-2xl sm:rounded-t-2xl">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="h-5 w-5 text-white" />
+                  <h3 className="text-base font-bold text-white">
+                    {language === "th" && conceptData?.titleTh ? conceptData.titleTh : conceptData?.titleMm ? (language === "my" ? conceptData.titleMm : conceptData?.title) : conceptData?.title || "..."}
+                  </h3>
+                </div>
+                <button onClick={() => setShowConceptPanel(false)} className="text-white/80 hover:text-white text-xl font-bold">&times;</button>
+              </div>
+            </div>
+            <div className="p-5">
+              {loadingConcept ? (
+                <div className="flex items-center justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-blue-500" /></div>
+              ) : conceptData?.contents?.[0] ? (
+                <div className="space-y-4">
+                  <div className="prose prose-sm max-w-none text-slate-700 whitespace-pre-wrap">
+                    {language === "th" && conceptData.contents[0].contentBodyTh
+                      ? conceptData.contents[0].contentBodyTh
+                      : language === "my" && conceptData.contents[0].contentBodyMm
+                        ? conceptData.contents[0].contentBodyMm
+                        : conceptData.contents[0].contentBodyEn}
+                  </div>
+                  {conceptData.contents[0].keyTakeaways?.length > 0 && (
+                    <div className="rounded-xl bg-amber-50 border border-amber-200 p-4">
+                      <p className="text-xs font-bold text-amber-800 mb-2">{tx("keyTakeaways")}</p>
+                      <ul className="space-y-1">
+                        {conceptData.contents[0].keyTakeaways.slice(0, 5).map((t: string, i: number) => (
+                          <li key={i} className="text-xs text-amber-900">{t}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {conceptData.contents[0].formulaOrRules?.length > 0 && conceptData.contents[0].formulaOrRules[0] && (
+                    <div className="rounded-xl bg-violet-50 border border-violet-200 p-4">
+                      <p className="text-xs font-bold text-violet-800 mb-2">{tx("formulasAndRules")}</p>
+                      <ul className="space-y-1">
+                        {conceptData.contents[0].formulaOrRules.slice(0, 8).map((f: string, i: number) => (
+                          <li key={i} className="text-xs text-violet-900 font-mono">{f}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">No content available</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -90,3 +90,33 @@ Stage Summary:
 - Students type the meaning and get instant feedback
 - 3-day rotation: vocab set changes every 3 days automatically
 - Server running at localhost:3000
+---
+Task ID: 2
+Agent: main
+Task: GED Knowledge Base & Handbook Module — Full Implementation
+
+Work Log:
+- Analyzed existing codebase: schema already had HandbookTopic/HandbookContent + Question.relatedConceptId
+- APIs /api/handbook/:subjectId and /api/handbook/concept/:conceptId already functional
+- HandbookView component with subject tabs, category tabs, ConceptGuidePanel already built
+- Identified missing: seed data, QuizView concept button, QuizResult concept panel, question linking
+- Fixed build-breaking unicode escape in HandbookView.tsx line 99
+- Switched Prisma schema to PostgreSQL for production (Supabase)
+- Created comprehensive handbook seed script: 19 topics across 4 subjects
+  - Category A (handbook): Exam overview, calculator guide, time strategies, essay guide, document analysis
+  - Category B (textbook): Number ops, algebra, geometry, life/physical/earth science, reading, grammar, civics, history/economics
+- All content trilingual (EN/TH/MM) with key takeaways and formula/rule boxes
+- Ran seed: 19 handbook topics, 19 content sections created
+- Created question-to-concept linker script: 32/64 questions linked via relatedConceptId
+- Added "Read Concept Guide" button to QuizView with inline concept panel overlay
+- Wired ConceptGuidePanel into QuizResult for wrong-answer review
+- Fixed all build errors, verified successful Next.js build
+- Switched schema to PostgreSQL provider for Vercel/Supabase deployment
+
+Stage Summary:
+- 19 Handbook Topics seeded (10 exam handbook + 9 core textbook)
+- 32 of 64 questions linked to handbook concepts via relatedConceptId
+- "อ่านคู่มือเรื่องนี้" button active in QuizView for linked questions
+- ConceptGuidePanel shows in QuizResult for wrong answers with related concept
+- Build passes successfully with PostgreSQL schema
+- Ready for Vercel deployment with Supabase DATABASE_URL
