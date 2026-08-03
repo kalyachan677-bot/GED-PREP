@@ -4,16 +4,27 @@ import { db } from '@/lib/db';
 /**
  * GET /api/handbook/:subjectId
  * Returns all handbook topics + contents for a subject, grouped by categoryType.
+ * Accepts either a subject code ("math", "science", "rla", "ss") or a subject DB ID.
  */
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ subjectId: string }> }
 ) {
   try {
-    const { subjectId } = await params;
+    const { subjectId: rawId } = await params;
+
+    // Resolve: if it looks like a code (short, no hyphens), look up by code
+    const VALID_CODES = new Set(['math', 'science', 'rla', 'ss']);
+    const subject = VALID_CODES.has(rawId)
+      ? await db.subject.findUnique({ where: { code: rawId } })
+      : await db.subject.findUnique({ where: { id: rawId } });
+
+    if (!subject) {
+      return NextResponse.json({ error: 'Subject not found' }, { status: 404 });
+    }
 
     const topics = await db.handbookTopic.findMany({
-      where: { subjectId },
+      where: { subjectId: subject.id },
       include: {
         contents: {
           orderBy: { sortOrder: 'asc' },
