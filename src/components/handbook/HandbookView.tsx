@@ -4,7 +4,7 @@ import { useAppStore } from "@/lib/store";
 import { useText, Lang } from "@/lib/ui-texts";
 import { BackButton } from "@/components/ui/BackButton";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BookOpen, ChevronDown, ChevronRight, GraduationCap, Lightbulb, FlaskConical, CheckCircle2, ExternalLink } from "lucide-react";
+import { BookOpen, ChevronDown, ChevronRight, GraduationCap, Lightbulb, FlaskConical, CheckCircle2, ExternalLink, FileText, Clock } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 
 // --- Types ---
@@ -29,6 +29,27 @@ interface HandbookTopicItem {
   contents: HandbookContentItem[];
 }
 
+interface LessonItem {
+  id: string;
+  title: string;
+  slug: string;
+  contentType: string;
+  durationMinutes: number;
+}
+
+interface TopicWithLessons {
+  id: string;
+  title: string;
+  lessons: LessonItem[];
+}
+
+interface ModuleWithTopics {
+  id: string;
+  title: string;
+  sortOrder: number;
+  topics: TopicWithLessons[];
+}
+
 const SUBJECT_META: Record<string, { icon: string; gradient: string }> = {
   math: { icon: "\u{1F9EE}", gradient: "from-blue-500 to-cyan-500" },
   science: { icon: "\u{1F52C}", gradient: "from-emerald-500 to-teal-500" },
@@ -37,11 +58,15 @@ const SUBJECT_META: Record<string, { icon: string; gradient: string }> = {
 };
 
 export function HandbookView() {
-  const { user, selectedHandbookSubjectId, setSelectedHandbookSubjectId, setView } = useAppStore();
+  const { user, selectedHandbookSubjectId, setSelectedHandbookSubjectId, setSelectedLesson, setView } = useAppStore();
   const { tx, language } = useText();
   const [data, setData] = useState<HandbookTopicItem[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<string | null>(null);
+
+  // Lessons data for tab C
+  const [lessonsData, setLessonsData] = useState<ModuleWithTopics[] | null>(null);
+  const [lessonsLoading, setLessonsLoading] = useState(false);
 
   const subjectCodes = ["math", "science", "rla", "ss"];
 
@@ -77,9 +102,37 @@ export function HandbookView() {
     }
   }, [selectedHandbookSubjectId]);
 
+  // Fetch lessons data when subject changes or tab switches to lessons
+  const fetchLessons = useCallback(async () => {
+    if (!selectedHandbookSubjectId) return;
+    setLessonsLoading(true);
+    try {
+      const res = await fetch(`/api/handbook/lessons/${selectedHandbookSubjectId}`);
+      const json = await res.json();
+      setLessonsData(json.data || []);
+    } catch (e) {
+      console.error("Failed to load lessons", e);
+      setLessonsData([]);
+    } finally {
+      setLessonsLoading(false);
+    }
+  }, [selectedHandbookSubjectId]);
+
+  // Fetch lessons when tab becomes "lessons"
+  useEffect(() => {
+    if (activeTab === "lessons" && !lessonsData) {
+      fetchLessons();
+    }
+  }, [activeTab, lessonsData, fetchLessons]);
+
   useEffect(() => {
     fetchHandbook();
   }, [fetchHandbook]);
+
+  // Reset lessons data when subject changes
+  useEffect(() => {
+    setLessonsData(null);
+  }, [selectedHandbookSubjectId]);
 
   const filteredTopics = data
     ? data.filter((t) => t.categoryType === activeTab)
@@ -156,38 +209,48 @@ export function HandbookView() {
       {!loading && selectedHandbookSubjectId && data && (
         <>
           {/* Category Tabs */}
-          {(handbookTopics.length > 0 || textbookTopics.length > 0) && (
-            <div className="flex gap-2">
-              {handbookTopics.length > 0 && (
-                <button
-                  onClick={() => setActiveTab("handbook")}
-                  className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all ${
-                    activeTab === "handbook"
-                      ? "bg-violet-100 text-violet-700 border-2 border-violet-200"
-                      : "bg-white text-slate-500 border-2 border-transparent hover:bg-slate-50"
-                  }`}
-                >
-                  <BookOpen className="h-4 w-4" />
-                  {tx("examHandbook")}
-                  <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeTab === "handbook" ? "bg-violet-200 text-violet-800" : "bg-slate-100 text-slate-500"}`}>A</span>
-                </button>
-              )}
-              {textbookTopics.length > 0 && (
-                <button
-                  onClick={() => setActiveTab("textbook")}
-                  className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all ${
-                    activeTab === "textbook"
-                      ? "bg-emerald-100 text-emerald-700 border-2 border-emerald-200"
-                      : "bg-white text-slate-500 border-2 border-transparent hover:bg-slate-50"
-                  }`}
-                >
-                  <FlaskConical className="h-4 w-4" />
-                  {tx("coreTextbook")}
-                  <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeTab === "textbook" ? "bg-emerald-200 text-emerald-800" : "bg-slate-100 text-slate-500"}`}>B</span>
-                </button>
-              )}
-            </div>
-          )}
+          <div className="flex gap-2 flex-wrap">
+            {handbookTopics.length > 0 && (
+              <button
+                onClick={() => setActiveTab("handbook")}
+                className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all ${
+                  activeTab === "handbook"
+                    ? "bg-violet-100 text-violet-700 border-2 border-violet-200"
+                    : "bg-white text-slate-500 border-2 border-transparent hover:bg-slate-50"
+                }`}
+              >
+                <BookOpen className="h-4 w-4" />
+                {tx("examHandbook")}
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeTab === "handbook" ? "bg-violet-200 text-violet-800" : "bg-slate-100 text-slate-500"}`}>A</span>
+              </button>
+            )}
+            {textbookTopics.length > 0 && (
+              <button
+                onClick={() => setActiveTab("textbook")}
+                className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all ${
+                  activeTab === "textbook"
+                    ? "bg-emerald-100 text-emerald-700 border-2 border-emerald-200"
+                    : "bg-white text-slate-500 border-2 border-transparent hover:bg-slate-50"
+                }`}
+              >
+                <FlaskConical className="h-4 w-4" />
+                {tx("coreTextbook")}
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeTab === "textbook" ? "bg-emerald-200 text-emerald-800" : "bg-slate-100 text-slate-500"}`}>B</span>
+              </button>
+            )}
+            <button
+              onClick={() => { setActiveTab("lessons"); if (!lessonsData) fetchLessons(); }}
+              className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all ${
+                activeTab === "lessons"
+                  ? "bg-blue-100 text-blue-700 border-2 border-blue-200"
+                  : "bg-white text-slate-500 border-2 border-transparent hover:bg-slate-50"
+              }`}
+            >
+              <FileText className="h-4 w-4" />
+              {tx("lessons")}
+              <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeTab === "lessons" ? "bg-blue-200 text-blue-800" : "bg-slate-100 text-slate-500"}`}>C</span>
+            </button>
+          </div>
 
           {/* Empty state */}
           {data.length === 0 && (
@@ -198,10 +261,37 @@ export function HandbookView() {
             </div>
           )}
 
-          {/* Topics list */}
-          {filteredTopics.map((topic) => (
+          {/* Topics list (handbook/textbook tabs) */}
+          {activeTab !== "lessons" && filteredTopics.map((topic) => (
             <TopicAccordion key={topic.id} topic={topic} language={language} tx={tx} />
           ))}
+
+          {/* Lessons tab content */}
+          {activeTab === "lessons" && lessonsLoading && (
+            <div className="space-y-4">
+              <Skeleton className="h-12 rounded-2xl" />
+              <Skeleton className="h-32 rounded-2xl" />
+            </div>
+          )}
+          {activeTab === "lessons" && !lessonsLoading && lessonsData && (
+            lessonsData.length > 0 ? (
+              lessonsData.map((mod) => (
+                <LessonsModuleCard key={mod.id} module={mod} onOpenLesson={(lessonId) => {
+                  setSelectedLesson(null);
+                  setView("lesson");
+                  fetch(`/api/lessons/${lessonId}`)
+                    .then((r) => r.json())
+                    .then((j) => { if (j.data) setSelectedLesson(j.data); })
+                    .catch(console.error);
+                }} />
+              ))
+            ) : (
+              <div className="rounded-2xl border border-dashed border-slate-300 bg-white/80 p-12 text-center">
+                <FileText className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+                <p className="text-sm font-semibold text-slate-500">{tx("handbookEmpty")}</p>
+              </div>
+            )
+          )}
         </>
       )}
     </div>
@@ -306,6 +396,60 @@ function ContentSection({ content, language, tx }: { content: HandbookContentIte
           {formulas.map((f, i) => (
             <div key={i} className="rounded-md bg-white/60 border border-violet-100 px-3 py-2">
               <p className="text-xs font-mono text-violet-800 leading-relaxed whitespace-pre-wrap">{f}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// --- Lessons Module Card (Tab C) ---
+function LessonsModuleCard({ module, onOpenLesson }: { module: ModuleWithTopics; onOpenLesson: (id: string) => void }) {
+  const [open, setOpen] = useState(true);
+  const totalLessons = module.topics.reduce((s, t) => s + t.lessons.length, 0);
+
+  return (
+    <div className="rounded-2xl border border-slate-200/60 bg-white/80 backdrop-blur-sm shadow-sm overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center justify-between px-5 py-4 text-left hover:bg-slate-50/50 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50">
+            <FileText className="h-4.5 w-4.5 text-blue-600" />
+          </div>
+          <div>
+            <p className="font-bold text-slate-800 text-sm">{module.title}</p>
+            <p className="text-[11px] text-slate-400 font-medium">{totalLessons} lessons</p>
+          </div>
+        </div>
+        {open ? <ChevronDown className="h-4 w-4 text-slate-400" /> : <ChevronRight className="h-4 w-4 text-slate-400" />}
+      </button>
+
+      {open && (
+        <div className="border-t border-slate-100 px-5 py-3">
+          {module.topics.map((topic) => (
+            <div key={topic.id} className="mb-3 last:mb-0">
+              <p className="px-2 pt-2 pb-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">{topic.title}</p>
+              {topic.lessons.map((lesson) => (
+                <button
+                  key={lesson.id}
+                  onClick={() => onOpenLesson(lesson.id)}
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all hover:bg-blue-50/50 group"
+                >
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-100/60">
+                    <BookOpen className="h-3.5 w-3.5 text-blue-500" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-slate-600 group-hover:text-blue-700 truncate">{lesson.title}</p>
+                  </div>
+                  <span className="flex items-center gap-1 text-[11px] text-slate-400 font-medium shrink-0">
+                    <Clock className="h-3 w-3" />
+                    {lesson.durationMinutes} min
+                  </span>
+                </button>
+              ))}
             </div>
           ))}
         </div>
