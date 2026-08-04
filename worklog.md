@@ -120,3 +120,30 @@ Stage Summary:
 - ConceptGuidePanel shows in QuizResult for wrong answers with related concept
 - Build passes successfully with PostgreSQL schema
 - Ready for Vercel deployment with Supabase DATABASE_URL
+---
+Task ID: 3
+Agent: main
+Task: Fix Tab C (Lessons) in Handbook — make 32 lessons accessible from Knowledge Base
+
+Work Log:
+- Verified HandbookView.tsx already had Tab C code with LessonsModuleCard component
+- Verified API /api/handbook/lessons/[subjectId] returns correct module>topic>lesson data (8 modules, 32 lessons across 4 subjects)
+- Verified API /api/lessons/[id] returns lesson content with bodyContent blocks and questions
+- Verified LessonView component renders content blocks, handles translation, and shows quiz button
+- Added `lessonOrigin` state to Zustand store for proper back navigation ("handbook" vs "subject")
+- Updated HandbookView Tab C onOpenLesson to set lessonOrigin="handbook" before navigating
+- Updated SubjectView openLesson to set lessonOrigin="subject"
+- Updated LessonView handleBack to use lessonOrigin for back navigation
+- Fixed HandbookView: removed redundant double-fetch of lessons data, added loading guard to useEffect
+- Fixed HandbookView: separated empty state for lessons tab into its own conditional block
+- Reverted allowedDevOrigins config (was causing server crashes in Next.js 16 Turbopack)
+- Verified production build succeeds
+- Verified all 4 subject lesson APIs return correct data (math:1785, science:1742, rla:1735, ss:1815 bytes)
+- Verified single lesson API returns content blocks and questions
+
+Stage Summary:
+- Tab C "บทเรียน (Lessons) 🔵" now fully functional: shows 8 modules with 32 lessons across 4 subjects
+- Clicking a lesson from Tab C opens LessonView with proper content rendering
+- Back button from LessonView correctly returns to Handbook (not Subject view)
+- All APIs verified working end-to-end
+- Files modified: store.ts, HandbookView.tsx, LessonView.tsx, SubjectView.tsx, next.config.ts

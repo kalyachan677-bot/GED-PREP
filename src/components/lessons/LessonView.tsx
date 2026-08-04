@@ -41,7 +41,7 @@ function extractTexts(blocks: ContentBlock[]): string[] {
 }
 
 export function LessonView() {
-  const { selectedLesson, setView, user, startQuiz } = useAppStore();
+  const { selectedLesson, setView, user, startQuiz, lessonOrigin, setLessonOrigin } = useAppStore();
   const [startingQuiz, setStartingQuiz] = useState(false);
   const { language, translateBatch, isTranslating } = useTranslation();
 
@@ -120,7 +120,8 @@ export function LessonView() {
   }
 
   function handleBack() {
-    setView("subject");
+    setLessonOrigin(null);
+    setView(lessonOrigin === "handbook" ? "handbook" : "subject");
   }
 
   const subjectTitle = selectedLesson.topic?.module?.subject?.title;

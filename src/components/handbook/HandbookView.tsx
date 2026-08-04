@@ -58,7 +58,7 @@ const SUBJECT_META: Record<string, { icon: string; gradient: string }> = {
 };
 
 export function HandbookView() {
-  const { user, selectedHandbookSubjectId, setSelectedHandbookSubjectId, setSelectedLesson, setView } = useAppStore();
+  const { user, selectedHandbookSubjectId, setSelectedHandbookSubjectId, setSelectedLesson, setView, setLessonOrigin } = useAppStore();
   const { tx, language } = useText();
   const [data, setData] = useState<HandbookTopicItem[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -120,10 +120,10 @@ export function HandbookView() {
 
   // Fetch lessons when tab becomes "lessons"
   useEffect(() => {
-    if (activeTab === "lessons" && !lessonsData) {
+    if (activeTab === "lessons" && !lessonsData && !lessonsLoading) {
       fetchLessons();
     }
-  }, [activeTab, lessonsData, fetchLessons]);
+  }, [activeTab, lessonsData, lessonsLoading, fetchLessons]);
 
   useEffect(() => {
     fetchHandbook();
@@ -239,7 +239,7 @@ export function HandbookView() {
               </button>
             )}
             <button
-              onClick={() => { setActiveTab("lessons"); if (!lessonsData) fetchLessons(); }}
+              onClick={() => setActiveTab("lessons")}
               className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all ${
                 activeTab === "lessons"
                   ? "bg-blue-100 text-blue-700 border-2 border-blue-200"
@@ -271,26 +271,27 @@ export function HandbookView() {
             <div className="space-y-4">
               <Skeleton className="h-12 rounded-2xl" />
               <Skeleton className="h-32 rounded-2xl" />
+              <Skeleton className="h-32 rounded-2xl" />
             </div>
           )}
-          {activeTab === "lessons" && !lessonsLoading && lessonsData && (
-            lessonsData.length > 0 ? (
-              lessonsData.map((mod) => (
-                <LessonsModuleCard key={mod.id} module={mod} onOpenLesson={(lessonId) => {
-                  setSelectedLesson(null);
-                  setView("lesson");
-                  fetch(`/api/lessons/${lessonId}`)
-                    .then((r) => r.json())
-                    .then((j) => { if (j.data) setSelectedLesson(j.data); })
-                    .catch(console.error);
-                }} />
-              ))
-            ) : (
-              <div className="rounded-2xl border border-dashed border-slate-300 bg-white/80 p-12 text-center">
-                <FileText className="h-12 w-12 text-slate-300 mx-auto mb-3" />
-                <p className="text-sm font-semibold text-slate-500">{tx("handbookEmpty")}</p>
-              </div>
-            )
+          {activeTab === "lessons" && !lessonsLoading && lessonsData && lessonsData.length === 0 && (
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-white/80 p-12 text-center">
+              <FileText className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+              <p className="text-sm font-semibold text-slate-500">{tx("handbookEmpty")}</p>
+            </div>
+          )}
+          {activeTab === "lessons" && !lessonsLoading && lessonsData && lessonsData.length > 0 && (
+            lessonsData.map((mod) => (
+              <LessonsModuleCard key={mod.id} module={mod} onOpenLesson={(lessonId) => {
+                setSelectedLesson(null);
+                setLessonOrigin("handbook");
+                setView("lesson");
+                fetch(`/api/lessons/${lessonId}`)
+                  .then((r) => r.json())
+                  .then((j) => { if (j.data) setSelectedLesson(j.data); })
+                  .catch(console.error);
+              }} />
+            ))
           )}
         </>
       )}

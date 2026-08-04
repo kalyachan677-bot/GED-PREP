@@ -30,7 +30,7 @@ const SUBJECT_ICONS: Record<string, string> = {
 };
 
 export function SubjectView() {
-  const { selectedSubject, setView, setSelectedLesson, user, startQuiz, rigorConfig, rigorState } = useAppStore();
+  const { selectedSubject, setView, setSelectedLesson, user, startQuiz, rigorConfig, rigorState, setLessonOrigin } = useAppStore();
   const { tx } = useText();
   const [startingQuiz, setStartingQuiz] = useState(false);
   const [vocabComplete, setVocabComplete] = useState(false);
@@ -87,6 +87,7 @@ export function SubjectView() {
 
   async function openLesson(lessonId: string) {
     if (lockedLessonIds.has(lessonId)) return; // BLOCKED by rigor
+    setLessonOrigin("subject");
     setView("lesson");
     setSelectedLesson(null);
     try {

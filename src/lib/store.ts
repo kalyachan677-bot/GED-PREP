@@ -509,6 +509,10 @@ interface AppStore {
   selectedHandbookSubjectId: string | null;
   setSelectedHandbookSubjectId: (id: string | null) => void;
 
+  // Lesson origin (for back navigation)
+  lessonOrigin: "subject" | "handbook" | null;
+  setLessonOrigin: (origin: "subject" | "handbook" | null) => void;
+
   logout: () => void;
 }
 
@@ -572,6 +576,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
 
   selectedHandbookSubjectId: null,
   setSelectedHandbookSubjectId: (id) => set({ selectedHandbookSubjectId: id }),
+
+  lessonOrigin: null,
+  setLessonOrigin: (origin) => set({ lessonOrigin: origin }),
 
   logout: () =>
     set({
