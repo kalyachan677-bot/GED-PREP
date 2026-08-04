@@ -58,7 +58,7 @@ const SUBJECT_META: Record<string, { icon: string; gradient: string }> = {
 };
 
 export function HandbookView() {
-  const { user, selectedHandbookSubjectId, setSelectedHandbookSubjectId, setSelectedLesson, setView, setLessonOrigin } = useAppStore();
+  const { selectedHandbookSubjectId, setSelectedHandbookSubjectId, setView } = useAppStore();
   const { tx, language } = useText();
   const [data, setData] = useState<HandbookTopicItem[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -281,17 +281,7 @@ export function HandbookView() {
             </div>
           )}
           {activeTab === "lessons" && !lessonsLoading && lessonsData && lessonsData.length > 0 && (
-            lessonsData.map((mod) => (
-              <LessonsModuleCard key={mod.id} module={mod} onOpenLesson={(lessonId) => {
-                setSelectedLesson(null);
-                setLessonOrigin("handbook");
-                setView("lesson");
-                fetch(`/api/lessons/${lessonId}`)
-                  .then((r) => r.json())
-                  .then((j) => { if (j.data) setSelectedLesson(j.data); })
-                  .catch(console.error);
-              }} />
-            ))
+            <LessonsTabContent modules={lessonsData} />
           )}
         </>
       )}
@@ -405,8 +395,45 @@ function ContentSection({ content, language, tx }: { content: HandbookContentIte
   );
 }
 
+// --- Lessons Tab Content (Tab C) ---
+function LessonsTabContent({ modules }: { modules: ModuleWithTopics[] }) {
+  const { setSelectedLesson, setView, setLessonOrigin } = useAppStore();
+  const [loadingLessonId, setLoadingLessonId] = useState<string | null>(null);
+
+  async function handleOpenLesson(lessonId: string) {
+    if (loadingLessonId) return; // prevent double-click
+    setLoadingLessonId(lessonId);
+    try {
+      const res = await fetch(`/api/lessons/${lessonId}`);
+      const json = await res.json();
+      if (json.data) {
+        setSelectedLesson(json.data);
+        setLessonOrigin("handbook");
+        setView("lesson");
+      }
+    } catch (e) {
+      console.error("Failed to load lesson", e);
+    } finally {
+      setLoadingLessonId(null);
+    }
+  }
+
+  return (
+    <>
+      {modules.map((mod) => (
+        <LessonsModuleCard
+          key={mod.id}
+          module={mod}
+          loadingLessonId={loadingLessonId}
+          onOpenLesson={handleOpenLesson}
+        />
+      ))}
+    </>
+  );
+}
+
 // --- Lessons Module Card (Tab C) ---
-function LessonsModuleCard({ module, onOpenLesson }: { module: ModuleWithTopics; onOpenLesson: (id: string) => void }) {
+function LessonsModuleCard({ module, loadingLessonId, onOpenLesson }: { module: ModuleWithTopics; loadingLessonId: string | null; onOpenLesson: (id: string) => void }) {
   const [open, setOpen] = useState(true);
   const totalLessons = module.topics.reduce((s, t) => s + t.lessons.length, 0);
 
@@ -433,24 +460,34 @@ function LessonsModuleCard({ module, onOpenLesson }: { module: ModuleWithTopics;
           {module.topics.map((topic) => (
             <div key={topic.id} className="mb-3 last:mb-0">
               <p className="px-2 pt-2 pb-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">{topic.title}</p>
-              {topic.lessons.map((lesson) => (
-                <button
-                  key={lesson.id}
-                  onClick={() => onOpenLesson(lesson.id)}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all hover:bg-blue-50/50 group"
-                >
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-100/60">
-                    <BookOpen className="h-3.5 w-3.5 text-blue-500" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-slate-600 group-hover:text-blue-700 truncate">{lesson.title}</p>
-                  </div>
-                  <span className="flex items-center gap-1 text-[11px] text-slate-400 font-medium shrink-0">
-                    <Clock className="h-3 w-3" />
-                    {lesson.durationMinutes} min
-                  </span>
-                </button>
-              ))}
+              {topic.lessons.map((lesson) => {
+                const isLoading = loadingLessonId === lesson.id;
+                return (
+                  <button
+                    key={lesson.id}
+                    onClick={() => onOpenLesson(lesson.id)}
+                    disabled={isLoading}
+                    className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all hover:bg-blue-50/50 group disabled:opacity-60"
+                  >
+                    {isLoading ? (
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-100/60">
+                        <div className="h-3.5 w-3.5 border-2 border-blue-300 border-t-blue-500 rounded-full animate-spin" />
+                      </div>
+                    ) : (
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-100/60">
+                        <BookOpen className="h-3.5 w-3.5 text-blue-500" />
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-slate-600 group-hover:text-blue-700 truncate">{lesson.title}</p>
+                    </div>
+                    <span className="flex items-center gap-1 text-[11px] text-slate-400 font-medium shrink-0">
+                      <Clock className="h-3 w-3" />
+                      {lesson.durationMinutes} min
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           ))}
         </div>

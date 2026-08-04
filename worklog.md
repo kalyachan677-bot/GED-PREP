@@ -147,3 +147,24 @@ Stage Summary:
 - Back button from LessonView correctly returns to Handbook (not Subject view)
 - All APIs verified working end-to-end
 - Files modified: store.ts, HandbookView.tsx, LessonView.tsx, SubjectView.tsx, next.config.ts
+---
+Task ID: 1
+Agent: main
+Task: แก้ไข Tab C บทเรียน (Lessons) ใน HandbookView ให้ใช้งานได้
+
+Work Log:
+- อ่านไฟล์ HandbookView.tsx, LessonView.tsx, SubjectView.tsx, store.ts
+- ตรวจ TypeScript compile error → ไม่มี error ใน src/
+- วิเคราะห์พบปัญหาหลัก: onOpenLesson ใน Tab C เรียก setView("lesson") ก่อน fetch จะเสร็จ ทำให้ LessonView แสดง Skeleton และข้อมูลอาจหาย
+- สร้าง LessonsTabContent component ใหม่ ที่ fetch ข้อมูลเสร็จก่อนค่อย setView
+- เพิ่ม loading spinner ขณะ fetch lesson และป้องกัน double-click
+- ทำความสะอาด unused imports ใน HandbookView
+- เพิ่ม allowedDevOrigins: ["space-z.ai"] ใน next.config.ts
+- Build production สำเร็จ ทดสอบ API ทั้ง 4 วิชา (math, science, rla, ss) ผ่าน
+- ตั้ง server-loop.sh auto-restart เพื่อรองรับ server crash
+
+Stage Summary:
+- แก้ race condition ใน onOpenLesson (fetch ก่อน → setView ทีหลัง)
+- API ทั้ง 4 วิชาตอบกลับถูกต้อง
+- Individual lesson API ทำงานได้
+- Server รัน production mode + auto-restart loop
