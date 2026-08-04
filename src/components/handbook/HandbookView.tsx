@@ -45,6 +45,13 @@ export function HandbookView() {
 
   const subjectCodes = ["math", "science", "rla", "ss"];
 
+  // Auto-select first subject when entering handbook view
+  useEffect(() => {
+    if (!selectedHandbookSubjectId) {
+      setSelectedHandbookSubjectId(subjectCodes[0]);
+    }
+  }, [selectedHandbookSubjectId, setSelectedHandbookSubjectId, subjectCodes]);
+
   // Determine initial tab
   useEffect(() => {
     if (!data || data.length === 0) return;
