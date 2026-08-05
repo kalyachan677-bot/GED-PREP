@@ -1,9 +1,8 @@
 #!/bin/bash
-# Auto-restart Next.js server
+cd /home/z/my-project
 while true; do
-  echo "[$(date)] Starting Next.js server..."
+  echo "[$(date)] Starting server..." >> /tmp/keeper.log
   npx next start -p 3000 2>&1 | tee -a /tmp/next-err.log
-  EXIT=$?
-  echo "[$(date)] Server exited with code $EXIT, restarting in 3s..."
-  sleep 3
+  echo "[$(date)] Crashed, restart in 2s" >> /tmp/keeper.log
+  sleep 2
 done
