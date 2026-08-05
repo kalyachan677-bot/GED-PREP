@@ -102,20 +102,23 @@ export function HandbookView() {
     }
   }, [selectedHandbookSubjectId]);
 
-  // Fetch lessons data when subject changes or tab switches to lessons
+  // Fetch lessons data — มี retry 3 ครั้ง เผื่อ server restart
   const fetchLessons = useCallback(async () => {
     if (!selectedHandbookSubjectId) return;
     setLessonsLoading(true);
-    try {
-      const res = await fetch(`/api/handbook/lessons/${selectedHandbookSubjectId}`);
-      const json = await res.json();
-      setLessonsData(json.data || []);
-    } catch (e) {
-      console.error("Failed to load lessons", e);
-      setLessonsData([]);
-    } finally {
-      setLessonsLoading(false);
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const res = await fetch(`/api/handbook/lessons/${selectedHandbookSubjectId}`);
+        const json = await res.json();
+        setLessonsData(json.data || []);
+        break; // สำเร็จ ออก loop
+      } catch (e) {
+        console.warn(`Lessons fetch attempt ${attempt}/3 failed`, e);
+        if (attempt < 3) await new Promise((r) => setTimeout(r, 2000 * attempt));
+        else { setLessonsData([]); }
+      }
     }
+    setLessonsLoading(false);
   }, [selectedHandbookSubjectId]);
 
   // Fetch lessons when tab becomes "lessons"
@@ -403,19 +406,23 @@ function LessonsTabContent({ modules }: { modules: ModuleWithTopics[] }) {
   async function handleOpenLesson(lessonId: string) {
     if (loadingLessonId) return; // prevent double-click
     setLoadingLessonId(lessonId);
-    try {
-      const res = await fetch(`/api/lessons/${lessonId}`);
-      const json = await res.json();
-      if (json.data) {
-        setSelectedLesson(json.data);
-        setLessonOrigin("handbook");
-        setView("lesson");
+    // retry 3 ครั้ง เผื่อ server restart
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const res = await fetch(`/api/lessons/${lessonId}`);
+        const json = await res.json();
+        if (json.data) {
+          setSelectedLesson(json.data);
+          setLessonOrigin("handbook");
+          setView("lesson");
+          break;
+        }
+      } catch (e) {
+        console.warn(`Lesson load attempt ${attempt}/3 failed`, e);
+        if (attempt < 3) await new Promise((r) => setTimeout(r, 2000 * attempt));
       }
-    } catch (e) {
-      console.error("Failed to load lesson", e);
-    } finally {
-      setLoadingLessonId(null);
     }
+    setLoadingLessonId(null);
   }
 
   return (
