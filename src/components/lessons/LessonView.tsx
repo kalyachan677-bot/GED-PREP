@@ -109,7 +109,7 @@ export function LessonView() {
         }),
       });
       const json = await res.json();
-      if (json.data) {
+      if (json.data?.attempt && Array.isArray(json.data.questions)) {
         startQuiz(json.data.attempt, json.data.questions);
       }
     } catch (e) {
@@ -191,7 +191,8 @@ export function LessonView() {
 
 function BlockRenderer({ block, tr }: { block: ContentBlock; tr: (s: string | undefined) => string }) {
   if (block.block_type === "heading") {
-    const Tag = (`h${block.level || 2}`) as keyof JSX.IntrinsicElements;
+    const level = Math.min(Math.max(Number(block.level) || 2, 1), 6);
+    const Tag = (`h${level}`) as keyof JSX.IntrinsicElements;
     const cls = block.level === 2
       ? "text-xl font-bold text-slate-900 mt-6 mb-2"
       : "text-lg font-semibold text-slate-800 mt-4 mb-1";

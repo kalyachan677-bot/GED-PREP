@@ -61,10 +61,11 @@ export function SubjectView() {
 
   // ── Rigor: compute locked lessons ──
   const recentScores = useMemo(() => {
-    if (!user) return [];
+    if (!user || typeof window === "undefined") return [];
     try {
       const raw = localStorage.getItem("ged-recent-quiz-scores");
-      return raw ? JSON.parse(raw) : [];
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
     } catch { return []; }
   }, [user, selectedSubject.id]);
 
@@ -123,7 +124,7 @@ export function SubjectView() {
         }),
       });
       const json = await res.json();
-      if (json.data) {
+      if (json.data?.attempt && Array.isArray(json.data.questions)) {
         startQuiz(json.data.attempt, json.data.questions);
         markQuizDone();
         useAppStore.getState().setRigorState(loadRigorState());

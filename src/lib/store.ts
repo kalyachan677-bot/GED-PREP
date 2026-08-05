@@ -150,7 +150,7 @@ export interface RigorConfig {
 }
 
 export function getRigorConfig(scoreTarget: number | null | undefined): RigorConfig | null {
-  if (!scoreTarget) return null;
+  if (scoreTarget == null) return null;
 
   if (scoreTarget >= 145 && scoreTarget <= 160) {
     return {
@@ -307,29 +307,34 @@ function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+const DEFAULT_RIGOR_STATE: RigorDailyState = {
+  lastLoginDate: "",
+  consecutiveMissDays: 0,
+  disciplineScore: 100,
+  vocabDoneToday: {},
+  quizDoneToday: false,
+  doubleScheduleToday: false,
+};
+
+function isValidRigorState(v: unknown): v is RigorDailyState {
+  return (
+    v !== null &&
+    typeof v === "object" &&
+    "lastLoginDate" in v &&
+    typeof (v as RigorDailyState).lastLoginDate === "string"
+  );
+}
+
 export function loadRigorState(): RigorDailyState {
-  if (typeof window === "undefined") {
-    return {
-      lastLoginDate: todayStr(),
-      consecutiveMissDays: 0,
-      disciplineScore: 100,
-      vocabDoneToday: {},
-      quizDoneToday: false,
-      doubleScheduleToday: false,
-    };
-  }
+  if (typeof window === "undefined") return { ...DEFAULT_RIGOR_STATE, lastLoginDate: todayStr() };
   try {
     const raw = localStorage.getItem(RIGOR_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (isValidRigorState(parsed)) return parsed;
+    }
   } catch { /* ignore */ }
-  return {
-    lastLoginDate: "",
-    consecutiveMissDays: 0,
-    disciplineScore: 100,
-    vocabDoneToday: {},
-    quizDoneToday: false,
-    doubleScheduleToday: false,
-  };
+  return { ...DEFAULT_RIGOR_STATE };
 }
 
 function saveRigorState(s: RigorDailyState) {
@@ -354,8 +359,9 @@ export function recordDailyLogin(rigorConfig: RigorConfig | null): RigorDailySta
     missed = diffDays - 1; // If logged in yesterday, missed = 0
   }
 
-  let newMissDays = missed > 0 ? state.consecutiveMissDays + missed : 0;
-  let newDiscipline = state.disciplineScore;
+  const prevDays = Number(state.consecutiveMissDays) || 0;
+  let newMissDays = missed > 0 ? prevDays + missed : 0;
+  let newDiscipline = Number(state.disciplineScore) || 100;
 
   // Level 3: deduct discipline for any missed day
   if (rigorConfig && rigorConfig.scoreDeductionOnMiss && missed > 0) {
@@ -521,7 +527,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
   setView: (view) => set({ view }),
 
   // Language / Translation
-  language: (typeof window !== "undefined" ? (localStorage.getItem("ged-lang") as AppLanguage) : null) || "en",
+  language: "en" as AppLanguage,
   setLanguage: (lang) => {
     if (typeof window !== "undefined") localStorage.setItem("ged-lang", lang);
     set({ language: lang });
@@ -567,7 +573,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
   quizQuestions: [],
   quizResult: null,
   startQuiz: (attempt, questions) =>
-    set({ quizAttempt: attempt, quizQuestions: questions, quizResult: null, view: "quiz" }),
+    set({ quizAttempt: attempt, quizQuestions: Array.isArray(questions) ? questions : [], quizResult: null, view: "quiz" }),
   setQuizResult: (result) => set({ quizResult: result, view: "quiz-result" }),
   clearQuiz: () => set({ quizAttempt: null, quizQuestions: [], quizResult: null }),
 

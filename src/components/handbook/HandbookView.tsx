@@ -93,7 +93,7 @@ export function HandbookView() {
     try {
       const res = await fetch(`/api/handbook/${selectedHandbookSubjectId}`);
       const json = await res.json();
-      setData(json.data || []);
+      setData(Array.isArray(json.data) ? json.data : []);
     } catch (e) {
       console.error("Failed to load handbook", e);
       setData([]);
@@ -110,7 +110,7 @@ export function HandbookView() {
       try {
         const res = await fetch(`/api/handbook/lessons/${selectedHandbookSubjectId}`);
         const json = await res.json();
-        setLessonsData(json.data || []);
+        setLessonsData(Array.isArray(json.data) ? json.data : []);
         break; // สำเร็จ ออก loop
       } catch (e) {
         console.warn(`Lessons fetch attempt ${attempt}/3 failed`, e);

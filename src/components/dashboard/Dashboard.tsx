@@ -86,7 +86,9 @@ export function Dashboard() {
 
   if (!data) return null;
 
-  const { overall, subjects, recentQuizScores } = data;
+  const overall = data.overall ?? { totalLessons: 0, completedLessons: 0, completionPct: 0, avgQuizScore: 0, totalQuizAttempts: 0 };
+  const subjects = Array.isArray(data.subjects) ? data.subjects : [];
+  const recentQuizScores = Array.isArray(data.recentQuizScores) ? data.recentQuizScores : [];
 
   return (
     <div className="space-y-6">
@@ -219,7 +221,7 @@ export function Dashboard() {
                           ? "text-amber-600"
                           : "text-rose-600")}
                   >
-                    {attempt.scorePercent.toFixed(0)}%
+                    {(attempt.scorePercent ?? 0).toFixed(0)}%
                   </span>
                 </div>
               ))}

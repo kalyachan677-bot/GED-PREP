@@ -66,8 +66,9 @@ export function QuizResult() {
       try {
         const subjectId = quizResult.attempt.id; // We'll use attempt's subject context
         // Store in a generic key since we don't have subjectId directly here
-        const scores: number[] = JSON.parse(localStorage.getItem("ged-recent-quiz-scores") || "[]");
-        scores.unshift(quizResult.attempt.scorePercent);
+        const parsed = JSON.parse(localStorage.getItem("ged-recent-quiz-scores") || "[]");
+        const scores: number[] = Array.isArray(parsed) ? parsed : [];
+        scores.unshift(quizResult.attempt.scorePercent ?? 0);
         localStorage.setItem("ged-recent-quiz-scores", JSON.stringify(scores.slice(0, 10)));
       } catch { /* ignore */ }
     }
