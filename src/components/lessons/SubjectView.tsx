@@ -35,29 +35,7 @@ export function SubjectView() {
   const [startingQuiz, setStartingQuiz] = useState(false);
   const [vocabComplete, setVocabComplete] = useState(false);
 
-  if (!selectedSubject) {
-    return (
-      <div className="space-y-4">
-        <Skeleton className="h-8 w-48 rounded-xl" />
-        <Skeleton className="h-64 rounded-2xl" />
-      </div>
-    );
-  }
-
-  const totalLessons = selectedSubject.modules.reduce(
-    (sum, m) => sum + m.topics.reduce((s, t) => s + t.lessons.length, 0),
-    0
-  );
-  const completedLessons = selectedSubject.modules.reduce(
-    (sum, m) => sum + m.topics.reduce(
-      (s, t) => s + t.lessons.filter((l) => l.progress?.isCompleted).length,
-      0
-    ),
-  );
-  const grad = SUBJECT_GRADIENTS[selectedSubject.code] || "from-violet-600 to-indigo-600";
-  const desc = tx(SUBJECT_DESCRIPTION_KEYS[selectedSubject.code] || "", {});
-  const icon = SUBJECT_ICONS[selectedSubject.code] || "\u{1F4DA}";
-  const pct = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+  // ── All hooks MUST be before any early return (Rules of Hooks) ──
 
   // ── Rigor: compute locked lessons ──
   const recentScores = useMemo(() => {
@@ -67,24 +45,52 @@ export function SubjectView() {
       const parsed = raw ? JSON.parse(raw) : [];
       return Array.isArray(parsed) ? parsed : [];
     } catch { return []; }
-  }, [user, selectedSubject.id]);
+  }, [user, selectedSubject?.id]);
 
   const lockedLessonIds = useMemo(() => {
+    if (!selectedSubject) return new Set<string>();
     return computeRigorLockedLessons(selectedSubject, rigorConfig, recentScores);
   }, [selectedSubject, rigorConfig, recentScores]);
 
-  // ── Rigor: check if vocab done for this subject today ──
-  const vocabDoneToday = rigorState?.vocabDoneToday?.[selectedSubject.id] === true;
-  const quizDoneToday = rigorState?.quizDoneToday === true;
-
-  // Level 2+: quiz blocked if vocab not done
-  const quizBlockedByVocab = rigorConfig && rigorConfig.level >= 2 && rigorConfig.flashcardRequired && !vocabDoneToday;
-
-  // ── Rigor warnings ──
   const warnings = useMemo(() => {
     if (!rigorConfig || !rigorState) return [];
     return getRigorWarnings(rigorConfig, rigorState);
   }, [rigorConfig, rigorState]);
+
+  const quizLockedByScore = useMemo(() => {
+    if (!rigorConfig || !rigorConfig.lockThreshold || recentScores.length === 0) return false;
+    const lockPct = (rigorConfig.lockThreshold / 200) * 100;
+    return recentScores[0] < lockPct;
+  }, [rigorConfig, recentScores]);
+
+  // ── Derived values (safe with optional chaining) ──
+  const totalLessons = selectedSubject?.modules?.reduce(
+    (sum, m) => sum + m.topics.reduce((s, t) => s + t.lessons.length, 0),
+    0
+  ) ?? 0;
+  const completedLessons = selectedSubject?.modules?.reduce(
+    (sum, m) => sum + m.topics.reduce(
+      (s, t) => s + t.lessons.filter((l) => l.progress?.isCompleted).length, 0
+    ),
+    0
+  ) ?? 0;
+  const grad = selectedSubject ? (SUBJECT_GRADIENTS[selectedSubject.code] || "from-violet-600 to-indigo-600") : "";
+  const desc = selectedSubject ? tx(SUBJECT_DESCRIPTION_KEYS[selectedSubject.code] || "", {}) : "";
+  const icon = selectedSubject ? (SUBJECT_ICONS[selectedSubject.code] || "\u{1F4DA}") : "";
+  const pct = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+  const vocabDoneToday = rigorState?.vocabDoneToday?.[selectedSubject?.id ?? ""] === true;
+  const quizDoneToday = rigorState?.quizDoneToday === true;
+  const quizBlockedByVocab = !!rigorConfig && rigorConfig.level >= 2 && rigorConfig.flashcardRequired && !vocabDoneToday;
+
+  // ── Early return (AFTER all hooks) ──
+  if (!selectedSubject) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-8 w-48 rounded-xl" />
+        <Skeleton className="h-64 rounded-2xl" />
+      </div>
+    );
+  }
 
   async function openLesson(lessonId: string) {
     if (lockedLessonIds.has(lessonId)) return; // BLOCKED by rigor
@@ -141,13 +147,6 @@ export function SubjectView() {
     setVocabComplete(true);
     useAppStore.getState().setRigorState(loadRigorState());
   }
-
-  // Check if subject quiz is locked by rigor
-  const quizLockedByScore = useMemo(() => {
-    if (!rigorConfig || !rigorConfig.lockThreshold || recentScores.length === 0) return false;
-    const lockPct = (rigorConfig.lockThreshold / 200) * 100;
-    return recentScores[0] < lockPct;
-  }, [rigorConfig, recentScores]);
 
   return (
     <div className="space-y-6">
