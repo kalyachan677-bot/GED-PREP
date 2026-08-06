@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   title: "GED Prep — Smart Learning Platform",
   description: "แพลตฟอร์มเตรียมสอบ GED อย่างมืออาชีพ พร้อม AI ติวเตอร์ ระบบทบทวนคำศัพท์ และแบบทดสอบแบบปรับเปลี่ยน",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/favicon.svg",
   },
 };
 
