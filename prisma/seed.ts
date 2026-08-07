@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const bcrypt = require("bcryptjs");
+import { EXTRA_QUESTIONS } from "./extra-questions";
 
 const prisma = new PrismaClient();
 
@@ -1357,6 +1358,17 @@ const SUBJECTS = [
 async function seed() {
   console.log("=== GED Prep Platform — Seeding Database ===\n");
 
+  // Idempotent check: skip if subjects already exist
+  const existingSubjects = await prisma.subject.count();
+  if (existingSubjects > 0) {
+    console.log(`Database already has ${existingSubjects} subjects. Checking for extra questions...`);
+    await seedExtraQuestions();
+    const totalQ = await prisma.question.count({ where: { isActive: true } });
+    console.log(`Total active questions: ${totalQ}`);
+    await prisma.$disconnect();
+    return;
+  }
+
   // Clear in reverse dependency order
   console.log("Clearing existing data...");
   await prisma.readinessHistory.deleteMany();
@@ -1686,6 +1698,77 @@ async function seed() {
     console.log(`  ${subject.title}: ${cards.length} flashcards`);
   }
   console.log(`Total flashcards: ${totalFlashcards}`);
+
+  // =======================================================================
+  // SEED EXTRA QUESTIONS (merged from add-questions.ts + add-hard-questions.ts)
+  // =======================================================================
+  await seedExtraQuestions();
+}
+
+async function seedExtraQuestions() {
+  console.log("\n--- Seeding Extra Questions ---");
+
+  const lessons = await prisma.lesson.findMany({
+    include: { topic: { include: { module: { include: { subject: true } } } } },
+  });
+
+  // Build a map of lesson title -> lesson id + subject id
+  const lessonMap = new Map<string, { id: string; subjectId: string }>();
+  for (const l of lessons) {
+    lessonMap.set(l.title, { id: l.id, subjectId: l.topic.module.subject.id });
+  }
+
+  let totalAdded = 0;
+  for (const [lessonTitle, questions] of Object.entries(EXTRA_QUESTIONS)) {
+    const lessonInfo = lessonMap.get(lessonTitle);
+    if (!lessonInfo) {
+      console.warn(`  SKIP: Lesson not found: "${lessonTitle}"`);
+      continue;
+    }
+
+    for (const [questionText, answers, difficulty, explanation, tags] of questions) {
+      await prisma.question.create({
+        data: {
+          questionType: "multiple_choice",
+          difficulty,
+          questionText,
+          explanation,
+          hintText: "",
+          tags: JSON.stringify(tags),
+          isActive: true,
+          points: difficulty === "hard" ? 3 : difficulty === "medium" ? 2 : 1,
+          subjectId: lessonInfo.subjectId,
+          lessonId: lessonInfo.id,
+          answers: {
+            create: answers.map((a, i) => ({
+              content: a[0],
+              isCorrect: a[1],
+              sortOrder: i,
+            })),
+          },
+        },
+      });
+      totalAdded++;
+    }
+    console.log(`  + ${lessonTitle}: ${questions.length} questions`);
+  }
+
+  console.log(`Extra questions added: ${totalAdded}`);
+
+  // Print summary
+  const subjects = await prisma.subject.findMany({
+    orderBy: { sortOrder: "asc" },
+    include: { questions: { where: { isActive: true } } },
+  });
+  console.log("\n--- Question Summary ---");
+  for (const s of subjects) {
+    const easy = s.questions.filter((q) => q.difficulty === "easy").length;
+    const med = s.questions.filter((q) => q.difficulty === "medium").length;
+    const hard = s.questions.filter((q) => q.difficulty === "hard").length;
+    console.log(
+      `  ${s.code}: ${s.questions.length} total (${easy} easy, ${med} medium, ${hard} hard)`
+    );
+  }
 }
 
 seed()

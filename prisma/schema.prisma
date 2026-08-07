@@ -1,8 +1,5 @@
 // ============================================================================
-// GED Prep Platform — Prisma Schema (PostgreSQL adapter for production)
-// ============================================================================
-// NOTE: For local dev with SQLite, change provider to "sqlite" and set
-// DATABASE_URL=file:./db/custom.db in .env
+// GED Prep Platform — Prisma Schema (PostgreSQL)
 // ============================================================================
 
 generator client {
@@ -10,8 +7,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // ---------------------------------------------------------------------------
