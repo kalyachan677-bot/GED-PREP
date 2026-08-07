@@ -1,0 +1,2002 @@
+  1689→}
+  1690→
+  1691→
+  1692→// ============================================================
+  1693→// ADDITIONAL QUESTIONS (beyond original 2 per lesson)
+  1694→// ============================================================
+  1695→
+  1696→async function seedAdditionalQuestions() {
+  1697→  const questionsByLesson = {
+  1698→  "What is a Linear Equation?": [
+  1699→    {
+  1700→      "lessonTitle": "What is a Linear Equation?",
+  1701→      "questionType": "multiple_choice",
+  1702→      "difficulty": "easy",
+  1703→      "questionText": null,
+  1704→      "explanation": "Subtract 7 from both sides to get 3x = 15, then divide by 3.",
+  1705→      "hintText": "Isolate x on one side of the equation.",
+  1706→      "tags": "[\"algebra\",\"linear-equation\",\"solving\"]",
+  1707→      "answers": [
+  1708→        {
+  1709→          "content": "5",
+  1710→          "isCorrect": true,
+  1711→          "sortOrder": 0
+  1712→        },
+  1713→        {
+  1714→          "content": "4",
+  1715→          "isCorrect": false,
+  1716→          "sortOrder": 1
+  1717→        },
+  1718→        {
+  1719→          "content": "6",
+  1720→          "isCorrect": false,
+  1721→          "sortOrder": 2
+  1722→        },
+  1723→        {
+  1724→          "content": "7",
+  1725→          "isCorrect": false,
+  1726→          "sortOrder": 3
+  1727→        }
+  1728→      ]
+  1729→    },
+  1730→    {
+  1731→      "lessonTitle": "What is a Linear Equation?",
+  1732→      "questionType": "multiple_choice",
+  1733→      "difficulty": "medium",
+  1734→      "questionText": null,
+  1735→      "explanation": "Subtract 4: 2(x+4) = 18 → x+4 = 9 → x = 5.",
+  1736→      "hintText": "First distribute or divide both sides by 2.",
+  1737→      "tags": "[\"algebra\",\"distributive-property\"]",
+  1738→      "answers": [
+  1739→        {
+  1740→          "content": "3",
+  1741→          "isCorrect": false,
+  1742→          "sortOrder": 0
+  1743→        },
+  1744→        {
+  1745→          "content": "5",
+  1746→          "isCorrect": true,
+  1747→          "sortOrder": 1
+  1748→        },
+  1749→        {
+  1750→          "content": "7",
+  1751→          "isCorrect": false,
+  1752→          "sortOrder": 2
+  1753→        },
+  1754→        {
+  1755→          "content": "9",
+  1756→          "isCorrect": false,
+  1757→          "sortOrder": 3
+  1758→        }
+  1759→      ]
+  1760→    },
+  1761→    {
+  1762→      "lessonTitle": "What is a Linear Equation?",
+  1763→      "questionType": "multiple_choice",
+  1764→      "difficulty": "easy",
+  1765→      "questionText": "Which of the following is a linear equation?",
+  1766→      "explanation": "A linear equation has variables only to the first power.",
+  1767→      "hintText": "",
+  1768→      "tags": "[\"algebra\",\"linear-equation\"]",
+  1769→      "answers": [
+  1770→        {
+  1771→          "content": "3x + 5 = 17",
+  1772→          "isCorrect": true,
+  1773→          "sortOrder": 0
+  1774→        },
+  1775→        {
+  1776→          "content": "x² + 2x = 8",
+  1777→          "isCorrect": false,
+  1778→          "sortOrder": 1
+  1779→        },
+  1780→        {
+  1781→          "content": "1/x + 3 = 7",
+  1782→          "isCorrect": false,
+  1783→          "sortOrder": 2
+  1784→        },
+  1785→        {
+  1786→          "content": "sqrt(x) = 4",
+  1787→          "isCorrect": false,
+  1788→          "sortOrder": 3
+  1789→        }
+  1790→      ]
+  1791→    },
+  1792→    {
+  1793→      "lessonTitle": "What is a Linear Equation?",
+  1794→      "questionType": "multiple_choice",
+  1795→      "difficulty": "medium",
+  1796→      "questionText": "Solve for x: 4(x - 2) = 20",
+  1797→      "explanation": "Distribute: 4x - 8 = 20. Add 8: 4x = 28. x = 7.",
+  1798→      "hintText": "",
+  1799→      "tags": "[\"algebra\",\"solving\"]",
+  1800→      "answers": [
+  1801→        {
+  1802→          "content": "7",
+  1803→          "isCorrect": true,
+  1804→          "sortOrder": 0
+  1805→        },
+  1806→        {
+  1807→          "content": "5",
+  1808→          "isCorrect": false,
+  1809→          "sortOrder": 1
+  1810→        },
+  1811→        {
+  1812→          "content": "8",
+  1813→          "isCorrect": false,
+  1814→          "sortOrder": 2
+  1815→        },
+  1816→        {
+  1817→          "content": "6",
+  1818→          "isCorrect": false,
+  1819→          "sortOrder": 3
+  1820→        }
+  1821→      ]
+  1822→    },
+  1823→    {
+  1824→      "lessonTitle": "What is a Linear Equation?",
+  1825→      "questionType": "multiple_choice",
+  1826→      "difficulty": "medium",
+  1827→      "questionText": "If 2x + 3 = 3x - 7, what is x?",
+  1828→      "explanation": "Subtract 2x: 3 = x - 7. Add 7: x = 10.",
+  1829→      "hintText": "",
+  1830→      "tags": "[\"algebra\",\"solving\"]",
+  1831→      "answers": [
+  1832→        {
+  1833→          "content": "10",
+  1834→          "isCorrect": true,
+  1835→          "sortOrder": 0
+  1836→        },
+  1837→        {
+  1838→          "content": "4",
+  1839→          "isCorrect": false,
+  1840→          "sortOrder": 1
+  1841→        },
+  1842→        {
+  1843→          "content": "7",
+  1844→          "isCorrect": false,
+  1845→          "sortOrder": 2
+  1846→        },
+  1847→        {
+  1848→          "content": "-10",
+  1849→          "isCorrect": false,
+  1850→          "sortOrder": 3
+  1851→        }
+  1852→      ]
+  1853→    },
+  1854→    {
+  1855→      "lessonTitle": "What is a Linear Equation?",
+  1856→      "questionType": "multiple_choice",
+  1857→      "difficulty": "medium",
+  1858→      "questionText": "What is the value of x if 5(x + 3) = 35?",
+  1859→      "explanation": "5x + 15 = 35, 5x = 20, x = 4.",
+  1860→      "hintText": "",
+  1861→      "tags": "[\"algebra\",\"distributive-property\"]",
+  1862→      "answers": [
+  1863→        {
+  1864→          "content": "4",
+  1865→          "isCorrect": true,
+  1866→          "sortOrder": 0
+  1867→        },
+  1868→        {
+  1869→          "content": "7",
+  1870→          "isCorrect": false,
+  1871→          "sortOrder": 1
+  1872→        },
+  1873→        {
+  1874→          "content": "10",
+  1875→          "isCorrect": false,
+  1876→          "sortOrder": 2
+  1877→        },
+  1878→        {
+  1879→          "content": "5",
+  1880→          "isCorrect": false,
+  1881→          "sortOrder": 3
+  1882→        }
+  1883→      ]
+  1884→    }
+  1885→  ],
+  1886→  "Solving Inequalities": [
+  1887→    {
+  1888→      "lessonTitle": "Solving Inequalities",
+  1889→      "questionType": "multiple_choice",
+  1890→      "difficulty": "easy",
+  1891→      "questionText": null,
+  1892→      "explanation": "Divide both sides by -2 and flip the sign: x < 5.",
+  1893→      "hintText": "",
+  1894→      "tags": "[\"inequality\",\"flip-sign\"]",
+  1895→      "answers": [
+  1896→        {
+  1897→          "content": "x > 5",
+  1898→          "isCorrect": false,
+  1899→          "sortOrder": 0
+  1900→        },
+  1901→        {
+  1902→          "content": "x < 5",
+  1903→          "isCorrect": true,
+  1904→          "sortOrder": 1
+  1905→        },
+  1906→        {
+  1907→          "content": "x < -5",
+  1908→          "isCorrect": false,
+  1909→          "sortOrder": 2
+  1910→        },
+  1911→        {
+  1912→          "content": "x > -5",
+  1913→          "isCorrect": false,
+  1914→          "sortOrder": 3
+  1915→        }
+  1916→      ]
+  1917→    },
+  1918→    {
+  1919→      "lessonTitle": "Solving Inequalities",
+  1920→      "questionType": "multiple_choice",
+  1921→      "difficulty": "medium",
+  1922→      "questionText": null,
+  1923→      "explanation": "Add 3 to both sides: 3x ≤ 12, then divide by 3: x ≤ 4.",
+  1924→      "hintText": "",
+  1925→      "tags": "[\"inequality\",\"compound-inequality\"]",
+  1926→      "answers": [
+  1927→        {
+  1928→          "content": "x ≤ 4",
+  1929→          "isCorrect": true,
+  1930→          "sortOrder": 0
+  1931→        },
+  1932→        {
+  1933→          "content": "x ≥ 4",
+  1934→          "isCorrect": false,
+  1935→          "sortOrder": 1
+  1936→        },
+  1937→        {
+  1938→          "content": "x < 4",
+  1939→          "isCorrect": false,
+  1940→          "sortOrder": 2
+  1941→        },
+  1942→        {
+  1943→          "content": "x > 4",
+  1944→          "isCorrect": false,
+  1945→          "sortOrder": 3
+  1946→        }
+  1947→      ]
+  1948→    },
+  1949→    {
+  1950→      "lessonTitle": "Solving Inequalities",
+  1951→      "questionType": "multiple_choice",
+  1952→      "difficulty": "easy",
+  1953→      "questionText": "Solve: 2x - 3 > 7",
+  1954→      "explanation": "Add 3: 2x > 10. Divide by 2: x > 5.",
+  1955→      "hintText": "",
+  1956→      "tags": "[\"algebra\",\"inequalities\"]",
+  1957→      "answers": [
+  1958→        {
+  1959→          "content": "x > 5",
+  1960→          "isCorrect": true,
+  1961→          "sortOrder": 0
+  1962→        },
+  1963→        {
+  1964→          "content": "x > 2",
+  1965→          "isCorrect": false,
+  1966→          "sortOrder": 1
+  1967→        },
+  1968→        {
+  1969→          "content": "x < 5",
+  1970→          "isCorrect": false,
+  1971→          "sortOrder": 2
+  1972→        },
+  1973→        {
+  1974→          "content": "x > 4",
+  1975→          "isCorrect": false,
+  1976→          "sortOrder": 3
+  1977→        }
+  1978→      ]
+  1979→    },
+  1980→    {
+  1981→      "lessonTitle": "Solving Inequalities",
+  1982→      "questionType": "multiple_choice",
+  1983→      "difficulty": "medium",
+  1984→      "questionText": "Solve: -3x <= 12",
+  1985→      "explanation": "Divide by -3 and flip the inequality sign: x >= -4.",
+  1986→      "hintText": "",
+  1987→      "tags": "[\"algebra\",\"inequalities\"]",
+  1988→      "answers": [
+  1989→        {
+  1990→          "content": "x >= -4",
+  1991→          "isCorrect": true,
+  1992→          "sortOrder": 0
+  1993→        },
+  1994→        {
+  1995→          "content": "x <= -4",
+  1996→          "isCorrect": false,
+  1997→          "sortOrder": 1
+  1998→        },
+  1999→        {
+  2000→          "content": "x >= 4",
+  2001→          "isCorrect": false,
+  2002→          "sortOrder": 2
+  2003→        },
+  2004→        {
+  2005→          "content": "x <= 4",
+  2006→          "isCorrect": false,
+  2007→          "sortOrder": 3
+  2008→        }
+  2009→      ]
+  2010→    },
+  2011→    {
+  2012→      "lessonTitle": "Solving Inequalities",
+  2013→      "questionType": "multiple_choice",
+  2014→      "difficulty": "easy",
+  2015→      "questionText": "Which represents x < 3 on a number line?",
+  2016→      "explanation": "Open circle (not equal) with arrow left (smaller values).",
+  2017→      "hintText": "",
+  2018→      "tags": "[\"algebra\",\"inequalities\",\"graphing\"]",
+  2019→      "answers": [
+  2020→        {
+  2021→          "content": "Open circle at 3, arrow pointing left",
+  2022→          "isCorrect": true,
+  2023→          "sortOrder": 0
+  2024→        },
+  2025→        {
+  2026→          "content": "Closed circle at 3, arrow pointing left",
+  2027→          "isCorrect": false,
+  2028→          "sortOrder": 1
+  2029→        },
+  2030→        {
+  2031→          "content": "Open circle at 3, arrow pointing right",
+  2032→          "isCorrect": false,
+  2033→          "sortOrder": 2
+  2034→        },
+  2035→        {
+  2036→          "content": "Closed circle at 3, arrow pointing right",
+  2037→          "isCorrect": false,
+  2038→          "sortOrder": 3
+  2039→        }
+  2040→      ]
+  2041→    },
+  2042→    {
+  2043→      "lessonTitle": "Solving Inequalities",
+  2044→      "questionType": "multiple_choice",
+  2045→      "difficulty": "medium",
+  2046→      "questionText": "Solve: 5 - 2x > 11",
+  2047→      "explanation": "Subtract 5: -2x > 6. Divide by -2 (flip): x < -3.",
+  2048→      "hintText": "",
+  2049→      "tags": "[\"algebra\",\"inequalities\"]",
+  2050→      "answers": [
+  2051→        {
+  2052→          "content": "x < -3",
+  2053→          "isCorrect": true,
+  2054→          "sortOrder": 0
+  2055→        },
+  2056→        {
+  2057→          "content": "x > -3",
+  2058→          "isCorrect": false,
+  2059→          "sortOrder": 1
+  2060→        },
+  2061→        {
+  2062→          "content": "x > 3",
+  2063→          "isCorrect": false,
+  2064→          "sortOrder": 2
+  2065→        },
+  2066→        {
+  2067→          "content": "x < 3",
+  2068→          "isCorrect": false,
+  2069→          "sortOrder": 3
+  2070→        }
+  2071→      ]
+  2072→    }
+  2073→  ],
+  2074→  "Substitution Method": [
+  2075→    {
+  2076→      "lessonTitle": "Substitution Method",
+  2077→      "questionType": "multiple_choice",
+  2078→      "difficulty": "medium",
+  2079→      "questionText": null,
+  2080→      "explanation": "Substitute x=3 into y=2x+1: y=7. Check: 3+7=10.",
+  2081→      "hintText": "",
+  2082→      "tags": "[\"systems\",\"substitution\"]",
+  2083→      "answers": [
+  2084→        {
+  2085→          "content": "(2, 5)",
+  2086→          "isCorrect": false,
+  2087→          "sortOrder": 0
+  2088→        },
+  2089→        {
+  2090→          "content": "(3, 7)",
+  2091→          "isCorrect": true,
+  2092→          "sortOrder": 1
+  2093→        },
+  2094→        {
+  2095→          "content": "(4, 6)",
+  2096→          "isCorrect": false,
+  2097→          "sortOrder": 2
+  2098→        },
+  2099→        {
+  2100→          "content": "(1, 9)",
+  2101→          "isCorrect": false,
+  2102→          "sortOrder": 3
+  2103→        }
+  2104→      ]
+  2105→    },
+  2106→    {
+  2107→      "lessonTitle": "Substitution Method",
+  2108→      "questionType": "multiple_choice",
+  2109→      "difficulty": "hard",
+  2110→      "questionText": null,
+  2111→      "explanation": "3(3) + 2y = 13 → 9 + 2y = 13 → y = 2.",
+  2112→      "hintText": "",
+  2113→      "tags": "[\"systems\",\"substitution\",\"fractions\"]",
+  2114→      "answers": [
+  2115→        {
+  2116→          "content": "y = 1",
+  2117→          "isCorrect": false,
+  2118→          "sortOrder": 0
+  2119→        },
+  2120→        {
+  2121→          "content": "y = 2",
+  2122→          "isCorrect": true,
+  2123→          "sortOrder": 1
+  2124→        },
+  2125→        {
+  2126→          "content": "y = 3",
+  2127→          "isCorrect": false,
+  2128→          "sortOrder": 2
+  2129→        },
+  2130→        {
+  2131→          "content": "y = 4",
+  2132→          "isCorrect": false,
+  2133→          "sortOrder": 3
+  2134→        }
+  2135→      ]
+  2136→    },
+  2137→    {
+  2138→      "lessonTitle": "Substitution Method",
+  2139→      "questionType": "multiple_choice",
+  2140→      "difficulty": "easy",
+  2141→      "questionText": "Solve: y = 2x + 1 and y = 7. What is x?",
+  2142→      "explanation": "Set 2x + 1 = 7. 2x = 6. x = 3.",
+  2143→      "hintText": "",
+  2144→      "tags": "[\"algebra\",\"systems\",\"substitution\"]",
+  2145→      "answers": [
+  2146→        {
+  2147→          "content": "3",
+  2148→          "isCorrect": true,
+  2149→          "sortOrder": 0
+  2150→        },
+  2151→        {
+  2152→          "content": "4",
+  2153→          "isCorrect": false,
+  2154→          "sortOrder": 1
+  2155→        },
+  2156→        {
+  2157→          "content": "5",
+  2158→          "isCorrect": false,
+  2159→          "sortOrder": 2
+  2160→        },
+  2161→        {
+  2162→          "content": "2",
+  2163→          "isCorrect": false,
+  2164→          "sortOrder": 3
+  2165→        }
+  2166→      ]
+  2167→    },
+  2168→    {
+  2169→      "lessonTitle": "Substitution Method",
+  2170→      "questionType": "multiple_choice",
+  2171→      "difficulty": "medium",
+  2172→      "questionText": "Solve: x + y = 10 and y = 3x. What is x?",
+  2173→      "explanation": "x + 3x = 10, 4x = 10, x = 2.5.",
+  2174→      "hintText": "",
+  2175→      "tags": "[\"algebra\",\"systems\"]",
+  2176→      "answers": [
+  2177→        {
+  2178→          "content": "2.5",
+  2179→          "isCorrect": true,
+  2180→          "sortOrder": 0
+  2181→        },
+  2182→        {
+  2183→          "content": "3",
+  2184→          "isCorrect": false,
+  2185→          "sortOrder": 1
+  2186→        },
+  2187→        {
+  2188→          "content": "2",
+  2189→          "isCorrect": false,
+  2190→          "sortOrder": 2
+  2191→        },
+  2192→        {
+  2193→          "content": "5",
+  2194→          "isCorrect": false,
+  2195→          "sortOrder": 3
+  2196→        }
+  2197→      ]
+  2198→    },
+  2199→    {
+  2200→      "lessonTitle": "Substitution Method",
+  2201→      "questionType": "multiple_choice",
+  2202→      "difficulty": "medium",
+  2203→      "questionText": "If y = x - 4 and 2x + y = 16, what is y?",
+  2204→      "explanation": "2x + x - 4 = 16, 3x = 20, x = 20/3, y = 20/3 - 12/3 = 8/3.",
+  2205→      "hintText": "",
+  2206→      "tags": "[\"algebra\",\"systems\"]",
+  2207→      "answers": [
+  2208→        {
+  2209→          "content": "8/3",
+  2210→          "isCorrect": true,
+  2211→          "sortOrder": 0
+  2212→        },
+  2213→        {
+  2214→          "content": "4",
+  2215→          "isCorrect": false,
+  2216→          "sortOrder": 1
+  2217→        },
+  2218→        {
+  2219→          "content": "2",
+  2220→          "isCorrect": false,
+  2221→          "sortOrder": 2
+  2222→        },
+  2223→        {
+  2224→          "content": "6",
+  2225→          "isCorrect": false,
+  2226→          "sortOrder": 3
+  2227→        }
+  2228→      ]
+  2229→    },
+  2230→    {
+  2231→      "lessonTitle": "Substitution Method",
+  2232→      "questionType": "multiple_choice",
+  2233→      "difficulty": "hard",
+  2234→      "questionText": "A store sells notebooks for $3 and pens for $1.50. Buy 5 items for $12 total. How many notebooks?",
+  2235→      "explanation": "n + p = 5, 3n + 1.5p = 12. Substitute: 3n + 1.5(5-n) = 12, 1.5n = 4.5, n = 3.",
+  2236→      "hintText": "",
+  2237→      "tags": "[\"algebra\",\"systems\",\"word-problem\"]",
+  2238→      "answers": [
+  2239→        {
+  2240→          "content": "3",
+  2241→          "isCorrect": true,
+  2242→          "sortOrder": 0
+  2243→        },
+  2244→        {
+  2245→          "content": "2",
+  2246→          "isCorrect": false,
+  2247→          "sortOrder": 1
+  2248→        },
+  2249→        {
+  2250→          "content": "4",
+  2251→          "isCorrect": false,
+  2252→          "sortOrder": 2
+  2253→        },
+  2254→        {
+  2255→          "content": "1",
+  2256→          "isCorrect": false,
+  2257→          "sortOrder": 3
+  2258→        }
+  2259→      ]
+  2260→    }
+  2261→  ],
+  2262→  "Elimination Method": [
+  2263→    {
+  2264→      "lessonTitle": "Elimination Method",
+  2265→      "questionType": "multiple_choice",
+  2266→      "difficulty": "medium",
+  2267→      "questionText": null,
+  2268→      "explanation": "",
+  2269→      "hintText": "",
+  2270→      "tags": "[\"systems\",\"elimination\"]",
+  2271→      "answers": [
+  2272→        {
+  2273→          "content": "(3, 1)",
+  2274→          "isCorrect": true,
+  2275→          "sortOrder": 0
+  2276→        },
+  2277→        {
+  2278→          "content": "(1, 3)",
+  2279→          "isCorrect": false,
+  2280→          "sortOrder": 1
+  2281→        },
+  2282→        {
+  2283→          "content": "(2, 2)",
+  2284→          "isCorrect": false,
+  2285→          "sortOrder": 2
+  2286→        },
+  2287→        {
+  2288→          "content": "(4, 0)",
+  2289→          "isCorrect": false,
+  2290→          "sortOrder": 3
+  2291→        }
+  2292→      ]
+  2293→    },
+  2294→    {
+  2295→      "lessonTitle": "Elimination Method",
+  2296→      "questionType": "multiple_choice",
+  2297→      "difficulty": "hard",
+  2298→      "questionText": null,
+  2299→      "explanation": "",
+  2300→      "hintText": "",
+  2301→      "tags": "[\"systems\",\"no-solution\"]",
+  2302→      "answers": [
+  2303→        {
+  2304→          "content": "One solution",
+  2305→          "isCorrect": false,
+  2306→          "sortOrder": 0
+  2307→        },
+  2308→        {
+  2309→          "content": "No solution",
+  2310→          "isCorrect": true,
+  2311→          "sortOrder": 1
+  2312→        },
+  2313→        {
+  2314→          "content": "Infinite solutions",
+  2315→          "isCorrect": false,
+  2316→          "sortOrder": 2
+  2317→        },
+  2318→        {
+  2319→          "content": "Two solutions",
+  2320→          "isCorrect": false,
+  2321→          "sortOrder": 3
+  2322→        }
+  2323→      ]
+  2324→    },
+  2325→    {
+  2326→      "lessonTitle": "Elimination Method",
+  2327→      "questionType": "multiple_choice",
+  2328→      "difficulty": "medium",
+  2329→      "questionText": "Solve: 2x + 3y = 12 and 2x + y = 8. What is y?",
+  2330→      "explanation": "Subtract: 2y = 4, y = 2.",
+  2331→      "hintText": "",
+  2332→      "tags": "[\"algebra\",\"systems\",\"elimination\"]",
+  2333→      "answers": [
+  2334→        {
+  2335→          "content": "2",
+  2336→          "isCorrect": true,
+  2337→          "sortOrder": 0
+  2338→        },
+  2339→        {
+  2340→          "content": "3",
+  2341→          "isCorrect": false,
+  2342→          "sortOrder": 1
+  2343→        },
+  2344→        {
+  2345→          "content": "1",
+  2346→          "isCorrect": false,
+  2347→          "sortOrder": 2
+  2348→        },
+  2349→        {
+  2350→          "content": "4",
+  2351→          "isCorrect": false,
+  2352→          "sortOrder": 3
+  2353→        }
+  2354→      ]
+  2355→    },
+  2356→    {
+  2357→      "lessonTitle": "Elimination Method",
+  2358→      "questionType": "multiple_choice",
+  2359→      "difficulty": "easy",
+  2360→      "questionText": "Solve: 3x + 2y = 16 and x + 2y = 10. What is x?",
+  2361→      "explanation": "Subtract: 2x = 6, x = 3.",
+  2362→      "hintText": "",
+  2363→      "tags": "[\"algebra\",\"systems\"]",
+  2364→      "answers": [
+  2365→        {
+  2366→          "content": "3",
+  2367→          "isCorrect": true,
+  2368→          "sortOrder": 0
+  2369→        },
+  2370→        {
+  2371→          "content": "2",
+  2372→          "isCorrect": false,
+  2373→          "sortOrder": 1
+  2374→        },
+  2375→        {
+  2376→          "content": "5",
+  2377→          "isCorrect": false,
+  2378→          "sortOrder": 2
+  2379→        },
+  2380→        {
+  2381→          "content": "4",
+  2382→          "isCorrect": false,
+  2383→          "sortOrder": 3
+  2384→        }
+  2385→      ]
+  2386→    },
+  2387→    {
+  2388→      "lessonTitle": "Elimination Method",
+  2389→      "questionType": "multiple_choice",
+  2390→      "difficulty": "easy",
+  2391→      "questionText": "Solve: x + y = 7 and x - y = 3. What are x and y?",
+  2392→      "explanation": "Add: 2x = 10, x = 5. y = 2.",
+  2393→      "hintText": "",
+  2394→      "tags": "[\"algebra\",\"systems\"]",
+  2395→      "answers": [
+  2396→        {
+  2397→          "content": "x = 5, y = 2",
+  2398→          "isCorrect": true,
+  2399→          "sortOrder": 0
+  2400→        },
+  2401→        {
+  2402→          "content": "x = 4, y = 3",
+  2403→          "isCorrect": false,
+  2404→          "sortOrder": 1
+  2405→        },
+  2406→        {
+  2407→          "content": "x = 6, y = 1",
+  2408→          "isCorrect": false,
+  2409→          "sortOrder": 2
+  2410→        },
+  2411→        {
+  2412→          "content": "x = 3, y = 4",
+  2413→          "isCorrect": false,
+  2414→          "sortOrder": 3
+  2415→        }
+  2416→      ]
+  2417→    },
+  2418→    {
+  2419→      "lessonTitle": "Elimination Method",
+  2420→      "questionType": "multiple_choice",
+  2421→      "difficulty": "hard",
+  2422→      "questionText": "A theater sold 200 tickets. Adult $8, child $5. Total $1,300. How many child tickets?",
+  2423→      "explanation": "a + c = 200, 8a + 5c = 1300. a = 200-c. 1600 - 3c = 1300, c = 100.",
+  2424→      "hintText": "",
+  2425→      "tags": "[\"algebra\",\"systems\",\"word-problem\"]",
+  2426→      "answers": [
+  2427→        {
+  2428→          "content": "100",
+  2429→          "isCorrect": true,
+  2430→          "sortOrder": 0
+  2431→        },
+  2432→        {
+  2433→          "content": "80",
+  2434→          "isCorrect": false,
+  2435→          "sortOrder": 1
+  2436→        },
+  2437→        {
+  2438→          "content": "120",
+  2439→          "isCorrect": false,
+  2440→          "sortOrder": 2
+  2441→        },
+  2442→        {
+  2443→          "content": "60",
+  2444→          "isCorrect": false,
+  2445→          "sortOrder": 3
+  2446→        }
+  2447→      ]
+  2448→    }
+  2449→  ],
+  2450→  "Rectangle and Triangle Basics": [
+  2451→    {
+  2452→      "lessonTitle": "Rectangle and Triangle Basics",
+  2453→      "questionType": "multiple_choice",
+  2454→      "difficulty": "easy",
+  2455→      "questionText": null,
+  2456→      "explanation": "",
+  2457→      "hintText": "",
+  2458→      "tags": "[\"geometry\",\"rectangle\",\"area\"]",
+  2459→      "answers": [
+  2460→        {
+  2461→          "content": "30",
+  2462→          "isCorrect": true,
+  2463→          "sortOrder": 0
+  2464→        },
+  2465→        {
+  2466→          "content": "35",
+  2467→          "isCorrect": false,
+  2468→          "sortOrder": 1
+  2469→        },
+  2470→        {
+  2471→          "content": "40",
+  2472→          "isCorrect": false,
+  2473→          "sortOrder": 2
+  2474→        },
+  2475→        {
+  2476→          "content": "50",
+  2477→          "isCorrect": false,
+  2478→          "sortOrder": 3
+  2479→        }
+  2480→      ]
+  2481→    },
+  2482→    {
+  2483→      "lessonTitle": "Rectangle and Triangle Basics",
+  2484→      "questionType": "multiple_choice",
+  2485→      "difficulty": "easy",
+  2486→      "questionText": null,
+  2487→      "explanation": "",
+  2488→      "hintText": "",
+  2489→      "tags": "[\"geometry\",\"triangle\",\"area\"]",
+  2490→      "answers": [
+  2491→        {
+  2492→          "content": "12",
+  2493→          "isCorrect": true,
+  2494→          "sortOrder": 0
+  2495→        },
+  2496→        {
+  2497→          "content": "24",
+  2498→          "isCorrect": false,
+  2499→          "sortOrder": 1
+  2500→        },
+  2501→        {
+  2502→          "content": "10",
+  2503→          "isCorrect": false,
+  2504→          "sortOrder": 2
+  2505→        },
+  2506→        {
+  2507→          "content": "6",
+  2508→          "isCorrect": false,
+  2509→          "sortOrder": 3
+  2510→        }
+  2511→      ]
+  2512→    },
+  2513→    {
+  2514→      "lessonTitle": "Rectangle and Triangle Basics",
+  2515→      "questionType": "multiple_choice",
+  2516→      "difficulty": "easy",
+  2517→      "questionText": "A rectangle has length 12 cm and width 8 cm. What is its perimeter?",
+  2518→      "explanation": "P = 2(l + w) = 2(12 + 8) = 40 cm.",
+  2519→      "hintText": "",
+  2520→      "tags": "[\"geometry\",\"perimeter\",\"rectangle\"]",
+  2521→      "answers": [
+  2522→        {
+  2523→          "content": "40 cm",
+  2524→          "isCorrect": true,
+  2525→          "sortOrder": 0
+  2526→        },
+  2527→        {
+  2528→          "content": "96 cm",
+  2529→          "isCorrect": false,
+  2530→          "sortOrder": 1
+  2531→        },
+  2532→        {
+  2533→          "content": "20 cm",
+  2534→          "isCorrect": false,
+  2535→          "sortOrder": 2
+  2536→        },
+  2537→        {
+  2538→          "content": "48 cm",
+  2539→          "isCorrect": false,
+  2540→          "sortOrder": 3
+  2541→        }
+  2542→      ]
+  2543→    },
+  2544→    {
+  2545→      "lessonTitle": "Rectangle and Triangle Basics",
+  2546→      "questionType": "multiple_choice",
+  2547→      "difficulty": "easy",
+  2548→      "questionText": "What is the area of a triangle with base 10 cm and height 6 cm?",
+  2549→      "explanation": "A = 1/2 * base * height = 1/2 * 10 * 6 = 30.",
+  2550→      "hintText": "",
+  2551→      "tags": "[\"geometry\",\"area\",\"triangle\"]",
+  2552→      "answers": [
+  2553→        {
+  2554→          "content": "30 sq cm",
+  2555→          "isCorrect": true,
+  2556→          "sortOrder": 0
+  2557→        },
+  2558→        {
+  2559→          "content": "60 sq cm",
+  2560→          "isCorrect": false,
+  2561→          "sortOrder": 1
+  2562→        },
+  2563→        {
+  2564→          "content": "16 sq cm",
+  2565→          "isCorrect": false,
+  2566→          "sortOrder": 2
+  2567→        },
+  2568→        {
+  2569→          "content": "36 sq cm",
+  2570→          "isCorrect": false,
+  2571→          "sortOrder": 3
+  2572→        }
+  2573→      ]
+  2574→    },
+  2575→    {
+  2576→      "lessonTitle": "Rectangle and Triangle Basics",
+  2577→      "questionType": "multiple_choice",
+  2578→      "difficulty": "medium",
+  2579→      "questionText": "A rectangle has area 72 sq cm and length 9 cm. What is the width?",
+  2580→      "explanation": "72 = 9 * w, w = 8 cm.",
+  2581→      "hintText": "",
+  2582→      "tags": "[\"geometry\",\"area\",\"rectangle\"]",
+  2583→      "answers": [
+  2584→        {
+  2585→          "content": "8 cm",
+  2586→          "isCorrect": true,
+  2587→          "sortOrder": 0
+  2588→        },
+  2589→        {
+  2590→          "content": "7 cm",
+  2591→          "isCorrect": false,
+  2592→          "sortOrder": 1
+  2593→        },
+  2594→        {
+  2595→          "content": "6 cm",
+  2596→          "isCorrect": false,
+  2597→          "sortOrder": 2
+  2598→        },
+  2599→        {
+  2600→          "content": "10 cm",
+  2601→          "isCorrect": false,
+  2602→          "sortOrder": 3
+  2603→        }
+  2604→      ]
+  2605→    },
+  2606→    {
+  2607→      "lessonTitle": "Rectangle and Triangle Basics",
+  2608→      "questionType": "multiple_choice",
+  2609→      "difficulty": "medium",
+  2610→      "questionText": "The perimeter of a square is 44 cm. What is its area?",
+  2611→      "explanation": "Side = 44/4 = 11 cm. Area = 11 * 11 = 121 sq cm.",
+  2612→      "hintText": "",
+  2613→      "tags": "[\"geometry\",\"square\"]",
+  2614→      "answers": [
+  2615→        {
+  2616→          "content": "121 sq cm",
+  2617→          "isCorrect": true,
+  2618→          "sortOrder": 0
+  2619→        },
+  2620→        {
+  2621→          "content": "176 sq cm",
+  2622→          "isCorrect": false,
+  2623→          "sortOrder": 1
+  2624→        },
+  2625→        {
+  2626→          "content": "484 sq cm",
+  2627→          "isCorrect": false,
+  2628→          "sortOrder": 2
+  2629→        },
+  2630→        {
+  2631→          "content": "44 sq cm",
+  2632→          "isCorrect": false,
+  2633→          "sortOrder": 3
+  2634→        }
+  2635→      ]
+  2636→    }
+  2637→  ],
+  2638→  "Circles and Composite Shapes": [
+  2639→    {
+  2640→      "lessonTitle": "Circles and Composite Shapes",
+  2641→      "questionType": "multiple_choice",
+  2642→      "difficulty": "medium",
+  2643→      "questionText": null,
+  2644→      "explanation": "",
+  2645→      "hintText": "",
+  2646→      "tags": "[\"geometry\",\"circle\",\"circumference\"]",
+  2647→      "answers": [
+  2648→        {
+  2649→          "content": "10π",
+  2650→          "isCorrect": true,
+  2651→          "sortOrder": 0
+  2652→        },
+  2653→        {
+  2654→          "content": "20π",
+  2655→          "isCorrect": false,
+  2656→          "sortOrder": 1
+  2657→        },
+  2658→        {
+  2659→          "content": "5π",
+  2660→          "isCorrect": false,
+  2661→          "sortOrder": 2
+  2662→        },
+  2663→        {
+  2664→          "content": "25π",
+  2665→          "isCorrect": false,
+  2666→          "sortOrder": 3
+  2667→        }
+  2668→      ]
+  2669→    },
+  2670→    {
+  2671→      "lessonTitle": "Circles and Composite Shapes",
+  2672→      "questionType": "multiple_choice",
+  2673→      "difficulty": "medium",
+  2674→      "questionText": null,
+  2675→      "explanation": "",
+  2676→      "hintText": "",
+  2677→      "tags": "[\"geometry\",\"circle\",\"area\"]",
+  2678→      "answers": [
+  2679→        {
+  2680→          "content": "16π",
+  2681→          "isCorrect": true,
+  2682→          "sortOrder": 0
+  2683→        },
+  2684→        {
+  2685→          "content": "8π",
+  2686→          "isCorrect": false,
+  2687→          "sortOrder": 1
+  2688→        },
+  2689→        {
+  2690→          "content": "4π",
+  2691→          "isCorrect": false,
+  2692→          "sortOrder": 2
+  2693→        },
+  2694→        {
+  2695→          "content": "32π",
+  2696→          "isCorrect": false,
+  2697→          "sortOrder": 3
+  2698→        }
+  2699→      ]
+  2700→    },
+  2701→    {
+  2702→      "lessonTitle": "Circles and Composite Shapes",
+  2703→      "questionType": "multiple_choice",
+  2704→      "difficulty": "easy",
+  2705→      "questionText": "What is the circumference of a circle with radius 7 cm? (pi = 22/7)",
+  2706→      "explanation": "C = 2 * pi * r = 2 * (22/7) * 7 = 44 cm.",
+  2707→      "hintText": "",
+  2708→      "tags": "[\"geometry\",\"circles\"]",
+  2709→      "answers": [
+  2710→        {
+  2711→          "content": "44 cm",
+  2712→          "isCorrect": true,
+  2713→          "sortOrder": 0
+  2714→        },
+  2715→        {
+  2716→          "content": "154 cm",
+  2717→          "isCorrect": false,
+  2718→          "sortOrder": 1
+  2719→        },
+  2720→        {
+  2721→          "content": "22 cm",
+  2722→          "isCorrect": false,
+  2723→          "sortOrder": 2
+  2724→        },
+  2725→        {
+  2726→          "content": "88 cm",
+  2727→          "isCorrect": false,
+  2728→          "sortOrder": 3
+  2729→        }
+  2730→      ]
+  2731→    },
+  2732→    {
+  2733→      "lessonTitle": "Circles and Composite Shapes",
+  2734→      "questionType": "multiple_choice",
+  2735→      "difficulty": "medium",
+  2736→      "questionText": "What is the area of a circle with diameter 10 cm? (pi = 3.14)",
+  2737→      "explanation": "Radius = 5. Area = pi * r^2 = 3.14 * 25 = 78.5 sq cm.",
+  2738→      "hintText": "",
+  2739→      "tags": "[\"geometry\",\"circles\",\"area\"]",
+  2740→      "answers": [
+  2741→        {
+  2742→          "content": "78.5 sq cm",
+  2743→          "isCorrect": true,
+  2744→          "sortOrder": 0
+  2745→        },
+  2746→        {
+  2747→          "content": "31.4 sq cm",
+  2748→          "isCorrect": false,
+  2749→          "sortOrder": 1
+  2750→        },
+  2751→        {
+  2752→          "content": "50.24 sq cm",
+  2753→          "isCorrect": false,
+  2754→          "sortOrder": 2
+  2755→        },
+  2756→        {
+  2757→          "content": "100 sq cm",
+  2758→          "isCorrect": false,
+  2759→          "sortOrder": 3
+  2760→        }
+  2761→      ]
+  2762→    },
+  2763→    {
+  2764→      "lessonTitle": "Circles and Composite Shapes",
+  2765→      "questionType": "multiple_choice",
+  2766→      "difficulty": "medium",
+  2767→      "questionText": "A circle has circumference 31.4 cm. What is its radius? (pi = 3.14)",
+  2768→      "explanation": "C = 2*pi*r, 31.4 = 6.28*r, r = 5 cm.",
+  2769→      "hintText": "",
+  2770→      "tags": "[\"geometry\",\"circles\"]",
+  2771→      "answers": [
+  2772→        {
+  2773→          "content": "5 cm",
+  2774→          "isCorrect": true,
+  2775→          "sortOrder": 0
+  2776→        },
+  2777→        {
+  2778→          "content": "10 cm",
+  2779→          "isCorrect": false,
+  2780→          "sortOrder": 1
+  2781→        },
+  2782→        {
+  2783→          "content": "15.7 cm",
+  2784→          "isCorrect": false,
+  2785→          "sortOrder": 2
+  2786→        },
+  2787→        {
+  2788→          "content": "3.14 cm",
+  2789→          "isCorrect": false,
+  2790→          "sortOrder": 3
+  2791→        }
+  2792→      ]
+  2793→    },
+  2794→    {
+  2795→      "lessonTitle": "Circles and Composite Shapes",
+  2796→      "questionType": "multiple_choice",
+  2797→      "difficulty": "medium",
+  2798→      "questionText": "What is the area of a circle with radius 14 cm? (pi = 22/7)",
+  2799→      "explanation": "A = (22/7) * 14^2 = (22/7) * 196 = 616 sq cm.",
+  2800→      "hintText": "",
+  2801→      "tags": "[\"geometry\",\"circles\",\"area\"]",
+  2802→      "answers": [
+  2803→        {
+  2804→          "content": "616 sq cm",
+  2805→          "isCorrect": true,
+  2806→          "sortOrder": 0
+  2807→        },
+  2808→        {
+  2809→          "content": "308 sq cm",
+  2810→          "isCorrect": false,
+  2811→          "sortOrder": 1
+  2812→        },
+  2813→        {
+  2814→          "content": "88 sq cm",
+  2815→          "isCorrect": false,
+  2816→          "sortOrder": 2
+  2817→        },
+  2818→        {
+  2819→          "content": "154 sq cm",
+  2820→          "isCorrect": false,
+  2821→          "sortOrder": 3
+  2822→        }
+  2823→      ]
+  2824→    }
+  2825→  ],
+  2826→  "Understanding the Theorem": [
+  2827→    {
+  2828→      "lessonTitle": "Understanding the Theorem",
+  2829→      "questionType": "multiple_choice",
+  2830→      "difficulty": "easy",
+  2831→      "questionText": null,
+  2832→      "explanation": "",
+  2833→      "hintText": "",
+  2834→      "tags": "[\"geometry\",\"pythagorean\",\"right-triangle\"]",
+  2835→      "answers": [
+  2836→        {
+  2837→          "content": "13",
+  2838→          "isCorrect": true,
+  2839→          "sortOrder": 0
+  2840→        },
+  2841→        {
+  2842→          "content": "12",
+  2843→          "isCorrect": false,
+  2844→          "sortOrder": 1
+  2845→        },
+  2846→        {
+  2847→          "content": "14",
+  2848→          "isCorrect": false,
+  2849→          "sortOrder": 2
+  2850→        },
+  2851→        {
+  2852→          "content": "15",
+  2853→          "isCorrect": false,
+  2854→          "sortOrder": 3
+  2855→        }
+  2856→      ]
+  2857→    },
+  2858→    {
+  2859→      "lessonTitle": "Understanding the Theorem",
+  2860→      "questionType": "multiple_choice",
+  2861→      "difficulty": "medium",
+  2862→      "questionText": null,
+  2863→      "explanation": "",
+  2864→      "hintText": "",
+  2865→      "tags": "[\"geometry\",\"pythagorean\",\"find-leg\"]",
+  2866→      "answers": [
+  2867→        {
+  2868→          "content": "8",
+  2869→          "isCorrect": false,
+  2870→          "sortOrder": 0
+  2871→        },
+  2872→        {
+  2873→          "content": "9",
+  2874→          "isCorrect": true,
+  2875→          "sortOrder": 1
+  2876→        },
+  2877→        {
+  2878→          "content": "12",
+  2879→          "isCorrect": false,
+  2880→          "sortOrder": 2
+  2881→        },
+  2882→        {
+  2883→          "content": "15",
+  2884→          "isCorrect": false,
+  2885→          "sortOrder": 3
+  2886→        }
+  2887→      ]
+  2888→    },
+  2889→    {
+  2890→      "lessonTitle": "Understanding the Theorem",
+  2891→      "questionType": "multiple_choice",
+  2892→      "difficulty": "easy",
+  2893→      "questionText": "In a right triangle with legs 5 and 12, what is the hypotenuse?",
+  2894→      "explanation": "5^2 + 12^2 = 25 + 144 = 169 = 13^2.",
+  2895→      "hintText": "",
+  2896→      "tags": "[\"geometry\",\"pythagorean\"]",
+  2897→      "answers": [
+  2898→        {
+  2899→          "content": "13",
+  2900→          "isCorrect": true,
+  2901→          "sortOrder": 0
+  2902→        },
+  2903→        {
+  2904→          "content": "17",
+  2905→          "isCorrect": false,
+  2906→          "sortOrder": 1
+  2907→        },
+  2908→        {
+  2909→          "content": "8",
+  2910→          "isCorrect": false,
+  2911→          "sortOrder": 2
+  2912→        },
+  2913→        {
+  2914→          "content": "7",
+  2915→          "isCorrect": false,
+  2916→          "sortOrder": 3
+  2917→        }
+  2918→      ]
+  2919→    },
+  2920→    {
+  2921→      "lessonTitle": "Understanding the Theorem",
+  2922→      "questionType": "multiple_choice",
+  2923→      "difficulty": "medium",
+  2924→      "questionText": "Which is a Pythagorean triple?",
+  2925→      "explanation": "8^2 + 15^2 = 64 + 225 = 289 = 17^2.",
+  2926→      "hintText": "",
+  2927→      "tags": "[\"geometry\",\"pythagorean-triple\"]",
+  2928→      "answers": [
+  2929→        {
+  2930→          "content": "8, 15, 17",
+  2931→          "isCorrect": true,
+  2932→          "sortOrder": 0
+  2933→        },
+  2934→        {
+  2935→          "content": "4, 5, 6",
+  2936→          "isCorrect": false,
+  2937→          "sortOrder": 1
+  2938→        },
+  2939→        {
+  2940→          "content": "3, 4, 8",
+  2941→          "isCorrect": false,
+  2942→          "sortOrder": 2
+  2943→        },
+  2944→        {
+  2945→          "content": "5, 6, 7",
+  2946→          "isCorrect": false,
+  2947→          "sortOrder": 3
+  2948→        }
+  2949→      ]
+  2950→    },
+  2951→    {
+  2952→      "lessonTitle": "Understanding the Theorem",
+  2953→      "questionType": "multiple_choice",
+  2954→      "difficulty": "medium",
+  2955→      "questionText": "A ladder base is 6 m from wall, reaches 8 m high. How long is the ladder?",
+  2956→      "explanation": "6^2 + 8^2 = 36 + 64 = 100 = 10^2.",
+  2957→      "hintText": "",
+  2958→      "tags": "[\"geometry\",\"pythagorean\",\"application\"]",
+  2959→      "answers": [
+  2960→        {
+  2961→          "content": "10 m",
+  2962→          "isCorrect": true,
+  2963→          "sortOrder": 0
+  2964→        },
+  2965→        {
+  2966→          "content": "14 m",
+  2967→          "isCorrect": false,
+  2968→          "sortOrder": 1
+  2969→        },
+  2970→        {
+  2971→          "content": "12 m",
+  2972→          "isCorrect": false,
+  2973→          "sortOrder": 2
+  2974→        },
+  2975→        {
+  2976→          "content": "8 m",
+  2977→          "isCorrect": false,
+  2978→          "sortOrder": 3
+  2979→        }
+  2980→      ]
+  2981→    },
+  2982→    {
+  2983→      "lessonTitle": "Understanding the Theorem",
+  2984→      "questionType": "multiple_choice",
+  2985→      "difficulty": "medium",
+  2986→      "questionText": "Right triangle: hypotenuse 25, one leg 7. What is the other leg?",
+  2987→      "explanation": "a^2 + 49 = 625, a^2 = 576, a = 24.",
+  2988→      "hintText": "",
+  2989→      "tags": "[\"geometry\",\"pythagorean\"]",
+  2990→      "answers": [
+  2991→        {
+  2992→          "content": "24",
+  2993→          "isCorrect": true,
+  2994→          "sortOrder": 0
+  2995→        },
+  2996→        {
+  2997→          "content": "18",
+  2998→          "isCorrect": false,
+  2999→          "sortOrder": 1
+  3000→        },
+  3001→        {
+  3002→          "content": "32",
+  3003→          "isCorrect": false,
+  3004→          "sortOrder": 2
+  3005→        },
+  3006→        {
+  3007→          "content": "12",
+  3008→          "isCorrect": false,
+  3009→          "sortOrder": 3
+  3010→        }
+  3011→      ]
+  3012→    }
+  3013→  ],
+  3014→  "Applications and Word Problems": [
+  3015→    {
+  3016→      "lessonTitle": "Applications and Word Problems",
+  3017→      "questionType": "multiple_choice",
+  3018→      "difficulty": "hard",
+  3019→      "questionText": null,
+  3020→      "explanation": "",
+  3021→      "hintText": "",
+  3022→      "tags": "[\"geometry\",\"pythagorean\",\"word-problem\"]",
+  3023→      "answers": [
+  3024→        {
+  3025→          "content": "17 feet",
+  3026→          "isCorrect": true,
+  3027→          "sortOrder": 0
+  3028→        },
+  3029→        {
+  3030→          "content": "20 feet",
+  3031→          "isCorrect": false,
+  3032→          "sortOrder": 1
+  3033→        },
+  3034→        {
+  3035→          "content": "15 feet",
+  3036→          "isCorrect": false,
+  3037→          "sortOrder": 2
+  3038→        },
+  3039→        {
+  3040→          "content": "25 feet",
+  3041→          "isCorrect": false,
+  3042→          "sortOrder": 3
+  3043→        }
+  3044→      ]
+  3045→    },
+  3046→    {
+  3047→      "lessonTitle": "Applications and Word Problems",
+  3048→      "questionType": "multiple_choice",
+  3049→      "difficulty": "hard",
+  3050→      "questionText": null,
+  3051→      "explanation": "",
+  3052→      "hintText": "",
+  3053→      "tags": "[\"geometry\",\"pythagorean\",\"diagonal\"]",
+  3054→      "answers": [
+  3055→        {
+  3056→          "content": "10√2",
+  3057→          "isCorrect": true,
+  3058→          "sortOrder": 0
+  3059→        },
+  3060→        {
+  3061→          "content": "20",
+  3062→          "isCorrect": false,
+  3063→          "sortOrder": 1
+  3064→        },
+  3065→        {
+  3066→          "content": "14",
+  3067→          "isCorrect": false,
+  3068→          "sortOrder": 2
+  3069→        },
+  3070→        {
+  3071→          "content": "10√3",
+  3072→          "isCorrect": false,
+  3073→          "sortOrder": 3
+  3074→        }
+  3075→      ]
+  3076→    },
+  3077→    {
+  3078→      "lessonTitle": "Applications and Word Problems",
+  3079→      "questionType": "multiple_choice",
+  3080→      "difficulty": "medium",
+  3081→      "questionText": "A 40-inch TV (diagonal) has width 32 inches. What is the height?",
+  3082→      "explanation": "32^2 + h^2 = 40^2, h^2 = 576, h = 24.",
+  3083→      "hintText": "",
+  3084→      "tags": "[\"geometry\",\"pythagorean\",\"application\"]",
+  3085→      "answers": [
+  3086→        {
+  3087→          "content": "24 inches",
+  3088→          "isCorrect": true,
+  3089→          "sortOrder": 0
+  3090→        },
+  3091→        {
+  3092→          "content": "20 inches",
+  3093→          "isCorrect": false,
+  3094→          "sortOrder": 1
+  3095→        },
+  3096→        {
+  3097→          "content": "28 inches",
+  3098→          "isCorrect": false,
+  3099→          "sortOrder": 2
+  3100→        },
+  3101→        {
+  3102→          "content": "16 inches",
+  3103→          "isCorrect": false,
+  3104→          "sortOrder": 3
+  3105→        }
+  3106→      ]
+  3107→    },
+  3108→    {
+  3109→      "lessonTitle": "Applications and Word Problems",
+  3110→      "questionType": "multiple_choice",
+  3111→      "difficulty": "hard",
+  3112→      "questionText": "A baseball diamond has 90-foot sides. Distance from home to second base?",
+  3113→      "explanation": "Diagonal = sqrt(90^2 + 90^2) = 90*sqrt(2) = 127.3 ft.",
+  3114→      "hintText": "",
+  3115→      "tags": "[\"geometry\",\"pythagorean\",\"application\"]",
+  3116→      "answers": [
+  3117→        {
+  3118→          "content": "127.3 feet",
+  3119→          "isCorrect": true,
+  3120→          "sortOrder": 0
+  3121→        },
+  3122→        {
+  3123→          "content": "180 feet",
+  3124→          "isCorrect": false,
+  3125→          "sortOrder": 1
+  3126→        },
+  3127→        {
+  3128→          "content": "90 feet",
+  3129→          "isCorrect": false,
+  3130→          "sortOrder": 2
+  3131→        },
+  3132→        {
+  3133→          "content": "120 feet",
+  3134→          "isCorrect": false,
+  3135→          "sortOrder": 3
+  3136→        }
+  3137→      ]
+  3138→    },
+  3139→    {
+  3140→      "lessonTitle": "Applications and Word Problems",
+  3141→      "questionType": "multiple_choice",
+  3142→      "difficulty": "easy",
+  3143→      "questionText": "Two cars leave same point: one drives 3 mi north, other 4 mi east. How far apart?",
+  3144→      "explanation": "3-4-5 right triangle. Distance = sqrt(9+16) = 5 miles.",
+  3145→      "hintText": "",
+  3146→      "tags": "[\"geometry\",\"pythagorean\",\"application\"]",
+  3147→      "answers": [
+  3148→        {
+  3149→          "content": "5 miles",
+  3150→          "isCorrect": true,
+  3151→          "sortOrder": 0
+  3152→        },
+  3153→        {
+  3154→          "content": "7 miles",
+  3155→          "isCorrect": false,
+  3156→          "sortOrder": 1
+  3157→        },
+  3158→        {
+  3159→          "content": "1 mile",
+  3160→          "isCorrect": false,
+  3161→          "sortOrder": 2
+  3162→        },
+  3163→        {
+  3164→          "content": "12 miles",
+  3165→          "isCorrect": false,
+  3166→          "sortOrder": 3
+  3167→        }
+  3168→      ]
+  3169→    },
+  3170→    {
+  3171→      "lessonTitle": "Applications and Word Problems",
+  3172→      "questionType": "multiple_choice",
+  3173→      "difficulty": "hard",
+  3174→      "questionText": "A ramp rises 2 ft over 24 ft horizontal. What is the ramp length?",
+  3175→      "explanation": "sqrt(24^2 + 2^2) = sqrt(580) = 24.08 ft.",
+  3176→      "hintText": "",
+  3177→      "tags": "[\"geometry\",\"pythagorean\",\"application\"]",
+  3178→      "answers": [
+  3179→        {
+  3180→          "content": "About 24.1 ft",
+  3181→          "isCorrect": true,
+  3182→          "sortOrder": 0
+  3183→        },
+  3184→        {
+  3185→          "content": "26 ft",
+  3186→          "isCorrect": false,
+  3187→          "sortOrder": 1
+  3188→        },
+  3189→        {
+  3190→          "content": "22 ft",
+  3191→          "isCorrect": false,
+  3192→          "sortOrder": 2
+  3193→        },
+  3194→        {
+  3195→          "content": "24 ft",
+  3196→          "isCorrect": false,
+  3197→          "sortOrder": 3
+  3198→        }
+  3199→      ]
+  3200→    }
+  3201→  ],
+  3202→  "Cell Structure and Organelles": [
+  3203→    {
+  3204→      "lessonTitle": "Cell Structure and Organelles",
+  3205→      "questionType": "multiple_choice",
+  3206→      "difficulty": "easy",
+  3207→      "questionText": null,
+  3208→      "explanation": "",
+  3209→      "hintText": "",
+  3210→      "tags": "[\"biology\",\"cell\",\"organelle\"]",
+  3211→      "answers": [
+  3212→        {
+  3213→          "content": "Mitochondria",
+  3214→          "isCorrect": true,
+  3215→          "sortOrder": 0
+  3216→        },
+  3217→        {
+  3218→          "content": "Ribosome",
+  3219→          "isCorrect": false,
+  3220→          "sortOrder": 1
+  3221→        },
+  3222→        {
+  3223→          "content": "Nucleus",
+  3224→          "isCorrect": false,
+  3225→          "sortOrder": 2
+  3226→        },
+  3227→        {
+  3228→          "content": "Cell wall",
+  3229→          "isCorrect": false,
+  3230→          "sortOrder": 3
+  3231→        }
+  3232→      ]
+  3233→    },
+  3234→    {
+  3235→      "lessonTitle": "Cell Structure and Organelles",
+  3236→      "questionType": "multiple_choice",
+  3237→      "difficulty": "medium",
+  3238→      "questionText": null,
+  3239→      "explanation": "",
+  3240→      "hintText": "",
+  3241→      "tags": "[\"biology\",\"prokaryotic\",\"eukaryotic\"]",
+  3242→      "answers": [
+  3243→        {
+  3244→          "content": "They have a nucleus",
+  3245→          "isCorrect": false,
+  3246→          "sortOrder": 0
+  3247→        },
+  3248→        {
+  3249→          "content": "They lack membrane-bound organelles",
+  3250→          "isCorrect": true,
+  3251→          "sortOrder": 1
+  3252→        },
+  3253→        {
+  3254→          "content": "They are larger",
+  3255→          "isCorrect": false,
+  3256→          "sortOrder": 2
+  3257→        },
+  3258→        {
+  3259→          "content": "They contain DNA",
+  3260→          "isCorrect": false,
+  3261→          "sortOrder": 3
+  3262→        }
+  3263→      ]
+  3264→    },
+  3265→    {
+  3266→      "lessonTitle": "Cell Structure and Organelles",
+  3267→      "questionType": "multiple_choice",
+  3268→      "difficulty": "easy",
+  3269→      "questionText": "Which organelle is the 'powerhouse of the cell'?",
+  3270→      "explanation": "Mitochondria produce ATP through cellular respiration.",
+  3271→      "hintText": "",
+  3272→      "tags": "[\"biology\",\"cell\",\"organelle\"]",
+  3273→      "answers": [
+  3274→        {
+  3275→          "content": "Mitochondria",
+  3276→          "isCorrect": true,
+  3277→          "sortOrder": 0
+  3278→        },
+  3279→        {
+  3280→          "content": "Nucleus",
+  3281→          "isCorrect": false,
+  3282→          "sortOrder": 1
+  3283→        },
+  3284→        {
+  3285→          "content": "Ribosome",
+  3286→          "isCorrect": false,
+  3287→          "sortOrder": 2
+  3288→        },
+  3289→        {
+  3290→          "content": "Endoplasmic reticulum",
+  3291→          "isCorrect": false,
+  3292→          "sortOrder": 3
+  3293→        }
+  3294→      ]
+  3295→    },
+  3296→    {
+  3297→      "lessonTitle": "Cell Structure and Organelles",
+  3298→      "questionType": "multiple_choice",
+  3299→      "difficulty": "easy",
+  3300→      "questionText": "What is the primary function of the cell membrane?",
+  3301→      "explanation": "The cell membrane is selectively permeable.",
+  3302→      "hintText": "",
+  3303→      "tags": "[\"biology\",\"cell\",\"cell-membrane\"]",
+  3304→      "answers": [
+  3305→        {
+  3306→          "content": "Control what enters and exits the cell",
+  3307→          "isCorrect": true,
+  3308→          "sortOrder": 0
+  3309→        },
+  3310→        {
+  3311→          "content": "Produce energy",
+  3312→          "isCorrect": false,
+  3313→          "sortOrder": 1
+  3314→        },
+  3315→        {
+  3316→          "content": "Store DNA",
+  3317→          "isCorrect": false,
+  3318→          "sortOrder": 2
+  3319→        },
+  3320→        {
+  3321→          "content": "Synthesize proteins",
+  3322→          "isCorrect": false,
+  3323→          "sortOrder": 3
+  3324→        }
+  3325→      ]
+  3326→    },
+  3327→    {
+  3328→      "lessonTitle": "Cell Structure and Organelles",
+  3329→      "questionType": "multiple_choice",
+  3330→      "difficulty": "easy",
+  3331→      "questionText": "Which organelle is responsible for protein synthesis?",
+  3332→      "explanation": "Ribosomes read mRNA and assemble amino acids into proteins.",
+  3333→      "hintText": "",
+  3334→      "tags": "[\"biology\",\"cell\",\"organelle\"]",
+  3335→      "answers": [
+  3336→        {
+  3337→          "content": "Ribosome",
+  3338→          "isCorrect": true,
+  3339→          "sortOrder": 0
+  3340→        },
+  3341→        {
+  3342→          "content": "Golgi apparatus",
+  3343→          "isCorrect": false,
+  3344→          "sortOrder": 1
+  3345→        },
+  3346→        {
+  3347→          "content": "Lysosome",
+  3348→          "isCorrect": false,
+  3349→          "sortOrder": 2
+  3350→        },
+  3351→        {
+  3352→          "content": "Vacuole",
+  3353→          "isCorrect": false,
+  3354→          "sortOrder": 3
+  3355→        }
+  3356→      ]
+  3357→    },
+  3358→    {
+  3359→      "lessonTitle": "Cell Structure and Organelles",
+  3360→      "questionType": "multiple_choice",
+  3361→      "difficulty": "easy",
+  3362→      "questionText": "Plant cells have which organelle that animal cells lack?",
+  3363→      "explanation": "Chloroplasts contain chlorophyll for photosynthesis.",
+  3364→      "hintText": "",
+  3365→      "tags": "[\"biology\",\"cell\",\"plant-cell\"]",
+  3366→      "answers": [
+  3367→        {
+  3368→          "content": "Chloroplast",
+  3369→          "isCorrect": true,
+  3370→          "sortOrder": 0
+  3371→        },
+  3372→        {
+  3373→          "content": "Mitochondria",
+  3374→          "isCorrect": false,
+  3375→          "sortOrder": 1
+  3376→        },
+  3377→        {
+  3378→          "content": "Nucleus",
+  3379→          "isCorrect": false,
+  3380→          "sortOrder": 2
+  3381→        },
+  3382→        {
+  3383→          "content": "Endoplasmic reticulum",
+  3384→          "isCorrect": false,
+  3385→          "sortOrder": 3
+  3386→        }
+  3387→      ]
+  3388→    },
+  3389→    {
+  3390→      "lessonTitle": "Cell Structure and Organelles",
+  3391→      "questionType": "multiple_choice",
+  3392→      "difficulty": "hard",
+  3393→      "questionText": "If a cell's mitochondria were destroyed, which process would be most affected?",
+  3394→      "explanation": "Without mitochondria, the cell cannot perform aerobic respiration to produce ATP energy.",
+  3395→      "hintText": "",
+  3396→      "tags": "[\"biology\",\"cell\",\"organelle\",\"mitochondria\"]",
+  3397→      "answers": [
+  3398→        {
+  3399→          "content": "ATP production (cellular respiration)",
+  3400→          "isCorrect": true,
+  3401→          "sortOrder": 0
+  3402→        },
+  3403→        {
+  3404→          "content": "Protein synthesis",
+  3405→          "isCorrect": false,
+  3406→          "sortOrder": 1
+  3407→        },
+  3408→        {
+  3409→          "content": "DNA replication",
+  3410→          "isCorrect": false,
+  3411→          "sortOrder": 2
+  3412→        },
+  3413→        {
+  3414→          "content": "Cell division",
+  3415→          "isCorrect": false,
+  3416→          "sortOrder": 3
+  3417→        }
+  3418→      ]
+  3419→    },
+  3420→    {
+  3421→      "lessonTitle": "Cell Structure and Organelles",
+  3422→      "questionType": "multiple_choice",
+  3423→      "difficulty": "hard",
+  3424→      "questionText": "Which statement correctly describes the endosymbiotic theory?",
+  3425→      "explanation": "The endosymbiotic theory explains that mitochondria and chloroplasts originated as independent prokaryotes.",
+  3426→      "hintText": "",
+  3427→      "tags": "[\"biology\",\"cell\",\"endosymbiotic-theory\"]",
+  3428→      "answers": [
+  3429→        {
+  3430→          "content": "Mitochondria and chloroplasts were once free-living prokaryotes",
+  3431→          "isCorrect": true,
+  3432→          "sortOrder": 0
+  3433→        },
+  3434→        {
+  3435→          "content": "All organelles evolved from bacteria",
+  3436→          "isCorrect": false,
+  3437→          "sortOrder": 1
+  3438→        },
+  3439→        {
+  3440→          "content": "Eukaryotic cells became prokaryotic",
+  3441→          "isCorrect": false,
+  3442→          "sortOrder": 2
+  3443→        },
+  3444→        {
+  3445→          "content": "The nucleus was the first organelle to evolve",
+  3446→          "isCorrect": false,
+  3447→          "sortOrder": 3
+  3448→        }
+  3449→      ]
+  3450→    }
+  3451→  ],
+  3452→  "Cell Division: Mitosis and Meiosis": [
+  3453→    {
+  3454→      "lessonTitle": "Cell Division: Mitosis and Meiosis",
+  3455→      "questionType": "multiple_choice",
+  3456→      "difficulty": "medium",
+  3457→      "questionText": null,
+  3458→      "explanation": "",
+  3459→      "hintText": "",
+  3460→      "tags": "[\"biology\",\"mitosis\"]",
+  3461→      "answers": [
+  3462→        {
+  3463→          "content": "2 identical diploid cells",
+  3464→          "isCorrect": true,
+  3465→          "sortOrder": 0
+  3466→        },
+  3467→        {
+  3468→          "content": "4 unique haploid cells",
+  3469→          "isCorrect": false,
+  3470→          "sortOrder": 1
+  3471→        },
+  3472→        {
+  3473→          "content": "2 unique haploid cells",
+  3474→          "isCorrect": false,
+  3475→          "sortOrder": 2
+  3476→        },
+  3477→        {
+  3478→          "content": "4 identical diploid cells",
+  3479→          "isCorrect": false,
+  3480→          "sortOrder": 3
+  3481→        }
+  3482→      ]
+  3483→    },
+  3484→    {
+  3485→      "lessonTitle": "Cell Division: Mitosis and Meiosis",
+  3486→      "questionType": "multiple_choice",
+  3487→      "difficulty": "medium",
+  3488→      "questionText": null,
+  3489→      "explanation": "",
+  3490→      "hintText": "",
+  3491→      "tags": "[\"biology\",\"meiosis\"]",
+  3492→      "answers": [
+  3493→        {
+  3494→          "content": "Growth and repair",
+  3495→          "isCorrect": false,
+  3496→          "sortOrder": 0
+  3497→        },
+  3498→        {
+  3499→          "content": "Sexual reproduction",
+  3500→          "isCorrect": true,
+  3501→          "sortOrder": 1
+  3502→        },
+  3503→        {
+  3504→          "content": "Asexual reproduction",
+  3505→          "isCorrect": false,
+  3506→          "sortOrder": 2
+  3507→        },
+  3508→        {
+  3509→          "content": "Protein synthesis",
+  3510→          "isCorrect": false,
+  3511→          "sortOrder": 3
+  3512→        }
+  3513→      ]
+  3514→    },
+  3515→    {
+  3516→      "lessonTitle": "Cell Division: Mitosis and Meiosis",
+  3517→      "questionType": "multiple_choice",
+  3518→      "difficulty": "easy",
+  3519→      "questionText": "How many daughter cells does mitosis produce?",
+  3520→      "explanation": "Mitosis produces 2 genetically identical daughter cells.",
+  3521→      "hintText": "",
+  3522→      "tags": "[\"biology\",\"mitosis\"]",
+  3523→      "answers": [
+  3524→        {
+  3525→          "content": "2 identical cells",
+  3526→          "isCorrect": true,
+  3527→          "sortOrder": 0
+  3528→        },
+  3529→        {
+  3530→          "content": "4 different cells",
+  3531→          "isCorrect": false,
+  3532→          "sortOrder": 1
+  3533→        },
+  3534→        {
+  3535→          "content": "1 cell",
+  3536→          "isCorrect": false,
+  3537→          "sortOrder": 2
+  3538→        },
+  3539→        {
+  3540→          "content": "3 cells",
+  3541→          "isCorrect": false,
+  3542→          "sortOrder": 3
+  3543→        }
+  3544→      ]
+  3545→    },
+  3546→    {
+  3547→      "lessonTitle": "Cell Division: Mitosis and Meiosis",
+  3548→      "questionType": "multiple_choice",
+  3549→      "difficulty": "medium",
+  3550→      "questionText": "What is the purpose of meiosis?",
+  3551→      "explanation": "Meiosis reduces chromosome number by half for sexual reproduction.",
+  3552→      "hintText": "",
+  3553→      "tags": "[\"biology\",\"meiosis\"]",
+  3554→      "answers": [
+  3555→        {
+  3556→          "content": "Produce gametes with half the chromosomes",
+  3557→          "isCorrect": true,
+  3558→          "sortOrder": 0
+  3559→        },
+  3560→        {
+  3561→          "content": "Produce identical body cells",
+  3562→          "isCorrect": false,
+  3563→          "sortOrder": 1
+  3564→        },
+  3565→        {
+  3566→          "content": "Create energy for the cell",
+  3567→          "isCorrect": false,
+  3568→          "sortOrder": 2
+  3569→        },
+  3570→        {
+  3571→          "content": "Break down waste products",
+  3572→          "isCorrect": false,
+  3573→          "sortOrder": 3
+  3574→        }
+  3575→      ]
+  3576→    },
+  3577→    {
+  3578→      "lessonTitle": "Cell Division: Mitosis and Meiosis",
+  3579→      "questionType": "multiple_choice",
+  3580→      "difficulty": "medium",
+  3581→      "questionText": "In which phase of mitosis do chromosomes align at the center?",
+  3582→      "explanation": "Metaphase: chromosomes align at the metaphase plate.",
+  3583→      "hintText": "",
+  3584→      "tags": "[\"biology\",\"mitosis\",\"phases\"]",
+  3585→      "answers": [
+  3586→        {
+  3587→          "content": "Metaphase",
+  3588→          "isCorrect": true,
+  3589→          "sortOrder": 0
+  3590→        },
+  3591→        {
+  3592→          "content": "Prophase",
+  3593→          "isCorrect": false,
+  3594→          "sortOrder": 1
+  3595→        },
+  3596→        {
+  3597→          "content": "Anaphase",
+  3598→          "isCorrect": false,
+  3599→          "sortOrder": 2
+  3600→        },
+  3601→        {
+  3602→          "content": "Telophase",
+  3603→          "isCorrect": false,
+  3604→          "sortOrder": 3
+  3605→        }
+  3606→      ]
+  3607→    },
+  3608→    {
+  3609→      "lessonTitle": "Cell Division: Mitosis and Meiosis",
+  3610→      "questionType": "multiple_choice",
+  3611→      "difficulty": "easy",
+  3612→      "questionText": "How many cells does meiosis produce from one parent cell?",
+  3613→      "explanation": "Meiosis involves two divisions producing 4 unique haploid cells.",
+  3614→      "hintText": "",
+  3615→      "tags": "[\"biology\",\"meiosis\"]",
+  3616→      "answers": [
+  3617→        {
+  3618→          "content": "4",
+  3619→          "isCorrect": true,
+  3620→          "sortOrder": 0
+  3621→        },
+  3622→        {
+  3623→          "content": "2",
+  3624→          "isCorrect": false,
+  3625→          "sortOrder": 1
+  3626→        },
+  3627→        {
+  3628→          "content": "8",
+  3629→          "isCorrect": false,
+  3630→          "sortOrder": 2
+  3631→        },
+  3632→        {
+  3633→          "content": "1",
+  3634→          "isCorrect": false,
+  3635→          "sortOrder": 3
+  3636→        }
+  3637→      ]
+  3638→    },
+  3639→    {
+  3640→      "lessonTitle": "Cell Division: Mitosis and Meiosis",
+  3641→      "questionType": "multiple_choice",
+  3642→      "difficulty": "hard",
+  3643→      "questionText": "A cell with 24 chromosomes undergoes meiosis. How many chromosomes does each resulting cell have?",
+  3644→      "explanation": "Meiosis halves the chromosome number: 24/2 = 12 chromosomes per gamete.",
+  3645→      "hintText": "",
+  3646→      "tags": "[\"biology\",\"meiosis\",\"chromosomes\"]",
+  3647→      "answers": [
+  3648→        {
+  3649→          "content": "12",
+  3650→          "isCorrect": true,
+  3651→          "sortOrder": 0
+  3652→        },
+  3653→        {
+  3654→          "content": "24",
+  3655→          "isCorrect": false,
+  3656→          "sortOrder": 1
+  3657→        },
+  3658→        {
+  3659→          "content": "6",
+  3660→          "isCorrect": false,
+  3661→          "sortOrder": 2
+  3662→        },
+  3663→        {
+  3664→          "content": "48",
+  3665→          "isCorrect": false,
+  3666→          "sortOrder": 3
+  3667→        }
+  3668→      ]
+  3669→    },
+  3670→    {
+  3671→      "lessonTitle": "Cell Division: Mitosis and Meiosis",
+  3672→      "questionType": "multiple_choice",
+  3673→      "difficulty": "hard",
+  3674→      "questionText": "If a cell has 20 chromosomes during G2 phase, how many chromosomes will each daughter cell have after mitosis?",
+  3675→      "explanation": "Mitosis preserves chromosome number. G2 = 20 (already replicated). Daughter cells also have 20.",
+  3676→      "hintText": "",
+  3677→      "tags": "[\"biology\",\"mitosis\",\"cell-cycle\"]",
+  3678→      "answers": [
+  3679→        {
+  3680→          "content": "20",
+  3681→          "isCorrect": true,
+  3682→          "sortOrder": 0
+  3683→        },
+  3684→        {
+  3685→          "content": "10",
+  3686→          "isCorrect": false,
+  3687→          "sortOrder": 1
+  3688→        },
+
+[showing lines 1689-3688 of 8826; use offset=3689 with limit to continue reading]
