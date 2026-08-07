@@ -1,0 +1,502 @@
+     1→   501→                    questionType: "multiple_choice",
+     2→   502→                    difficulty: "easy",
+     3→   503→                    tags: JSON.stringify([
+     4→   504→                      "geometry",
+     5→   505→                      "pythagorean",
+     6→   506→                      "right-triangle",
+     7→   507→                    ]),
+     8→   508→                    answers: [
+     9→   509→                      { content: "13", isCorrect: true, sortOrder: 0 },
+    10→   510→                      { content: "12", isCorrect: false, sortOrder: 1 },
+    11→   511→                      { content: "14", isCorrect: false, sortOrder: 2 },
+    12→   512→                      { content: "15", isCorrect: false, sortOrder: 3 },
+    13→   513→                    ],
+    14→   514→                  },
+    15→   515→                  {
+    16→   516→                    questionType: "multiple_choice",
+    17→   517→                    difficulty: "medium",
+    18→   518→                    tags: JSON.stringify([
+    19→   519→                      "geometry",
+    20→   520→                      "pythagorean",
+    21→   521→                      "find-leg",
+    22→   522→                    ]),
+    23→   523→                    answers: [
+    24→   524→                      { content: "8", isCorrect: false, sortOrder: 0 },
+    25→   525→                      { content: "9", isCorrect: true, sortOrder: 1 },
+    26→   526→                      { content: "12", isCorrect: false, sortOrder: 2 },
+    27→   527→                      { content: "15", isCorrect: false, sortOrder: 3 },
+    28→   528→                    ],
+    29→   529→                  },
+    30→   530→                ],
+    31→   531→              },
+    32→   532→              {
+    33→   533→                title: "Applications and Word Problems",
+    34→   534→                slug: "pythagorean-applications",
+    35→   535→                contentType: "text",
+    36→   536→                durationMinutes: 20,
+    37→   537→                sortOrder: 1,
+    38→   538→                bodyContent: JSON.stringify([
+    39→   539→                  {
+    40→   540→                    id: "blk_001",
+    41→   541→                    block_type: "heading",
+    42→   542→                    content: "Real-World Applications",
+    43→   543→                    level: 2,
+    44→   544→                  },
+    45→   545→                  {
+    46→   546→                    id: "blk_002",
+    47→   547→                    block_type: "paragraph",
+    48→   548→                    content:
+    49→   549→                      "The Pythagorean theorem is used in construction, navigation, and many real-world measurement problems. On the GED, you will often see it in word problem format.",
+    50→   550→                  },
+    51→   551→                ]),
+    52→   552→                questions: [
+    53→   553→                  {
+    54→   554→                    questionType: "multiple_choice",
+    55→   555→                    difficulty: "hard",
+    56→   556→                    tags: JSON.stringify([
+    57→   557→                      "geometry",
+    58→   558→                      "pythagorean",
+    59→   559→                      "word-problem",
+    60→   560→                    ]),
+    61→   561→                    answers: [
+    62→   562→                      { content: "17 feet", isCorrect: true, sortOrder: 0 },
+    63→   563→                      { content: "20 feet", isCorrect: false, sortOrder: 1 },
+    64→   564→                      { content: "15 feet", isCorrect: false, sortOrder: 2 },
+    65→   565→                      { content: "25 feet", isCorrect: false, sortOrder: 3 },
+    66→   566→                    ],
+    67→   567→                  },
+    68→   568→                  {
+    69→   569→                    questionType: "multiple_choice",
+    70→   570→                    difficulty: "hard",
+    71→   571→                    tags: JSON.stringify([
+    72→   572→                      "geometry",
+    73→   573→                      "pythagorean",
+    74→   574→                      "diagonal",
+    75→   575→                    ]),
+    76→   576→                    answers: [
+    77→   577→                      { content: "10\u221a2", isCorrect: true, sortOrder: 0 },
+    78→   578→                      { content: "20", isCorrect: false, sortOrder: 1 },
+    79→   579→                      { content: "14", isCorrect: false, sortOrder: 2 },
+    80→   580→                      { content: "10\u221a3", isCorrect: false, sortOrder: 3 },
+    81→   581→                    ],
+    82→   582→                  },
+    83→   583→                ],
+    84→   584→              },
+    85→   585→            ],
+    86→   586→          },
+    87→   587→        ],
+    88→   588→      },
+    89→   589→    ],
+    90→   590→  },
+    91→   591→  {
+    92→   592→    code: "science",
+    93→   593→    title: "Science",
+    94→   594→    description:
+    95→   595→      "Life science, physical science, earth and space science concepts for the GED.",
+    96→   596→    iconUrl: "/icons/science.svg",
+    97→   597→    colorHex: "#F59E0B",
+    98→   598→    sortOrder: 1,
+    99→   599→    modules: [
+   100→   600→      {
+   101→   601→        title: "Life Science",
+   102→   602→        description: "Cell biology, genetics, evolution, and human body systems.",
+   103→   603→        estimatedHours: 7.0,
+   104→   604→        sortOrder: 0,
+   105→   605→        topics: [
+   106→   606→          {
+   107→   607→            title: "Cell Biology",
+   108→   608→            description: "Cell structure, organelles, and cell processes.",
+   109→   609→            sortOrder: 0,
+   110→   610→            lessons: [
+   111→   611→              {
+   112→   612→                title: "Cell Structure and Organelles",
+   113→   613→                slug: "cell-structure-organelles",
+   114→   614→                contentType: "text",
+   115→   615→                durationMinutes: 16,
+   116→   616→                sortOrder: 0,
+   117→   617→                bodyContent: JSON.stringify([
+   118→   618→                  { id: "b1", block_type: "heading", content: "Cell Structure", level: 2 },
+   119→   619→                  { id: "b2", block_type: "paragraph", content: "All living things are made of cells. Prokaryotic cells (bacteria) lack a nucleus, while eukaryotic cells (plants, animals) have a nucleus and membrane-bound organelles." },
+   120→   620→                  { id: "b3", block_type: "callout", callout: { variant: "info", title: "Key Organelles", body: "Mitochondria: energy production (ATP)\nRibosomes: protein synthesis\nNucleus: contains DNA\nCell membrane: controls what enters/exits" } },
+   121→   621→                ]),
+   122→   622→                questions: [
+   123→   623→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["biology", "cell", "organelle"]), answers: [
+   124→   624→                    { content: "Mitochondria", isCorrect: true, sortOrder: 0 },
+   125→   625→                    { content: "Ribosome", isCorrect: false, sortOrder: 1 },
+   126→   626→                    { content: "Nucleus", isCorrect: false, sortOrder: 2 },
+   127→   627→                    { content: "Cell wall", isCorrect: false, sortOrder: 3 },
+   128→   628→                  ]},
+   129→   629→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["biology", "prokaryotic", "eukaryotic"]), answers: [
+   130→   630→                    { content: "They have a nucleus", isCorrect: false, sortOrder: 0 },
+   131→   631→                    { content: "They lack membrane-bound organelles", isCorrect: true, sortOrder: 1 },
+   132→   632→                    { content: "They are larger", isCorrect: false, sortOrder: 2 },
+   133→   633→                    { content: "They contain DNA", isCorrect: false, sortOrder: 3 },
+   134→   634→                  ]},
+   135→   635→                ],
+   136→   636→              },
+   137→   637→              {
+   138→   638→                title: "Cell Division: Mitosis and Meiosis",
+   139→   639→                slug: "cell-division-mitosis-meiosis",
+   140→   640→                contentType: "text",
+   141→   641→                durationMinutes: 18,
+   142→   642→                sortOrder: 1,
+   143→   643→                bodyContent: JSON.stringify([
+   144→   644→                  { id: "b1", block_type: "heading", content: "Cell Division", level: 2 },
+   145→   645→                  { id: "b2", block_type: "paragraph", content: "Mitosis produces two identical diploid cells for growth and repair. Meiosis produces four unique haploid cells for reproduction (sperm and egg)." },
+   146→   646→                ]),
+   147→   647→                questions: [
+   148→   648→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["biology", "mitosis"]), answers: [
+   149→   649→                    { content: "2 identical diploid cells", isCorrect: true, sortOrder: 0 },
+   150→   650→                    { content: "4 unique haploid cells", isCorrect: false, sortOrder: 1 },
+   151→   651→                    { content: "2 unique haploid cells", isCorrect: false, sortOrder: 2 },
+   152→   652→                    { content: "4 identical diploid cells", isCorrect: false, sortOrder: 3 },
+   153→   653→                  ]},
+   154→   654→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["biology", "meiosis"]), answers: [
+   155→   655→                    { content: "Growth and repair", isCorrect: false, sortOrder: 0 },
+   156→   656→                    { content: "Sexual reproduction", isCorrect: true, sortOrder: 1 },
+   157→   657→                    { content: "Asexual reproduction", isCorrect: false, sortOrder: 2 },
+   158→   658→                    { content: "Protein synthesis", isCorrect: false, sortOrder: 3 },
+   159→   659→                  ]},
+   160→   660→                ],
+   161→   661→              },
+   162→   662→            ],
+   163→   663→          },
+   164→   664→          {
+   165→   665→            title: "Genetics and Heredity",
+   166→   666→            description: "DNA, genes, alleles, and Punnett squares.",
+   167→   667→            sortOrder: 1,
+   168→   668→            lessons: [
+   169→   669→              {
+   170→   670→                title: "DNA and Genes",
+   171→   671→                slug: "dna-and-genes",
+   172→   672→                contentType: "text",
+   173→   673→                durationMinutes: 15,
+   174→   674→                sortOrder: 0,
+   175→   675→                bodyContent: JSON.stringify([
+   176→   676→                  { id: "b1", block_type: "heading", content: "DNA and Genes", level: 2 },
+   177→   677→                  { id: "b2", block_type: "paragraph", content: "DNA (deoxyribonucleic acid) is a double helix that carries genetic instructions. Genes are segments of DNA that code for specific proteins. Alleles are different versions of a gene." },
+   178→   678→                ]),
+   179→   679→                questions: [
+   180→   680→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["genetics", "DNA"]), answers: [
+   181→   681→                    { content: "Double helix", isCorrect: true, sortOrder: 0 },
+   182→   682→                    { content: "Single strand", isCorrect: false, sortOrder: 1 },
+   183→   683→                    { content: "Triple helix", isCorrect: false, sortOrder: 2 },
+   184→   684→                    { content: "Circular ring", isCorrect: false, sortOrder: 3 },
+   185→   685→                  ]},
+   186→   686→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["genetics", "allele"]), answers: [
+   187→   687→                    { content: "Different versions of the same gene", isCorrect: true, sortOrder: 0 },
+   188→   688→                    { content: "Different genes on different chromosomes", isCorrect: false, sortOrder: 1 },
+   189→   689→                    { content: "Mutated DNA sequences only", isCorrect: false, sortOrder: 2 },
+   190→   690→                    { content: "Proteins that build cells", isCorrect: false, sortOrder: 3 },
+   191→   691→                  ]},
+   192→   692→                ],
+   193→   693→              },
+   194→   694→              {
+   195→   695→                title: "Punnett Squares",
+   196→   696→                slug: "punnett-squares",
+   197→   697→                contentType: "text",
+   198→   698→                durationMinutes: 14,
+   199→   699→                sortOrder: 1,
+   200→   700→                bodyContent: JSON.stringify([
+   201→   701→                  { id: "b1", block_type: "heading", content: "Punnett Squares", level: 2 },
+   202→   702→                  { id: "b2", block_type: "paragraph", content: "A Punnett square predicts the probability of offspring genotypes from parental crosses. Dominant alleles (uppercase) mask recessive alleles (lowercase)." },
+   203→   703→                ]),
+   204→   704→                questions: [
+   205→   705→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["genetics", "punnett-square"]), answers: [
+   206→   706→                    { content: "25%", isCorrect: true, sortOrder: 0 },
+   207→   707→                    { content: "50%", isCorrect: false, sortOrder: 1 },
+   208→   708→                    { content: "75%", isCorrect: false, sortOrder: 2 },
+   209→   709→                    { content: "100%", isCorrect: false, sortOrder: 3 },
+   210→   710→                  ]},
+   211→   711→                  { questionType: "multiple_choice", difficulty: "hard", tags: JSON.stringify(["genetics", "genotype-phenotype"]), answers: [
+   212→   712→                    { content: "Genotype is the genetic makeup; phenotype is the physical expression", isCorrect: true, sortOrder: 0 },
+   213→   713→                    { content: "They mean the same thing", isCorrect: false, sortOrder: 1 },
+   214→   714→                    { content: "Phenotype determines genotype", isCorrect: false, sortOrder: 2 },
+   215→   715→                    { content: "Genotype is only about appearance", isCorrect: false, sortOrder: 3 },
+   216→   716→                  ]},
+   217→   717→                ],
+   218→   718→              },
+   219→   719→            ],
+   220→   720→          },
+   221→   721→        ],
+   222→   722→      },
+   223→   723→      {
+   224→   724→        title: "Physical Science",
+   225→   725→        description: "Chemistry, physics, and energy concepts.",
+   226→   726→        estimatedHours: 6.5,
+   227→   727→        sortOrder: 1,
+   228→   728→        topics: [
+   229→   729→          {
+   230→   730→            title: "Chemistry Basics",
+   231→   731→            description: "Atoms, elements, compounds, and chemical reactions.",
+   232→   732→            sortOrder: 0,
+   233→   733→            lessons: [
+   234→   734→              {
+   235→   735→                title: "Atoms and the Periodic Table",
+   236→   736→                slug: "atoms-periodic-table",
+   237→   737→                contentType: "text",
+   238→   738→                durationMinutes: 16,
+   239→   739→                sortOrder: 0,
+   240→   740→                bodyContent: JSON.stringify([
+   241→   741→                  { id: "b1", block_type: "heading", content: "Atoms and the Periodic Table", level: 2 },
+   242→   742→                  { id: "b2", block_type: "paragraph", content: "Atoms are the smallest units of elements. They consist of protons (positive), neutrons (neutral), and electrons (negative). The periodic table organizes elements by atomic number." },
+   243→   743→                ]),
+   244→   744→                questions: [
+   245→   745→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["chemistry", "atom"]), answers: [
+   246→   746→                    { content: "Proton", isCorrect: true, sortOrder: 0 },
+   247→   747→                    { content: "Neutron", isCorrect: false, sortOrder: 1 },
+   248→   748→                    { content: "Electron", isCorrect: false, sortOrder: 2 },
+   249→   749→                    { content: "Isotope", isCorrect: false, sortOrder: 3 },
+   250→   750→                  ]},
+   251→   751→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["chemistry", "periodic-table"]), answers: [
+   252→   752→                    { content: "Atomic number", isCorrect: true, sortOrder: 0 },
+   253→   753→                    { content: "Atomic mass", isCorrect: false, sortOrder: 1 },
+   254→   754→                    { content: "Number of neutrons", isCorrect: false, sortOrder: 2 },
+   255→   755→                    { content: "Chemical symbol", isCorrect: false, sortOrder: 3 },
+   256→   756→                  ]},
+   257→   757→                ],
+   258→   758→              },
+   259→   759→              {
+   260→   760→                title: "Chemical Reactions",
+   261→   761→                slug: "chemical-reactions",
+   262→   762→                contentType: "text",
+   263→   763→                durationMinutes: 15,
+   264→   764→                sortOrder: 1,
+   265→   765→                bodyContent: JSON.stringify([
+   266→   766→                  { id: "b1", block_type: "heading", content: "Chemical Reactions", level: 2 },
+   267→   767→                  { id: "b2", block_type: "paragraph", content: "In a chemical reaction, bonds break and form to create new substances. Reactants are on the left side; products are on the right. The law of conservation of mass means atoms are neither created nor destroyed." },
+   268→   768→                ]),
+   269→   769→                questions: [
+   270→   770→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["chemistry", "conservation-of-mass"]), answers: [
+   271→   771→                    { content: "The total mass of reactants equals total mass of products", isCorrect: true, sortOrder: 0 },
+   272→   772→                    { content: "Mass can be created during reactions", isCorrect: false, sortOrder: 1 },
+   273→   773→                    { content: "Gases have no mass", isCorrect: false, sortOrder: 2 },
+   274→   774→                    { content: "Mass is only conserved in solids", isCorrect: false, sortOrder: 3 },
+   275→   775→                  ]},
+   276→   776→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["chemistry", "reaction-type"]), answers: [
+   277→   777→                    { content: "Synthesis", isCorrect: true, sortOrder: 0 },
+   278→   778→                    { content: "Decomposition", isCorrect: false, sortOrder: 1 },
+   279→   779→                    { content: "Combustion", isCorrect: false, sortOrder: 2 },
+   280→   780→                    { content: "Neutralization", isCorrect: false, sortOrder: 3 },
+   281→   781→                  ]},
+   282→   782→                ],
+   283→   783→              },
+   284→   784→            ],
+   285→   785→          },
+   286→   786→          {
+   287→   787→            title: "Physics: Motion and Forces",
+   288→   788→            description: "Newton's laws, speed, velocity, and acceleration.",
+   289→   789→            sortOrder: 1,
+   290→   790→            lessons: [
+   291→   791→              {
+   292→   792→                title: "Newton's Laws of Motion",
+   293→   793→                slug: "newtons-laws-motion",
+   294→   794→                contentType: "text",
+   295→   795→                durationMinutes: 18,
+   296→   796→                sortOrder: 0,
+   297→   797→                bodyContent: JSON.stringify([
+   298→   798→                  { id: "b1", block_type: "heading", content: "Newton's Laws of Motion", level: 2 },
+   299→   799→                  { id: "b2", block_type: "paragraph", content: "1st Law (Inertia): An object at rest stays at rest; an object in motion stays in motion unless acted on by an unbalanced force. 2nd Law: F = ma. 3rd Law: Every action has an equal and opposite reaction." },
+   300→   800→                ]),
+   301→   801→                questions: [
+   302→   802→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["physics", "newton"]), answers: [
+   303→   803→                    { content: "F = ma", isCorrect: true, sortOrder: 0 },
+   304→   804→                    { content: "E = mc\u00b2", isCorrect: false, sortOrder: 1 },
+   305→   805→                    { content: "P = mv", isCorrect: false, sortOrder: 2 },
+   306→   806→                    { content: "V = IR", isCorrect: false, sortOrder: 3 },
+   307→   807→                  ]},
+   308→   808→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["physics", "inertia"]), answers: [
+   309→   809→                    { content: "First law", isCorrect: true, sortOrder: 0 },
+   310→   810→                    { content: "Second law", isCorrect: false, sortOrder: 1 },
+   311→   811→                    { content: "Third law", isCorrect: false, sortOrder: 2 },
+   312→   812→                    { content: "Law of gravity", isCorrect: false, sortOrder: 3 },
+   313→   813→                  ]},
+   314→   814→                ],
+   315→   815→              },
+   316→   816→              {
+   317→   817→                title: "Speed, Velocity, and Acceleration",
+   318→   818→                slug: "speed-velocity-acceleration",
+   319→   819→                contentType: "text",
+   320→   820→                durationMinutes: 14,
+   321→   821→                sortOrder: 1,
+   322→   822→                bodyContent: JSON.stringify([
+   323→   823→                  { id: "b1", block_type: "heading", content: "Speed, Velocity, and Acceleration", level: 2 },
+   324→   824→                  { id: "b2", block_type: "paragraph", content: "Speed is how fast (scalar). Velocity is speed with direction (vector). Acceleration is the rate of change of velocity." },
+   325→   825→                ]),
+   326→   826→                questions: [
+   327→   827→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["physics", "speed-velocity"]), answers: [
+   328→   828→                    { content: "Velocity includes direction; speed does not", isCorrect: true, sortOrder: 0 },
+   329→   829→                    { content: "They are the same thing", isCorrect: false, sortOrder: 1 },
+   330→   830→                    { content: "Speed is a vector quantity", isCorrect: false, sortOrder: 2 },
+   331→   831→                    { content: "Velocity only measures deceleration", isCorrect: false, sortOrder: 3 },
+   332→   832→                  ]},
+   333→   833→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["physics", "acceleration"]), answers: [
+   334→   834→                    { content: "m/s\u00b2", isCorrect: true, sortOrder: 0 },
+   335→   835→                    { content: "m/s", isCorrect: false, sortOrder: 1 },
+   336→   836→                    { content: "kg\u00b7m/s", isCorrect: false, sortOrder: 2 },
+   337→   837→                    { content: "N", isCorrect: false, sortOrder: 3 },
+   338→   838→                  ]},
+   339→   839→                ],
+   340→   840→              },
+   341→   841→            ],
+   342→   842→          },
+   343→   843→        ],
+   344→   844→      },
+   345→   845→    ],
+   346→   846→  },
+   347→   847→  {
+   348→   848→    code: "rla",
+   349→   849→    title: "Reasoning Through Language Arts",
+   350→   850→    description: "Reading comprehension, writing, grammar, and language conventions.",
+   351→   851→    iconUrl: "/icons/rla.svg",
+   352→   852→    colorHex: "#8B5CF6",
+   353→   853→    sortOrder: 2,
+   354→   854→    modules: [
+   355→   855→      {
+   356→   856→        title: "Reading Comprehension",
+   357→   857→        description: "Analyze passages, identify main ideas, and make inferences.",
+   358→   858→        estimatedHours: 8.0,
+   359→   859→        sortOrder: 0,
+   360→   860→        topics: [
+   361→   861→          {
+   362→   862→            title: "Main Idea and Details",
+   363→   863→            description: "Identify the main idea and supporting details in passages.",
+   364→   864→            sortOrder: 0,
+   365→   865→            lessons: [
+   366→   866→              {
+   367→   867→                title: "Finding the Main Idea",
+   368→   868→                slug: "finding-main-idea",
+   369→   869→                contentType: "text",
+   370→   870→                durationMinutes: 14,
+   371→   871→                sortOrder: 0,
+   372→   872→                bodyContent: JSON.stringify([
+   373→   873→                  { id: "b1", block_type: "heading", content: "Finding the Main Idea", level: 2 },
+   374→   874→                  { id: "b2", block_type: "paragraph", content: "The <strong>main idea</strong> is the central point the author wants to communicate. It is often (but not always) stated in the first or last sentence. Supporting details provide evidence, examples, and explanations." },
+   375→   875→                  { id: "b3", block_type: "callout", callout: { variant: "tip", title: "GED Strategy", body: "Ask yourself: 'What is the one thing the author most wants me to understand?' If you can answer in one sentence, you have found the main idea." } },
+   376→   876→                ]),
+   377→   877→                questions: [
+   378→   878→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["rla", "main-idea"]), answers: [
+   379→   879→                    { content: "First or last sentence", isCorrect: true, sortOrder: 0 },
+   380→   880→                    { content: "Random sentence in the middle", isCorrect: false, sortOrder: 1 },
+   381→   881→                    { content: "Only in the title", isCorrect: false, sortOrder: 2 },
+   382→   882→                    { content: "It is never directly stated", isCorrect: false, sortOrder: 3 },
+   383→   883→                  ]},
+   384→   884→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["rla", "supporting-detail"]), answers: [
+   385→   885→                    { content: "To provide evidence and examples", isCorrect: true, sortOrder: 0 },
+   386→   886→                    { content: "To contradict the main idea", isCorrect: false, sortOrder: 1 },
+   387→   887→                    { content: "To introduce a new topic", isCorrect: false, sortOrder: 2 },
+   388→   888→                    { content: "To summarize the passage", isCorrect: false, sortOrder: 3 },
+   389→   889→                  ]},
+   390→   890→                ],
+   391→   891→              },
+   392→   892→              {
+   393→   893→                title: "Making Inferences",
+   394→   894→                slug: "making-inferences",
+   395→   895→                contentType: "text",
+   396→   896→                durationMinutes: 16,
+   397→   897→                sortOrder: 1,
+   398→   898→                bodyContent: JSON.stringify([
+   399→   899→                  { id: "b1", block_type: "heading", content: "Making Inferences", level: 2 },
+   400→   900→                  { id: "b2", block_type: "paragraph", content: "An <strong>inference</strong> is a conclusion drawn from evidence and reasoning rather than from explicit statements. On the GED, you will need to 'read between the lines' to answer inference questions." },
+   401→   901→                ]),
+   402→   902→                questions: [
+   403→   903→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["rla", "inference"]), answers: [
+   404→   904→                    { content: "A conclusion based on clues and evidence in the text", isCorrect: true, sortOrder: 0 },
+   405→   905→                    { content: "A fact directly stated by the author", isCorrect: false, sortOrder: 1 },
+   406→   906→                    { content: "The title of the passage", isCorrect: false, sortOrder: 2 },
+   407→   907→                    { content: "A summary of the main idea", isCorrect: false, sortOrder: 3 },
+   408→   908→                  ]},
+   409→   909→                  { questionType: "multiple_choice", difficulty: "hard", tags: JSON.stringify(["rla", "tone"]), answers: [
+   410→   910→                    { content: "The author's attitude toward the subject", isCorrect: true, sortOrder: 0 },
+   411→   911→                    { content: "The main character's name", isCorrect: false, sortOrder: 1 },
+   412→   912→                    { content: "The number of paragraphs", isCorrect: false, sortOrder: 2 },
+   413→   913→                    { content: "The publication date", isCorrect: false, sortOrder: 3 },
+   414→   914→                  ]},
+   415→   915→                ],
+   416→   916→              },
+   417→   917→            ],
+   418→   918→          },
+   419→   919→          {
+   420→   920→            title: "Text Structure and Purpose",
+   421→   921→            description: "Recognize how texts are organized and the author's purpose.",
+   422→   922→            sortOrder: 1,
+   423→   923→            lessons: [
+   424→   924→              {
+   425→   925→                title: "Author's Purpose",
+   426→   926→                slug: "authors-purpose",
+   427→   927→                contentType: "text",
+   428→   928→                durationMinutes: 12,
+   429→   929→                sortOrder: 0,
+   430→   930→                bodyContent: JSON.stringify([
+   431→   931→                  { id: "b1", block_type: "heading", content: "Author's Purpose", level: 2 },
+   432→   932→                  { id: "b2", block_type: "paragraph", content: "The three main purposes are: <strong>to inform</strong> (explain facts), <strong>to persuade</strong> (convince the reader), and <strong>to entertain</strong> (tell a story). Some texts combine multiple purposes." },
+   433→   933→                ]),
+   434→   934→                questions: [
+   435→   935→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["rla", "purpose"]), answers: [
+   436→   936→                    { content: "To persuade", isCorrect: true, sortOrder: 0 },
+   437→   937→                    { content: "To entertain", isCorrect: false, sortOrder: 1 },
+   438→   938→                    { content: "To inform", isCorrect: false, sortOrder: 2 },
+   439→   939→                    { content: "To describe", isCorrect: false, sortOrder: 3 },
+   440→   940→                  ]},
+   441→   941→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["rla", "text-structure"]), answers: [
+   442→   942→                    { content: "Cause and effect", isCorrect: true, sortOrder: 0 },
+   443→   943→                    { content: "Alphabetical order", isCorrect: false, sortOrder: 1 },
+   444→   944→                    { content: "Rhyming scheme", isCorrect: false, sortOrder: 2 },
+   445→   945→                    { content: "Question and answer", isCorrect: false, sortOrder: 3 },
+   446→   946→                  ]},
+   447→   947→                ],
+   448→   948→              },
+   449→   949→              {
+   450→   950→                title: "Point of View",
+   451→   951→                slug: "point-of-view",
+   452→   952→                contentType: "text",
+   453→   953→                durationMinutes: 13,
+   454→   954→                sortOrder: 1,
+   455→   955→                bodyContent: JSON.stringify([
+   456→   956→                  { id: "b1", block_type: "heading", content: "Point of View", level: 2 },
+   457→   957→                  { id: "b2", block_type: "paragraph", content: "Point of view (POV) is the perspective from which a story is told. First person uses 'I'. Third person limited follows one character. Third person omniscient knows all characters' thoughts." },
+   458→   958→                ]),
+   459→   959→                questions: [
+   460→   960→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["rla", "point-of-view"]), answers: [
+   461→   961→                    { content: "First person", isCorrect: true, sortOrder: 0 },
+   462→   962→                    { content: "Second person", isCorrect: false, sortOrder: 1 },
+   463→   963→                    { content: "Third person omniscient", isCorrect: false, sortOrder: 2 },
+   464→   964→                    { content: "Third person objective", isCorrect: false, sortOrder: 3 },
+   465→   965→                  ]},
+   466→   966→                  { questionType: "multiple_choice", difficulty: "medium", tags: JSON.stringify(["rla", "narrator"]), answers: [
+   467→   967→                    { content: "Can reveal all characters' thoughts and feelings", isCorrect: true, sortOrder: 0 },
+   468→   968→                    { content: "Only knows one character's perspective", isCorrect: false, sortOrder: 1 },
+   469→   969→                    { content: "Is a character in the story", isCorrect: false, sortOrder: 2 },
+   470→   970→                    { content: "Never describes settings", isCorrect: false, sortOrder: 3 },
+   471→   971→                  ]},
+   472→   972→                ],
+   473→   973→              },
+   474→   974→            ],
+   475→   975→          },
+   476→   976→        ],
+   477→   977→      },
+   478→   978→      {
+   479→   979→        title: "Grammar and Language Conventions",
+   480→   980→        description: "Sentence structure, punctuation, verb tense, and agreement.",
+   481→   981→        estimatedHours: 6.0,
+   482→   982→        sortOrder: 1,
+   483→   983→        topics: [
+   484→   984→          {
+   485→   985→            title: "Sentence Structure",
+   486→   986→            description: "Complete sentences, fragments, run-ons, and sentence types.",
+   487→   987→            sortOrder: 0,
+   488→   988→            lessons: [
+   489→   989→              {
+   490→   990→                title: "Complete Sentences vs. Fragments",
+   491→   991→                slug: "sentences-vs-fragments",
+   492→   992→                contentType: "text",
+   493→   993→                durationMinutes: 12,
+   494→   994→                sortOrder: 0,
+   495→   995→                bodyContent: JSON.stringify([
+   496→   996→                  { id: "b1", block_type: "heading", content: "Complete Sentences vs. Fragments", level: 2 },
+   497→   997→                  { id: "b2", block_type: "paragraph", content: "A <strong>complete sentence</strong> has a subject and a verb and expresses a complete thought. A <strong>fragment</strong> is missing one of these elements. A <strong>run-on</strong> joins two complete sentences without proper punctuation or conjunction." },
+   498→   998→                ]),
+   499→   999→                questions: [
+   500→  1000→                  { questionType: "multiple_choice", difficulty: "easy", tags: JSON.stringify(["grammar", "fragment"]), answers: [
+   501→
+   502→[showing lines 501-1000 of 1782; use offset=1001 with limit to continue reading]
