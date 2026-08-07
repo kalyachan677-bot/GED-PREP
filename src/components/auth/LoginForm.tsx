@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAppStore } from "@/lib/store";
 import { useText } from "@/lib/ui-texts";
 import { RegisterForm } from "./RegisterForm";
@@ -18,6 +18,35 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [setupStatus, setSetupStatus] = useState<string | null>(null);
+
+  // Auto-seed database on first visit
+  useEffect(() => {
+    fetch("/api/setup")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.status === "seeded") {
+          setSetupStatus("seeded");
+          console.log("[setup] Database seeded successfully");
+        } else if (data.status === "ready") {
+          console.log("[setup] Database already ready:", data);
+        } else if (data.status === "seeding_in_progress") {
+          setSetupStatus("seeding");
+          // Retry after a delay
+          setTimeout(() => {
+            fetch("/api/setup")
+              .then((r) => r.json())
+              .then((d) => {
+                if (d.status === "seeded" || d.status === "ready") setSetupStatus(null);
+              })
+              .catch(() => {});
+          }, 5000);
+        } else if (data.status === "error") {
+          console.error("[setup] Seed error:", data.error);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
