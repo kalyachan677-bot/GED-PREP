@@ -81,6 +81,7 @@ export async function POST(request: NextRequest) {
         difficulty: q.difficulty,
         points: q.points,
         hintText: q.hintText,
+        relatedConceptId: q.relatedConceptId,
         answers: shuffledAnswers.map((a) => ({
           id: a.id,
           content: a.content,

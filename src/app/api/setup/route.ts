@@ -18,9 +18,17 @@ export async function GET() {
     try {
       const count = await db.user.count();
       if (count > 0) {
+        // Data repair: fix questions with NULL questionText
+        const repaired = await repairNullQuestionText();
         const subjects = await db.subject.count();
         const questions = await db.question.count({ where: { isActive: true } });
-        return NextResponse.json({ status: "ready", users: count, subjects, questions });
+        return NextResponse.json({
+          status: repaired ? "repaired" : "ready",
+          users: count,
+          subjects,
+          questions,
+          ...(repaired ? { repaired } : {}),
+        });
       }
     } catch {
       // Tables don't exist yet, run migration
@@ -55,6 +63,126 @@ export async function POST() {
   return GET();
 }
 
+// ==========================================================================
+// Repair questions that have NULL questionText
+// ==========================================================================
+async function repairNullQuestionText(): Promise<boolean> {
+  try {
+    const broken = await db.question.findMany({
+      where: { questionText: { in: [null, ""] as any } },
+      take: 50,
+    });
+    if (broken.length === 0) return false;
+
+    console.log(`[setup] Repairing ${broken.length} questions with NULL questionText...`);
+
+    // Build a reverse map: lessonId -> [questions from EXTRA_QUESTIONS]
+    const lessonTitles = await db.lesson.findMany({
+      where: { id: { in: broken.map((q) => q.lessonId).filter(Boolean) } },
+      select: { id: true, title: true },
+    });
+    const titleToLessonId = new Map(lessonTitles.map((l) => [l.title, l.id]));
+
+    // Match broken questions to EXTRA_QUESTIONS and backfill
+    let fixed = 0;
+    for (const [lessonTitle, questions] of Object.entries(EXTRA_QUESTIONS)) {
+      const lessonId = titleToLessonId.get(lessonTitle);
+      if (!lessonId) continue;
+
+      // Find broken questions for this lesson
+      const lessonBroken = broken.filter((q) => q.lessonId === lessonId);
+      for (let i = 0; i < lessonBroken.length && i < questions.length; i++) {
+        const qText = questions[i][0];
+        if (qText) {
+          await db.question.update({
+            where: { id: lessonBroken[i].id },
+            data: { questionText: qText },
+          });
+          fixed++;
+        }
+      }
+    }
+
+    // For any remaining broken questions, set a generic text
+    const stillBroken = await db.question.findMany({
+      where: { questionText: { in: [null, ""] as any } },
+      take: 50,
+    });
+    for (const q of stillBroken) {
+      const ans = await db.answer.findFirst({ where: { questionId: q.id } });
+      await db.question.update({
+        where: { id: q.id },
+        data: { questionText: ans ? `Select the correct answer about ${ans.content}` : "Question " + q.id.slice(0, 6) },
+      });
+      fixed++;
+    }
+
+    console.log(`[setup] Repaired ${fixed} questions.`);
+    return fixed > 0;
+  } catch (e) {
+    console.error("[setup] Repair failed:", e);
+    return false;
+  }
+}
+
+// ==========================================================================
+// Subject mapping for EXTRA_QUESTIONS keys
+// ==========================================================================
+const SUBJECT_LESSON_MAP: Record<string, { code: string; module: string; topic: string; slug: string }> = {
+  // MATH
+  "What is a Linear Equation?":          { code: "math", module: "Algebraic Foundations", topic: "Solving Linear Equations", slug: "what-is-linear-equation" },
+  "Solving Inequalities":                { code: "math", module: "Algebraic Foundations", topic: "Solving Inequalities", slug: "solving-inequalities" },
+  "Working with Units and Measurement":   { code: "math", module: "Number Sense", topic: "Measurement", slug: "units-and-measurement" },
+  "Geometry Basics":                    { code: "math", module: "Geometry", topic: "Basic Shapes", slug: "geometry-basics" },
+  "The Coordinate Plane and Graphing":   { code: "math", module: "Algebraic Foundations", topic: "Graphing", slug: "coordinate-plane" },
+  "Data Analysis and Statistics":         { code: "math", module: "Data Analysis", topic: "Statistics", slug: "data-analysis-statistics" },
+  "Introduction to Probability":        { code: "math", module: "Data Analysis", topic: "Probability", slug: "introduction-probability" },
+  "Percentages, Ratios, and Proportions": { code: "math", module: "Number Sense", topic: "Percents and Ratios", slug: "percentages-ratios" },
+  "Functions and Graphs":               { code: "math", module: "Algebraic Foundations", topic: "Functions", slug: "functions-and-graphs" },
+  "Polynomials and Exponents":           { code: "math", module: "Algebraic Foundations", topic: "Polynomials", slug: "polynomials-exponents" },
+  "Quadratic Equations":                 { code: "math", module: "Algebraic Foundations", topic: "Quadratics", slug: "quadratic-equations" },
+  "Number Sense and Operations":          { code: "math", module: "Number Sense", topic: "Basic Operations", slug: "number-sense" },
+  // SCIENCE
+  "Cell Structure and Organelles":       { code: "science", module: "Life Science", topic: "Cell Biology", slug: "cell-structure" },
+  "Chemical Reactions":                  { code: "science", module: "Physical Science", topic: "Chemistry", slug: "chemical-reactions" },
+  "DNA and Genes":                      { code: "science", module: "Life Science", topic: "Genetics", slug: "dna-and-genes" },
+  "Newton's Laws of Motion":            { code: "science", module: "Physical Science", topic: "Physics", slug: "newtons-laws" },
+  "Speed, Velocity, and Acceleration":   { code: "science", module: "Physical Science", topic: "Motion", slug: "speed-velocity-acceleration" },
+  "Cell Division: Mitosis and Meiosis":  { code: "science", module: "Life Science", topic: "Cell Division", slug: "cell-division" },
+  "Atoms and the Periodic Table":        { code: "science", module: "Physical Science", topic: "Chemistry Basics", slug: "atoms-periodic-table" },
+  "Punnett Squares":                    { code: "science", module: "Life Science", topic: "Heredity", slug: "punnett-squares" },
+  "The Scientific Method":              { code: "science", module: "General Science", topic: "Scientific Method", slug: "scientific-method" },
+  "Energy and Work":                     { code: "science", module: "Physical Science", topic: "Energy", slug: "energy-and-work" },
+  "Ecology and Ecosystems":               { code: "science", module: "Earth Science", topic: "Ecology", slug: "ecology-ecosystems" },
+  // RLA
+  "Making Inferences":                  { code: "rla", module: "Reading Comprehension", topic: "Inferences", slug: "making-inferences" },
+  "Author's Purpose":                   { code: "rla", module: "Reading Comprehension", topic: "Author Purpose", slug: "authors-purpose" },
+  "Subject-Verb Agreement":              { code: "rla", module: "Grammar", topic: "Verb Agreement", slug: "subject-verb-agreement" },
+  "Comma Rules":                        { code: "rla", module: "Grammar", topic: "Punctuation", slug: "comma-rules" },
+  "Point of View":                       { code: "rla", module: "Reading Comprehension", topic: "Perspective", slug: "point-of-view" },
+  "Complete Sentences vs. Fragments":    { code: "rla", module: "Grammar", topic: "Sentence Structure", slug: "complete-sentences-fragments" },
+  "Apostrophes and Quotation Marks":     { code: "rla", module: "Grammar", topic: "Punctuation", slug: "apostrophes-quotation-marks" },
+  "Finding the Main Idea":               { code: "rla", module: "Reading Comprehension", topic: "Main Idea", slug: "finding-the-main-idea" },
+  "Text Structure and Organization":      { code: "rla", module: "Reading Comprehension", topic: "Text Structure", slug: "text-structure" },
+  "Vocabulary in Context":               { code: "rla", module: "Reading Comprehension", topic: "Vocabulary", slug: "vocabulary-in-context" },
+  // SS
+  "The Declaration of Independence":      { code: "ss", module: "American History", topic: "Founding Documents", slug: "declaration-of-independence" },
+  "The U.S. Constitution":              { code: "ss", module: "American History", topic: "Founding Documents", slug: "the-us-constitution" },
+  "The Civil Rights Movement Overview":  { code: "ss", module: "American History", topic: "Civil Rights", slug: "civil-rights-movement" },
+  "Key Figures: MLK and Rosa Parks":     { code: "ss", module: "American History", topic: "Civil Rights", slug: "key-figures-mlk-rosa" },
+  "Legislative Branch: Congress":        { code: "ss", module: "Civics", topic: "Government Structure", slug: "legislative-branch" },
+  "Executive and Judicial Branches":      { code: "ss", module: "Civics", topic: "Government Structure", slug: "executive-judicial-branches" },
+  "How Elections Work":                 { code: "ss", module: "Civics", topic: "Elections", slug: "how-elections-work" },
+  "Political Parties and the Two-Party System": { code: "ss", module: "Civics", topic: "Political Parties", slug: "political-parties" },
+  "Economics Basics":                   { code: "ss", module: "Economics", topic: "Fundamentals", slug: "economics-basics" },
+  "World Wars and Global Conflicts":     { code: "ss", module: "World History", topic: "World Wars", slug: "world-wars" },
+  "Maps, Geography, and Human-Environment Interaction": { code: "ss", module: "Geography", topic: "Maps and Geography", slug: "maps-geography" },
+  "The Bill of Rights":                  { code: "ss", module: "American History", topic: "Founding Documents", slug: "bill-of-rights" },
+};
+
+// ==========================================================================
+// FULL SEED DATA
+// ==========================================================================
 async function fullSetup() {
   // Step 1: Create tables
   console.log("[setup] Creating tables...");
@@ -67,7 +195,6 @@ async function fullSetup() {
     try {
       await db.$executeRawUnsafe(stmt + ";");
     } catch (e) {
-      // Ignore errors for existing objects
       console.log("[setup] SQL ok or skipped:", stmt.substring(0, 80));
     }
   }
@@ -100,89 +227,96 @@ async function fullSetup() {
   }
 }
 
-// =============================================================================
-// FULL SEED DATA (inline - no external file dependencies)
-// =============================================================================
 async function seedAllData() {
   // Create subjects
   const math = await db.subject.create({
-    data: { code: "math", title: "Mathematical Reasoning", description: "Algebra, geometry, data analysis", colorHex: "#10B981", sortOrder: 0, status: "published" },
+    data: { code: "math", title: "Mathematical Reasoning", description: "Algebra, geometry, data analysis", colorHex: "10B981", sortOrder: 0, status: "published" },
   });
   const science = await db.subject.create({
-    data: { code: "science", title: "Science", description: "Life, physical, and earth & space science", colorHex: "#3B82F6", sortOrder: 1, status: "published" },
+    data: { code: "science", title: "Science", description: "Life, physical, and earth & space science", colorHex: "3B82F6", sortOrder: 1, status: "published" },
   });
   const rla = await db.subject.create({
-    data: { code: "rla", title: "Reasoning Through Language Arts", description: "Reading comprehension, writing, grammar", colorHex: "#F59E0B", sortOrder: 2, status: "published" },
+    data: { code: "rla", title: "Reasoning Through Language Arts", description: "Reading comprehension, writing, grammar", colorHex: "F59E0B", sortOrder: 2, status: "published" },
   });
   const ss = await db.subject.create({
-    data: { code: "ss", title: "Social Studies", description: "History, civics, economics, geography", colorHex: "#EF4444", sortOrder: 3, status: "published" },
+    data: { code: "ss", title: "Social Studies", description: "History, civics, economics, geography", colorHex: "EF4444", sortOrder: 3, status: "published" },
   });
 
-  // Create minimal structure for each subject
-  const subjectData = [
-    { subject: math, module: "Algebraic Foundations", topic: "Solving Linear Equations", lesson: "What is a Linear Equation?", slug: "what-is-linear-equation" },
-    { subject: math, module: "Algebraic Foundations", topic: "Solving Inequalities", lesson: "Solving Inequalities", slug: "solving-inequalities" },
-    { subject: science, module: "Life Science", topic: "Cell Biology", lesson: "What is a Cell?", slug: "what-is-a-cell" },
-    { subject: science, module: "Physical Science", topic: "Chemistry Basics", lesson: "Atoms and Molecules", slug: "atoms-and-molecules" },
-    { subject: rla, module: "Reading Comprehension", topic: "Main Idea", lesson: "Finding the Main Idea", slug: "finding-the-main-idea" },
-    { subject: rla, module: "Grammar", topic: "Sentence Structure", lesson: "Parts of a Sentence", slug: "parts-of-a-sentence" },
-    { subject: ss, module: "American History", topic: "Founding Documents", lesson: "The US Constitution", slug: "the-us-constitution" },
-    { subject: ss, module: "Civics", topic: "Government Structure", lesson: "Three Branches of Government", slug: "three-branches" },
-  ];
+  const subjectByCode = new Map<string, { id: string }>([
+    ["math", { id: math.id }],
+    ["science", { id: science.id }],
+    ["rla", { id: rla.id }],
+    ["ss", { id: ss.id }],
+  ]);
 
   // Track unique modules/topics
   const moduleMap = new Map<string, string>();
   const topicMap = new Map<string, string>();
   const lessonMap = new Map<string, { id: string; subjectId: string }>();
 
-  for (const item of subjectData) {
-    const modKey = item.subject.code + ":" + item.module;
+  // Create a lesson for each EXTRA_QUESTIONS key
+  for (const [lessonTitle, meta] of Object.entries(SUBJECT_LESSON_MAP)) {
+    const subj = subjectByCode.get(meta.code);
+    if (!subj) continue;
+
+    // Create module if needed
+    const modKey = meta.code + ":" + meta.module;
     let moduleId = moduleMap.get(modKey);
     if (!moduleId) {
       const mod = await db.module.create({
-        data: { subjectId: item.subject.id, title: item.module, sortOrder: moduleMap.size, status: "published" },
+        data: { subjectId: subj.id, title: meta.module, sortOrder: moduleMap.size, status: "published" },
       });
       moduleId = mod.id;
       moduleMap.set(modKey, moduleId);
     }
 
-    const topKey = modKey + ":" + item.topic;
+    // Create topic if needed
+    const topKey = modKey + ":" + meta.topic;
     let topicId = topicMap.get(topKey);
     if (!topicId) {
       const top = await db.topic.create({
-        data: { moduleId, title: item.topic, sortOrder: topicMap.size, status: "published" },
+        data: { moduleId, title: meta.topic, sortOrder: topicMap.size, status: "published" },
       });
       topicId = top.id;
       topicMap.set(topKey, topicId);
     }
 
+    // Create lesson
     const lesson = await db.lesson.create({
       data: {
         topicId,
-        title: item.lesson,
-        slug: item.slug,
+        title: lessonTitle,
+        slug: meta.slug,
         contentType: "text",
-        bodyContent: JSON.stringify([{ id: "blk_1", block_type: "paragraph", content: "Content for " + item.lesson }]),
+        bodyContent: JSON.stringify([{ id: "blk_1", block_type: "paragraph", content: "Content for " + lessonTitle }]),
         durationMinutes: 15,
         sortOrder: 0,
         status: "published",
         lessonType: "core_topic",
       },
     });
-    lessonMap.set(item.lesson, { id: lesson.id, subjectId: item.subject.id });
+    lessonMap.set(lessonTitle, { id: lesson.id, subjectId: subj.id });
   }
 
-  // Seed extra questions
+  // Seed questions from EXTRA_QUESTIONS
   let qCount = 0;
   for (const [lessonTitle, questions] of Object.entries(EXTRA_QUESTIONS)) {
     const info = lessonMap.get(lessonTitle);
-    if (!info) continue;
+    if (!info) {
+      console.log("[setup] WARNING: No lesson for key:", lessonTitle);
+      continue;
+    }
     for (const [qText, answers, difficulty, explanation, tags] of questions) {
+      const text = qText as string;
+      if (!text) {
+        console.log("[setup] WARNING: Empty questionText for", lessonTitle);
+        continue;
+      }
       await db.question.create({
         data: {
           questionType: "multiple_choice",
           difficulty: difficulty as string,
-          questionText: qText as string,
+          questionText: text,
           explanation: explanation as string,
           tags: JSON.stringify(tags),
           isActive: true,
@@ -195,5 +329,5 @@ async function seedAllData() {
       qCount++;
     }
   }
-  console.log(`[setup] Seeded ${qCount} questions across ${subjectData.length} lessons`);
+  console.log(`[setup] Seeded ${qCount} questions across ${lessonMap.size} lessons`);
 }
