@@ -65,7 +65,7 @@ async function fullSetup() {
 
   for (const stmt of statements) {
     try {
-      await db.\$executeRawUnsafe(stmt + ";");
+      await db.$executeRawUnsafe(stmt + ";");
     } catch (e) {
       // Ignore errors for existing objects
       console.log("[setup] SQL ok or skipped:", stmt.substring(0, 80));
