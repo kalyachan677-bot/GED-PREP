@@ -68,57 +68,68 @@ export async function POST() {
 // ==========================================================================
 async function repairNullQuestionText(): Promise<boolean> {
   try {
-    const broken = await db.question.findMany({
-      where: { questionText: { in: [null, ""] as any } },
-      take: 50,
-    });
-    if (broken.length === 0) return false;
+    let totalFixed = 0;
+    let batchNum = 0;
+    const BATCH_SIZE = 100;
 
-    console.log(`[setup] Repairing ${broken.length} questions with NULL questionText...`);
+    // Loop until no more broken questions are found
+    while (true) {
+      batchNum++;
+      const broken = await db.question.findMany({
+        where: { questionText: { in: [null, ""] as any } },
+        take: BATCH_SIZE,
+        orderBy: { createdAt: "asc" },
+      });
+      if (broken.length === 0) break;
 
-    // Build a reverse map: lessonId -> [questions from EXTRA_QUESTIONS]
-    const lessonTitles = await db.lesson.findMany({
-      where: { id: { in: broken.map((q) => q.lessonId).filter(Boolean) } },
-      select: { id: true, title: true },
-    });
-    const titleToLessonId = new Map(lessonTitles.map((l) => [l.title, l.id]));
+      console.log(`[setup] Repair batch ${batchNum}: ${broken.length} questions with NULL questionText...`);
 
-    // Match broken questions to EXTRA_QUESTIONS and backfill
-    let fixed = 0;
-    for (const [lessonTitle, questions] of Object.entries(EXTRA_QUESTIONS)) {
-      const lessonId = titleToLessonId.get(lessonTitle);
-      if (!lessonId) continue;
+      // Build a reverse map: lessonId -> [questions from EXTRA_QUESTIONS]
+      const lessonIds = [...new Set(broken.map((q) => q.lessonId).filter(Boolean))];
+      const lessonTitles = await db.lesson.findMany({
+        where: { id: { in: lessonIds } },
+        select: { id: true, title: true },
+      });
+      const titleToLessonId = new Map(lessonTitles.map((l) => [l.title, l.id]));
 
-      // Find broken questions for this lesson
-      const lessonBroken = broken.filter((q) => q.lessonId === lessonId);
-      for (let i = 0; i < lessonBroken.length && i < questions.length; i++) {
-        const qText = questions[i][0];
-        if (qText) {
-          await db.question.update({
-            where: { id: lessonBroken[i].id },
-            data: { questionText: qText },
-          });
-          fixed++;
+      // Match broken questions to EXTRA_QUESTIONS and backfill
+      for (const [lessonTitle, questions] of Object.entries(EXTRA_QUESTIONS)) {
+        const lessonId = titleToLessonId.get(lessonTitle);
+        if (!lessonId) continue;
+
+        // Find broken questions for this lesson (from this batch)
+        const lessonBroken = broken.filter((q) => q.lessonId === lessonId);
+        for (let i = 0; i < lessonBroken.length && i < questions.length; i++) {
+          const qText = questions[i][0];
+          if (qText) {
+            await db.question.update({
+              where: { id: lessonBroken[i].id },
+              data: { questionText: qText },
+            });
+            totalFixed++;
+          }
         }
+      }
+
+      // For any remaining broken questions in this batch, set a generic text
+      const stillBroken = await db.question.findMany({
+        where: { questionText: { in: [null, ""] as any } },
+        take: BATCH_SIZE,
+      });
+      for (const q of stillBroken) {
+        const ans = await db.answer.findFirst({ where: { questionId: q.id } });
+        await db.question.update({
+          where: { id: q.id },
+          data: { questionText: ans ? `Select the correct answer about ${ans.content}` : "Question " + q.id.slice(0, 6) },
+        });
+        totalFixed++;
       }
     }
 
-    // For any remaining broken questions, set a generic text
-    const stillBroken = await db.question.findMany({
-      where: { questionText: { in: [null, ""] as any } },
-      take: 50,
-    });
-    for (const q of stillBroken) {
-      const ans = await db.answer.findFirst({ where: { questionId: q.id } });
-      await db.question.update({
-        where: { id: q.id },
-        data: { questionText: ans ? `Select the correct answer about ${ans.content}` : "Question " + q.id.slice(0, 6) },
-      });
-      fixed++;
+    if (totalFixed > 0) {
+      console.log(`[setup] Total repaired: ${totalFixed} questions across ${batchNum} batch(es).`);
     }
-
-    console.log(`[setup] Repaired ${fixed} questions.`);
-    return fixed > 0;
+    return totalFixed > 0;
   } catch (e) {
     console.error("[setup] Repair failed:", e);
     return false;
