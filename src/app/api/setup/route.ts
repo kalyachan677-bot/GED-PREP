@@ -21,11 +21,11 @@ export async function GET() {
         // Data repair: fix questions with NULL questionText
         const repaired = await repairNullQuestionText();
         
-        // Auto force-reseed if too many questions still have NULL text (repair can't match)
+        // Auto force-reseed if ANY questions still have NULL text after repair
         const totalQ = await db.question.count({ where: { isActive: true } });
         const nullQ = await db.question.count({ where: { questionText: { in: [null, ""] as any }, isActive: true } });
         let reseeded = false;
-        if (totalQ > 0 && nullQ > totalQ * 0.3) {
+        if (totalQ > 0 && nullQ > 0) {
           console.log(`[setup] ${nullQ}/${totalQ} questions still NULL — auto force-reseed...`);
           const res = await forceReseedQuestions();
           reseeded = res.status === "reseeded";
