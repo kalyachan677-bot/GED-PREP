@@ -370,15 +370,20 @@ export function QuizView() {
         {currentIdx === totalQ - 1 ? (
           <Button
             onClick={handleSubmit}
-            disabled={submitting || answeredCount < totalQ}
-            className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 rounded-xl shadow-lg shadow-violet-200/50"
+            disabled={submitting}
+            className={`rounded-xl ${answeredCount === totalQ
+              ? "bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 shadow-lg shadow-violet-200/50"
+              : "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 shadow-lg shadow-amber-200/50"
+            }`}
           >
             {submitting ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               <Send className="mr-2 h-4 w-4" />
             )}
-            {tx("submitAnswer", { n: answeredCount, m: totalQ })}
+            {answeredCount < totalQ
+              ? tx("submitPartial", { n: answeredCount, m: totalQ })
+              : tx("submitAnswer", { n: answeredCount, m: totalQ })}
           </Button>
         ) : (
           <Button onClick={goNext} variant="outline" className="rounded-xl">

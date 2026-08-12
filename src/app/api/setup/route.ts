@@ -8,39 +8,47 @@ export const dynamic = "force-dynamic";
 
 let isSeeding = false;
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     if (isSeeding) {
       return NextResponse.json({ status: "seeding", message: "Seeding in progress..." });
     }
 
+    // Support ?force=1 query param for manual trigger
+    const { searchParams } = new URL(request.url);
+    const forceParam = searchParams.get("force");
+
     // Check if already set up
     try {
       const count = await db.user.count();
       if (count > 0) {
-        // Data repair: fix questions with NULL questionText
-        const repaired = await repairNullQuestionText();
-        
-        // Auto force-reseed if ANY questions still have NULL text after repair
-        const totalQ = await db.question.count({ where: { isActive: true } });
-        const nullQ = await db.question.count({ where: { questionText: { in: [null, ""] as any }, isActive: true } });
-        let reseeded = false;
-        if (totalQ > 0 && nullQ > 0) {
-          console.log(`[setup] ${nullQ}/${totalQ} questions still NULL — auto force-reseed...`);
-          const res = await forceReseedQuestions();
-          reseeded = res.status === "reseeded";
+        // Diagnostics
+        const totalQ = await db.question.count();
+        const nullQ = await db.question.count({ where: { questionText: { in: [null, ""] as any } } });
+        const totalA = await db.answer.count();
+
+        // Always show diagnostic info
+        const diagnostics = { totalQuestions: totalQ, nullTextQuestions: nullQ, totalAnswers: totalA };
+
+        // If ?force=1 or any NULL questions exist, run force reseed
+        if (forceParam === "1" || nullQ > 0) {
+          isSeeding = true;
+          try {
+            const res = await forceReseedQuestionsRaw();
+            const newTotal = await db.question.count();
+            const newNull = await db.question.count({ where: { questionText: { in: [null, ""] as any } } });
+            return NextResponse.json({
+              status: "reseeded",
+              ...diagnostics,
+              reseedResult: res,
+              afterReseed: { totalQuestions: newTotal, nullTextQuestions: newNull },
+            });
+          } finally {
+            isSeeding = false;
+          }
         }
 
-        const subjects = await db.subject.count();
-        const questions = await db.question.count({ where: { isActive: true } });
-        return NextResponse.json({
-          status: reseeded ? "reseeded" : repaired ? "repaired" : "ready",
-          users: count,
-          subjects,
-          questions,
-          ...(reseeded ? { reseeded: true } : {}),
-          ...(repaired ? { repaired } : {}),
-        });
+        return NextResponse.json({ status: "ready", ...diagnostics });
       }
     } catch {
       // Tables don't exist yet, run migration
@@ -73,7 +81,6 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    // Check for force-reseed parameter
     let forceReseed = false;
     try {
       const body = await request.json();
@@ -81,12 +88,12 @@ export async function POST(request: NextRequest) {
     } catch { /* no body, ignore */ }
 
     if (forceReseed) {
-      console.log("[setup] Force reseed requested...");
-      const result = await forceReseedQuestions();
+      const result = await forceReseedQuestionsRaw();
       return NextResponse.json(result);
     }
 
-    return GET();
+    // Forward to GET logic
+    return GET(request);
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : String(error);
     console.error("[setup] POST Error:", error);
@@ -95,75 +102,77 @@ export async function POST(request: NextRequest) {
 }
 
 // ==========================================================================
-// Repair questions that have NULL questionText
+// Force reseed using RAW SQL (bypass Prisma FK issues)
 // ==========================================================================
-async function repairNullQuestionText(): Promise<boolean> {
+async function forceReseedQuestionsRaw() {
   try {
-    let totalFixed = 0;
-    let batchNum = 0;
-    const BATCH_SIZE = 100;
+    // Step 1: Delete dependent records first (raw SQL to bypass FK constraints)
+    console.log("[setup] Force reseed: cleaning old data...");
+    await db.$executeRawUnsafe(`DELETE FROM "QuizAttemptAnswer"`);
+    await db.$executeRawUnsafe(`DELETE FROM "SpacedRepetition"`);
+    await db.$executeRawUnsafe(`DELETE FROM "Answer"`);
+    await db.$executeRawUnsafe(`DELETE FROM "Question"`);
+    await db.$executeRawUnsafe(`DELETE FROM "QuizAttempt"`);
+    console.log("[setup] Old data cleaned.");
 
-    // Loop until no more broken questions are found
-    while (true) {
-      batchNum++;
-      const broken = await db.question.findMany({
-        where: { questionText: { in: [null, ""] as any } },
-        take: BATCH_SIZE,
-        orderBy: { createdAt: "asc" },
-      });
-      if (broken.length === 0) break;
+    // Step 2: Get existing lesson mapping
+    const lessons = await db.lesson.findMany({
+      select: { id: true, title: true, subjectId: true },
+    });
+    const lessonByTitle = new Map(lessons.map((l) => [l.title, { id: l.id, subjectId: l.subjectId }]));
 
-      console.log(`[setup] Repair batch ${batchNum}: ${broken.length} questions with NULL questionText...`);
+    // Step 3: Re-create questions from EXTRA_QUESTIONS
+    let created = 0;
+    let skipped = 0;
+    const matchedLessons: string[] = [];
+    const skippedLessons: string[] = [];
 
-      // Build a reverse map: lessonId -> [questions from EXTRA_QUESTIONS]
-      const lessonIds = [...new Set(broken.map((q) => q.lessonId).filter(Boolean))];
-      const lessonTitles = await db.lesson.findMany({
-        where: { id: { in: lessonIds } },
-        select: { id: true, title: true },
-      });
-      const titleToLessonId = new Map(lessonTitles.map((l) => [l.title, l.id]));
-
-      // Match broken questions to EXTRA_QUESTIONS and backfill
-      for (const [lessonTitle, questions] of Object.entries(EXTRA_QUESTIONS)) {
-        const lessonId = titleToLessonId.get(lessonTitle);
-        if (!lessonId) continue;
-
-        // Find broken questions for this lesson (from this batch)
-        const lessonBroken = broken.filter((q) => q.lessonId === lessonId);
-        for (let i = 0; i < lessonBroken.length && i < questions.length; i++) {
-          const qText = questions[i][0];
-          if (qText) {
-            await db.question.update({
-              where: { id: lessonBroken[i].id },
-              data: { questionText: qText },
-            });
-            totalFixed++;
-          }
-        }
+    for (const [lessonTitle, questions] of Object.entries(EXTRA_QUESTIONS)) {
+      const info = lessonByTitle.get(lessonTitle);
+      if (!info) {
+        skippedLessons.push(lessonTitle);
+        skipped++;
+        continue;
       }
-
-      // For any remaining broken questions in this batch, set a generic text
-      const stillBroken = await db.question.findMany({
-        where: { questionText: { in: [null, ""] as any } },
-        take: BATCH_SIZE,
-      });
-      for (const q of stillBroken) {
-        const ans = await db.answer.findFirst({ where: { questionId: q.id } });
-        await db.question.update({
-          where: { id: q.id },
-          data: { questionText: ans ? `Select the correct answer about ${ans.content}` : "Question " + q.id.slice(0, 6) },
+      matchedLessons.push(lessonTitle);
+      for (const [qText, answers, difficulty, explanation, tags] of questions) {
+        const text = qText as string;
+        if (!text) continue;
+        await db.question.create({
+          data: {
+            questionType: "multiple_choice",
+            difficulty: difficulty as string,
+            questionText: text,
+            explanation: explanation as string,
+            tags: JSON.stringify(tags),
+            isActive: true,
+            points: difficulty === "hard" ? 3 : difficulty === "medium" ? 2 : 1,
+            subjectId: info.subjectId,
+            lessonId: info.id,
+            answers: { create: (answers as [string, boolean][]).map((a, i) => ({ content: a[0], isCorrect: a[1], sortOrder: i })) },
+          },
         });
-        totalFixed++;
+        created++;
       }
     }
 
-    if (totalFixed > 0) {
-      console.log(`[setup] Total repaired: ${totalFixed} questions across ${batchNum} batch(es).`);
+    console.log(`[setup] Force reseed done: ${created} created, ${skipped} skipped`);
+    if (skippedLessons.length > 0) {
+      console.log(`[setup] Skipped lessons (no match in DB): ${skippedLessons.join(", ")}`);
     }
-    return totalFixed > 0;
+
+    return {
+      status: "reseeded",
+      createdQuestions: created,
+      matchedLessons: matchedLessons.length,
+      skippedLessons: skipped,
+      skippedLessonNames: skippedLessons,
+      dbLessonCount: lessons.length,
+      message: `Re-seeded ${created} questions with questionText`,
+    };
   } catch (e) {
-    console.error("[setup] Repair failed:", e);
-    return false;
+    console.error("[setup] Force reseed FAILED:", e);
+    return { status: "error", error: e instanceof Error ? e.message : String(e) };
   }
 }
 
@@ -291,17 +300,14 @@ async function seedAllData() {
     ["ss", { id: ss.id }],
   ]);
 
-  // Track unique modules/topics
   const moduleMap = new Map<string, string>();
   const topicMap = new Map<string, string>();
   const lessonMap = new Map<string, { id: string; subjectId: string }>();
 
-  // Create a lesson for each EXTRA_QUESTIONS key
   for (const [lessonTitle, meta] of Object.entries(SUBJECT_LESSON_MAP)) {
     const subj = subjectByCode.get(meta.code);
     if (!subj) continue;
 
-    // Create module if needed
     const modKey = meta.code + ":" + meta.module;
     let moduleId = moduleMap.get(modKey);
     if (!moduleId) {
@@ -312,7 +318,6 @@ async function seedAllData() {
       moduleMap.set(modKey, moduleId);
     }
 
-    // Create topic if needed
     const topKey = modKey + ":" + meta.topic;
     let topicId = topicMap.get(topKey);
     if (!topicId) {
@@ -323,7 +328,6 @@ async function seedAllData() {
       topicMap.set(topKey, topicId);
     }
 
-    // Create lesson
     const lesson = await db.lesson.create({
       data: {
         topicId,
@@ -340,7 +344,6 @@ async function seedAllData() {
     lessonMap.set(lessonTitle, { id: lesson.id, subjectId: subj.id });
   }
 
-  // Seed questions from EXTRA_QUESTIONS
   let qCount = 0;
   for (const [lessonTitle, questions] of Object.entries(EXTRA_QUESTIONS)) {
     const info = lessonMap.get(lessonTitle);
@@ -372,66 +375,4 @@ async function seedAllData() {
     }
   }
   console.log(`[setup] Seeded ${qCount} questions across ${lessonMap.size} lessons`);
-}
-
-// ==========================================================================
-// Force reseed: delete ALL questions/answers and re-create from EXTRA_QUESTIONS
-// ==========================================================================
-async function forceReseedQuestions() {
-  try {
-    // Step 1: Get existing lesson mapping (title → { id, subjectId })
-    const lessons = await db.lesson.findMany({
-      select: { id: true, title: true, subjectId: true },
-    });
-    const lessonByTitle = new Map(lessons.map((l) => [l.title, { id: l.id, subjectId: l.subjectId }]));
-
-    // Step 2: Delete ALL existing answers and questions
-    const deletedAnswers = await db.answer.deleteMany();
-    const deletedQuestions = await db.question.deleteMany();
-    console.log(`[setup] Deleted ${deletedAnswers.count} answers, ${deletedQuestions.count} questions`);
-
-    // Step 3: Re-create all questions from EXTRA_QUESTIONS
-    let created = 0;
-    let skipped = 0;
-    for (const [lessonTitle, questions] of Object.entries(EXTRA_QUESTIONS)) {
-      const info = lessonByTitle.get(lessonTitle);
-      if (!info) {
-        skipped++;
-        continue;
-      }
-      for (const [qText, answers, difficulty, explanation, tags] of questions) {
-        const text = qText as string;
-        if (!text) continue;
-        await db.question.create({
-          data: {
-            questionType: "multiple_choice",
-            difficulty: difficulty as string,
-            questionText: text,
-            explanation: explanation as string,
-            tags: JSON.stringify(tags),
-            isActive: true,
-            points: difficulty === "hard" ? 3 : difficulty === "medium" ? 2 : 1,
-            subjectId: info.subjectId,
-            lessonId: info.id,
-            answers: { create: (answers as [string, boolean][]).map((a, i) => ({ content: a[0], isCorrect: a[1], sortOrder: i })) },
-          },
-        });
-        created++;
-      }
-    }
-
-    console.log(`[setup] Force reseed: created ${created} questions, skipped ${skipped} lessons`);
-
-    return {
-      status: "reseeded",
-      deletedQuestions: deletedQuestions.count,
-      deletedAnswers: deletedAnswers.count,
-      createdQuestions: created,
-      skippedLessons: skipped,
-      message: `Re-seeded ${created} questions with questionText`,
-    };
-  } catch (e) {
-    console.error("[setup] Force reseed failed:", e);
-    return { status: "error", error: e instanceof Error ? e.message : String(e) };
-  }
 }

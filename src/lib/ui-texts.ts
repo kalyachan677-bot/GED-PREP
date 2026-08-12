@@ -138,6 +138,7 @@ export const UI: Record<string, Record<Lang, string>> = {
   hard:             { en: "Hard",          th: "ยาก",                 my: "ခက်ခဲ" },
   previous:         { en: "Previous",      th: "ก่อนหน้า",           my: "ရှေ့က" },
   submitAnswer:     { en: "Submit ({n}/{m})", th: "ส่งคำตอบ ({n}/{m})", my: "ဖြေပေးပါ ({n}/{m})" },
+  submitPartial:   { en: "Submit ({n}/{m})...", th: "ส่งแบบยังไม่ครบ ({n}/{m})", my: "ဖြေပေးပါ ({n}/{m})..." },
   next:             { en: "Next",          th: "ถัดไป",               my: "နောက်က" },
 
   // -- Quiz Result --
