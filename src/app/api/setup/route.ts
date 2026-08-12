@@ -30,8 +30,8 @@ export async function GET(request: NextRequest) {
         // Always show diagnostic info
         const diagnostics = { totalQuestions: totalQ, nullTextQuestions: nullQ, totalAnswers: totalA };
 
-        // If ?force=1 or any NULL questions exist, run force reseed
-        if (forceParam === "1" || nullQ > 0) {
+        // If ?force=1 or any NULL questions exist or no questions at all, run force reseed
+        if (forceParam === "1" || nullQ > 0 || totalQ === 0) {
           isSeeding = true;
           try {
             const res = await forceReseedQuestionsRaw();
@@ -115,26 +115,68 @@ async function forceReseedQuestionsRaw() {
     await db.$executeRawUnsafe(`DELETE FROM "QuizAttempt"`);
     console.log("[setup] Old data cleaned.");
 
-    // Step 2: Get existing lesson mapping
+    // Step 2: Get existing lessons with subject info
     const lessons = await db.lesson.findMany({
-      select: { id: true, title: true, subjectId: true },
+      select: { id: true, title: true, subjectId: true, slug: true, subject: { select: { code: true, id: true } } },
     });
-    const lessonByTitle = new Map(lessons.map((l) => [l.title, { id: l.id, subjectId: l.subjectId }]));
+
+    // Build multiple lookup strategies
+    const lessonByTitle = new Map<string, { id: string; subjectId: string }>();
+    const lessonBySlug = new Map<string, { id: string; subjectId: string }>();
+    const lessonsBySubjectCode = new Map<string, { id: string; subjectId: string }[]>();
+
+    for (const l of lessons) {
+      lessonByTitle.set(l.title, { id: l.id, subjectId: l.subjectId });
+      if (l.slug) lessonBySlug.set(l.slug, { id: l.id, subjectId: l.subjectId });
+      const code = l.subject?.code || "";
+      if (!lessonsBySubjectCode.has(code)) lessonsBySubjectCode.set(code, []);
+      lessonsBySubjectCode.get(code)!.push({ id: l.id, subjectId: l.subjectId });
+    }
 
     // Step 3: Re-create questions from EXTRA_QUESTIONS
     let created = 0;
     let skipped = 0;
     const matchedLessons: string[] = [];
     const skippedLessons: string[] = [];
+    const matchMethodUsed: Record<string, string> = {};
 
     for (const [lessonTitle, questions] of Object.entries(EXTRA_QUESTIONS)) {
-      const info = lessonByTitle.get(lessonTitle);
+      let info: { id: string; subjectId: string } | undefined;
+      let method = "none";
+
+      // Strategy 1: Exact title match
+      info = lessonByTitle.get(lessonTitle);
+      if (info) method = "title";
+
+      // Strategy 2: Slug match via SUBJECT_LESSON_MAP
+      if (!info) {
+        const meta = SUBJECT_LESSON_MAP[lessonTitle];
+        if (meta) {
+          info = lessonBySlug.get(meta.slug);
+          if (info) method = `slug(${meta.slug})`;
+        }
+      }
+
+      // Strategy 3: Fallback to any lesson in the same subject
+      if (!info) {
+        const meta = SUBJECT_LESSON_MAP[lessonTitle];
+        if (meta) {
+          const subjectLessons = lessonsBySubjectCode.get(meta.code);
+          if (subjectLessons && subjectLessons.length > 0) {
+            info = subjectLessons[0];
+            method = `fallback(${meta.code})`;
+          }
+        }
+      }
+
       if (!info) {
         skippedLessons.push(lessonTitle);
         skipped++;
         continue;
       }
+
       matchedLessons.push(lessonTitle);
+      matchMethodUsed[lessonTitle] = method;
       for (const [qText, answers, difficulty, explanation, tags] of questions) {
         const text = qText as string;
         if (!text) continue;
@@ -157,8 +199,9 @@ async function forceReseedQuestionsRaw() {
     }
 
     console.log(`[setup] Force reseed done: ${created} created, ${skipped} skipped`);
+    console.log(`[setup] Match methods: ${JSON.stringify(matchMethodUsed)}`);
     if (skippedLessons.length > 0) {
-      console.log(`[setup] Skipped lessons (no match in DB): ${skippedLessons.join(", ")}`);
+      console.log(`[setup] Skipped lessons (no match at all): ${skippedLessons.join(", ")}`);
     }
 
     return {
@@ -168,6 +211,7 @@ async function forceReseedQuestionsRaw() {
       skippedLessons: skipped,
       skippedLessonNames: skippedLessons,
       dbLessonCount: lessons.length,
+      matchMethods: matchMethodUsed,
       message: `Re-seeded ${created} questions with questionText`,
     };
   } catch (e) {

@@ -20,7 +20,9 @@ export function QuizView() {
   const [questionStart, setQuestionStart] = useState(Date.now());
   const [elapsed, setElapsed] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
   const [showConceptPanel, setShowConceptPanel] = useState(false);
   const [conceptData, setConceptData] = useState<any>(null);
   const [loadingConcept, setLoadingConcept] = useState(false);
@@ -128,9 +130,10 @@ export function QuizView() {
     }
   }
 
-  const handleSubmit = useCallback(async () => {
+  const doSubmit = useCallback(async () => {
     if (!quizAttempt || !user) return;
     setSubmitting(true);
+    setSubmitError("");
     try {
       const answers = quizQuestions.map((q) => ({
         questionId: q.id,
@@ -147,13 +150,29 @@ export function QuizView() {
       const json = await res.json();
       if (json.data) {
         setQuizResult(json.data);
+      } else {
+        setSubmitError(json.error || "Unknown error");
       }
     } catch (e) {
       console.error("Failed to submit quiz", e);
+      setSubmitError("Network error - please try again");
     } finally {
       setSubmitting(false);
     }
   }, [quizAttempt, user, quizQuestions, selectedAnswers, flagged, setQuizResult]);
+
+  function handleSubmit() {
+    if (answeredCount < totalQ) {
+      setShowSubmitConfirm(true);
+    } else {
+      doSubmit();
+    }
+  }
+
+  function confirmSubmit() {
+    setShowSubmitConfirm(false);
+    doSubmit();
+  }
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -223,10 +242,54 @@ export function QuizView() {
         </div>
       )}
 
+      {/* Submit confirm dialog — when not all questions answered */}
+      {showSubmitConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowSubmitConfirm(false)} />
+          <div className="relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+            <h3 className="text-lg font-bold text-gray-900">{tx("submitPartial", { n: answeredCount, m: totalQ })}</h3>
+            <p className="mt-2 text-sm text-gray-600">
+              {answeredCount < totalQ
+                ? `You have answered ${answeredCount} out of ${totalQ} questions. Unanswered questions will be marked as incorrect.`
+                : "All questions answered. Ready to submit?"}
+            </p>
+            <div className="mt-5 flex gap-3">
+              <button
+                onClick={() => setShowSubmitConfirm(false)}
+                className="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-all"
+              >
+                {tx("continue")}
+              </button>
+              <button
+                onClick={confirmSubmit}
+                disabled={submitting}
+                className="flex-1 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:from-violet-700 hover:to-indigo-700 transition-all disabled:opacity-50"
+              >
+                {submitting ? <Loader2 className="h-4 w-4 animate-spin mx-auto" /> : tx("submitAnswer", { n: answeredCount, m: totalQ })}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <BackButton label={tx("backToLesson")} onClick={handleExit} />
         <div className="flex items-center gap-2">
+          {/* Persistent Submit Button — always visible */}
+          <Button
+            onClick={handleSubmit}
+            disabled={submitting}
+            size="sm"
+            className={`rounded-xl text-xs font-semibold ${
+              answeredCount === totalQ
+                ? "bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-md"
+                : "bg-amber-500 hover:bg-amber-600 text-white shadow-md"
+            }`}
+          >
+            {submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <Send className="h-3.5 w-3.5 mr-1" />}
+            {tx("submitAnswer", { n: answeredCount, m: totalQ })}
+          </Button>
           <TranslatingIndicator isTranslating={isTranslating} />
           <div className="flex items-center gap-2 text-sm text-gray-500">
             <Clock className="h-4 w-4" />
@@ -234,6 +297,14 @@ export function QuizView() {
           </div>
         </div>
       </div>
+
+      {/* Submit error banner */}
+      {submitError && (
+        <div className="rounded-xl bg-rose-50 border border-rose-200 px-4 py-3 flex items-center justify-between">
+          <p className="text-sm text-rose-700 font-medium">{submitError}</p>
+          <button onClick={() => setSubmitError("")} className="text-rose-400 hover:text-rose-600 text-lg font-bold">&times;</button>
+        </div>
+      )}
 
       {/* Progress bar */}
       <div className="flex items-center gap-3">
