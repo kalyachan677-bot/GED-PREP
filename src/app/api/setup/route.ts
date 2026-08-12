@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { MIGRATION_SQL } from "@/lib/migration-sql";
@@ -20,13 +20,25 @@ export async function GET() {
       if (count > 0) {
         // Data repair: fix questions with NULL questionText
         const repaired = await repairNullQuestionText();
+        
+        // Auto force-reseed if too many questions still have NULL text (repair can't match)
+        const totalQ = await db.question.count({ where: { isActive: true } });
+        const nullQ = await db.question.count({ where: { questionText: { in: [null, ""] as any }, isActive: true } });
+        let reseeded = false;
+        if (totalQ > 0 && nullQ > totalQ * 0.3) {
+          console.log(`[setup] ${nullQ}/${totalQ} questions still NULL — auto force-reseed...`);
+          const res = await forceReseedQuestions();
+          reseeded = res.status === "reseeded";
+        }
+
         const subjects = await db.subject.count();
         const questions = await db.question.count({ where: { isActive: true } });
         return NextResponse.json({
-          status: repaired ? "repaired" : "ready",
+          status: reseeded ? "reseeded" : repaired ? "repaired" : "ready",
           users: count,
           subjects,
           questions,
+          ...(reseeded ? { reseeded: true } : {}),
           ...(repaired ? { repaired } : {}),
         });
       }
@@ -59,8 +71,27 @@ export async function GET() {
   }
 }
 
-export async function POST() {
-  return GET();
+export async function POST(request: NextRequest) {
+  try {
+    // Check for force-reseed parameter
+    let forceReseed = false;
+    try {
+      const body = await request.json();
+      forceReseed = body?.force === true;
+    } catch { /* no body, ignore */ }
+
+    if (forceReseed) {
+      console.log("[setup] Force reseed requested...");
+      const result = await forceReseedQuestions();
+      return NextResponse.json(result);
+    }
+
+    return GET();
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error("[setup] POST Error:", error);
+    return NextResponse.json({ status: "error", error: msg }, { status: 500 });
+  }
 }
 
 // ==========================================================================
@@ -341,4 +372,66 @@ async function seedAllData() {
     }
   }
   console.log(`[setup] Seeded ${qCount} questions across ${lessonMap.size} lessons`);
+}
+
+// ==========================================================================
+// Force reseed: delete ALL questions/answers and re-create from EXTRA_QUESTIONS
+// ==========================================================================
+async function forceReseedQuestions() {
+  try {
+    // Step 1: Get existing lesson mapping (title → { id, subjectId })
+    const lessons = await db.lesson.findMany({
+      select: { id: true, title: true, subjectId: true },
+    });
+    const lessonByTitle = new Map(lessons.map((l) => [l.title, { id: l.id, subjectId: l.subjectId }]));
+
+    // Step 2: Delete ALL existing answers and questions
+    const deletedAnswers = await db.answer.deleteMany();
+    const deletedQuestions = await db.question.deleteMany();
+    console.log(`[setup] Deleted ${deletedAnswers.count} answers, ${deletedQuestions.count} questions`);
+
+    // Step 3: Re-create all questions from EXTRA_QUESTIONS
+    let created = 0;
+    let skipped = 0;
+    for (const [lessonTitle, questions] of Object.entries(EXTRA_QUESTIONS)) {
+      const info = lessonByTitle.get(lessonTitle);
+      if (!info) {
+        skipped++;
+        continue;
+      }
+      for (const [qText, answers, difficulty, explanation, tags] of questions) {
+        const text = qText as string;
+        if (!text) continue;
+        await db.question.create({
+          data: {
+            questionType: "multiple_choice",
+            difficulty: difficulty as string,
+            questionText: text,
+            explanation: explanation as string,
+            tags: JSON.stringify(tags),
+            isActive: true,
+            points: difficulty === "hard" ? 3 : difficulty === "medium" ? 2 : 1,
+            subjectId: info.subjectId,
+            lessonId: info.id,
+            answers: { create: (answers as [string, boolean][]).map((a, i) => ({ content: a[0], isCorrect: a[1], sortOrder: i })) },
+          },
+        });
+        created++;
+      }
+    }
+
+    console.log(`[setup] Force reseed: created ${created} questions, skipped ${skipped} lessons`);
+
+    return {
+      status: "reseeded",
+      deletedQuestions: deletedQuestions.count,
+      deletedAnswers: deletedAnswers.count,
+      createdQuestions: created,
+      skippedLessons: skipped,
+      message: `Re-seeded ${created} questions with questionText`,
+    };
+  } catch (e) {
+    console.error("[setup] Force reseed failed:", e);
+    return { status: "error", error: e instanceof Error ? e.message : String(e) };
+  }
 }
