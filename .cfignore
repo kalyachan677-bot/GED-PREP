@@ -1,0 +1,9 @@
+node_modules
+.vercel
+tool-results
+upload
+scripts
+*.db
+*.db-journal
+worklog.md
+.watchmanconfig

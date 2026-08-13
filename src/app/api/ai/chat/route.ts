@@ -1,3 +1,4 @@
+export const runtime = "edge";
 import { NextRequest, NextResponse } from "next/server";
 import { GED_TUTOR_SYSTEM_PROMPT, buildSubjectContext } from "@/lib/ai-tutor-prompt";
 
