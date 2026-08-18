@@ -1,0 +1,151 @@
+   101→    ["If a DNA strand has the sequence ATTCGGA, what is the complementary strand?", [["TAAGCCT", true], ["ATTCGGA", false], ["UAAGCCU", false], ["GCCTAAT", false]], "hard", "A pairs with T, T pairs with A, C pairs with G, G pairs with C. Complement of ATTCGGA = TAAGCCT.", ["biology", "dna", "base-pairing"]],
+   102→    ["A mutation changes a codon from GAA to GUA. What type of mutation is this?", [["Missense mutation", true], ["Silent mutation", false], ["Nonsense mutation", false], ["Frameshift mutation", false]], "hard", "GAA (Glu) to GUA (Val) changes the amino acid = missense mutation.", ["biology", "dna", "mutation"]],
+   103→  ],
+   104→  "Newton's Laws of Motion": [
+   105→    ["Newton's First Law is also called the Law of:", [["Inertia", true], ["Acceleration", false], ["Action-Reaction", false], ["Gravity", false]], "easy", "An object at rest stays at rest unless acted upon by a force.", ["physics", "newton-laws"]],
+   106→    ["Force = mass x acceleration is Newton's:", [["Second Law", true], ["First Law", false], ["Third Law", false], ["Law of Gravity", false]], "easy", "F = ma is Newton's Second Law of Motion.", ["physics", "newton-laws", "F=ma"]],
+   107→    ["For every action, there is an equal and opposite reaction. This is Newton's:", [["Third Law", true], ["First Law", false], ["Second Law", false], ["Law of Gravity", false]], "easy", "Newton's Third Law describes action-reaction force pairs.", ["physics", "newton-laws"]],
+   108→    ["A 2000 kg car at rest is pushed with 400 N of force. If friction is 100 N, what is the acceleration?", [["0.15 m/s squared", true], ["0.2 m/s squared", false], ["0.05 m/s squared", false], ["0.25 m/s squared", false]], "hard", "Net force = 400 - 100 = 300 N. a = F/m = 300/2000 = 0.15 m/s squared.", ["physics", "newton-laws", "friction"]],
+   109→  ],
+   110→  "Speed, Velocity, and Acceleration": [
+   111→    ["Speed is:", [["Distance divided by time", true], ["Force divided by mass", false], ["Mass divided by volume", false], ["Displacement divided by time", false]], "easy", "Speed = distance/time.", ["physics", "speed"]],
+   112→    ["What is the difference between speed and velocity?", [["Velocity includes direction", true], ["Speed is always faster", false], ["There is no difference", false], ["Speed uses metric units only", false]], "medium", "Velocity is speed with a specified direction (vector quantity).", ["physics", "velocity"]],
+   113→    ["A ball is thrown upward at 20 m/s. How high does it go before falling back? (g = 10 m/s squared)", [["20 meters", true], ["10 meters", false], ["40 meters", false], ["5 meters", false]], "hard", "At max height: v = 0. v squared = u squared - 2gh. 0 = 400 - 20h. h = 20 m.", ["physics", "kinematics", "projectile"]],
+   114→    ["A car accelerates from rest at 2 m/s squared for 8 seconds. How far does it travel?", [["64 meters", true], ["16 meters", false], ["32 meters", false], ["128 meters", false]], "hard", "d = ut + 1/2 at squared = 0 + 0.5(2)(64) = 64 meters.", ["physics", "kinematics", "equations-of-motion"]],
+   115→  ],
+   116→  "Cell Division: Mitosis and Meiosis": [
+   117→    ["Mitosis produces:", [["Two identical daughter cells", true], ["Four unique cells", false], ["One cell with double DNA", false], ["Three cells", false]], "easy", "Mitosis creates two genetically identical daughter cells.", ["biology", "mitosis"]],
+   118→    ["Meiosis is used for:", [["Producing gametes (sex cells)", true], ["Growth and repair", false], ["Asexual reproduction", false], ["Making proteins", false]], "medium", "Meiosis reduces chromosome number by half to produce gametes.", ["biology", "meiosis"]],
+   119→    ["A cell with 24 chromosomes undergoes meiosis. How many chromosomes does each resulting cell have?", [["12", true], ["24", false], ["6", false], ["48", false]], "hard", "Meiosis halves the chromosome number: 24/2 = 12 chromosomes per gamete.", ["biology", "meiosis", "chromosomes"]],
+   120→    ["If a cell has 20 chromosomes during G2 phase, how many chromosomes will each daughter cell have after mitosis?", [["20", true], ["10", false], ["40", false], ["30", false]], "hard", "Mitosis preserves chromosome number. G2 = 20 (already replicated). Daughter cells also have 20.", ["biology", "mitosis", "cell-cycle"]],
+   121→  ],
+   122→  "Atoms and the Periodic Table": [
+   123→    ["The nucleus of an atom contains:", [["Protons and neutrons", true], ["Protons and electrons", false], ["Neutrons and electrons", false], ["Only protons", false]], "easy", "The nucleus contains protons (positive) and neutrons (neutral).", ["chemistry", "atoms", "nucleus"]],
+   124→    ["What determines an element's identity?", [["Number of protons (atomic number)", true], ["Number of neutrons", false], ["Number of electrons", false], ["Atomic mass", false]], "medium", "The atomic number (proton count) uniquely identifies an element.", ["chemistry", "atoms", "atomic-number"]],
+   125→    ["An element has atomic number 17 and mass number 35. How many neutrons does it have?", [["18", true], ["17", false], ["35", false], ["52", false]], "hard", "Neutrons = Mass number - Atomic number = 35 - 17 = 18. (This is Chlorine-35.)", ["chemistry", "atoms", "isotopes"]],
+   126→  ],
+   127→  "Punnett Squares": [
+   128→    ["In a monohybrid cross Aa x Aa, what fraction of offspring will show the dominant trait?", [["3/4", true], ["1/2", false], ["1/4", false], ["All", false]], "medium", "AA, Aa, Aa show dominant. Only aa shows recessive. 3/4.", ["biology", "genetics", "punnett-square"]],
+   129→    ["In sex-linked inheritance (X-linked recessive), a carrier mother (XNXn) and normal father (XNY) have a son. What is the chance the son has the trait?", [["50%", true], ["25%", false], ["100%", false], ["0%", false]], "hard", "Son gets Y from father, X from mother. 50% chance of getting Xn (affected) vs XN (carrier).", ["biology", "genetics", "sex-linked"]],
+   130→  ],
+   131→  "The Scientific Method": [
+   132→    ["What is the correct order of the scientific method?", [["Observation, hypothesis, experiment, analysis, conclusion", true], ["Experiment, hypothesis, observation, conclusion", false], ["Hypothesis, observation, experiment, analysis", false], ["Conclusion, experiment, hypothesis, observation", false]], "easy", "The scientific method starts with observation and ends with conclusion.", ["science", "scientific-method"]],
+   133→    ["A hypothesis is:", [["A testable prediction", true], ["A proven fact", false], ["A final conclusion", false], ["An opinion", false]], "easy", "A hypothesis is an educated guess that can be tested.", ["science", "hypothesis"]],
+   134→    ["In an experiment, the variable you change is called:", [["Independent variable", true], ["Dependent variable", false], ["Control variable", false], ["Constant", false]], "medium", "The independent variable is the one the experimenter changes.", ["science", "variables"]],
+   135→    ["Which of the following is a scientific theory?", [["Theory of Evolution by Natural Selection", true], ["It just is what it is", false], ["Because I said so", false], ["My teacher told me", false]], "medium", "A scientific theory is supported by extensive evidence and testing.", ["science", "theory"]],
+   136→  ],
+   137→  "Energy and Work": [
+   138→    ["What is the unit of energy?", [["Joule", true], ["Watt", false], ["Newton", false], ["Pascal", false]], "easy", "The Joule (J) is the SI unit of energy.", ["physics", "energy", "units"]],
+   139→    ["Kinetic energy depends on:", [["Mass and velocity", true], ["Mass and height", false], ["Height and gravity", false], ["Temperature only", false]], "medium", "KE = 1/2 mv squared. It depends on mass and velocity.", ["physics", "energy", "kinetic"]],
+   140→    ["A 10 kg object is lifted 5 meters. How much work is done? (g = 10 m/s squared)", [["500 Joules", true], ["50 Joules", false], ["100 Joules", false], ["250 Joules", false]], "medium", "Work = Force x distance = (10 x 10) x 5 = 500 J.", ["physics", "work"]],
+   141→  ],
+   142→  "Ecology and Ecosystems": [
+   143→    ["Producers in an ecosystem are organisms that:", [["Make their own food through photosynthesis", true], ["Eat other organisms", false], ["Break down dead matter", false], ["Only live in water", false]], "easy", "Producers (autotrophs) convert sunlight into food energy.", ["biology", "ecology", "producers"]],
+   144→    ["What is a food chain?", [["A sequence of who eats whom", true], ["A chain made of food", false], ["The amount of food available", false], ["A type of ecosystem", false]], "easy", "A food chain shows energy flow from producers to consumers.", ["biology", "ecology", "food-chain"]],
+   145→    ["Decomposers play an important role because they:", [["Break down dead organisms and recycle nutrients", true], ["Produce oxygen", false], ["Are primary consumers", false], ["Create energy from sunlight", false]], "medium", "Decomposers recycle nutrients back into the ecosystem.", ["biology", "ecology", "decomposers"]],
+   146→  ],
+   147→
+   148→  // ======================== RLA (Reasoning Through Language Arts) ========================
+   149→  "Making Inferences": [
+   150→    ["Read: 'Maria shut the door, pulled up the blanket, and closed her eyes.' What can you infer?", [["Maria is going to sleep", true], ["Maria is angry", false], ["Maria is cleaning", false], ["Maria is exercising", false]], "easy", "Shutting door, pulling blanket, closing eyes = going to sleep.", ["reading", "inference"]],
+   151→    ["'The company's quarterly profits dropped 40%, and the CEO announced mandatory vacation days next month.' Best inference:", [["The company is likely preparing for layoffs disguised as vacation", true], ["Employees are getting a bonus", false], ["The company is doing well", false], ["The CEO is generous", false]], "hard", "Profits dropped 40% + mandatory vacation suggests cost-cutting, likely layoffs.", ["reading", "inference", "critical-thinking"]],
+   152→    ["'Every morning, she watered the plants and checked the soil.' What can you infer about her?", [["She cares about gardening/plants", true], ["She works at a nursery", false], ["She lives in a desert", false], ["She is a farmer", false]], "easy", "Regularly watering plants and checking soil shows care for plants.", ["reading", "inference"]],
+   153→  ],
+   154→  "Author's Purpose": [
+   155→    ["'Buy now and save 50%!' This text is meant to:", [["Persuade", true], ["Inform", false], ["Entertain", false], ["Describe", false]], "easy", "Sales language with urgency is persuasive.", ["reading", "authors-purpose"]],
+   156→    ["'The new highway will cut travel time by 20 minutes but will destroy the only wetland in the county, home to 15 endangered species.' The author's purpose is most likely to:", [["Persuade readers to oppose the highway project", true], ["Inform about highway construction schedules", false], ["Entertain with a story about wildlife", false], ["Describe wetland geography", false]], "hard", "Presenting benefits vs. devastating environmental cost = persuasive against the project.", ["reading", "authors-purpose", "persuasion"]],
+   157→    ["An encyclopedia entry about the water cycle is meant to:", [["Inform", true], ["Persuade", false], ["Entertain", false], ["Express emotion", false]], "easy", "Encyclopedia entries provide factual information.", ["reading", "authors-purpose"]],
+   158→  ],
+   159→  "Subject-Verb Agreement": [
+   160→    ["'The group of students ___ going to the museum.' Which verb is correct?", [["is", true], ["are", false], ["were", false], ["be", false]], "easy", "'The group' is singular (collective noun), so use 'is'.", ["grammar", "subject-verb-agreement"]],
+   161→    ["'Neither the cat nor the dogs ___ outside.' Which verb fits?", [["were", true], ["was", false], ["is", false], ["has been", false]], "medium", "With 'neither/nor', the verb agrees with the nearer subject 'dogs' (plural) = 'were'.", ["grammar", "subject-verb-agreement", "neither-nor"]],
+   162→    ["'None of the evidence ___ to support the defendant's claim.' Which verb fits both formal and informal usage?", [["points (formal) / point (informal) are both acceptable", true], ["Only 'points' is correct", false], ["Only 'point' is correct", false], ["Neither is correct; use 'pointing'", false]], "hard", "'None' can be singular or plural. Formal grammar prefers singular ('points'). Informal allows plural ('point').", ["grammar", "subject-verb-agreement", "none"]],
+   163→  ],
+   164→  "Comma Rules": [
+   165→    ["Which sentence uses commas correctly?", [["I need to buy apples, bananas, and oranges.", true], ["I need to buy, apples, bananas, and oranges.", false], ["I need to buy apples bananas and, oranges.", false], ["I need to buy apples, bananas and oranges.", false]], "easy", "Use commas to separate items in a list (Oxford comma before 'and').", ["grammar", "punctuation", "commas"]],
+   166→    ["Which sentence correctly uses commas with a complex sentence?", [["Because the storm was approaching, we boarded up the windows.", true], ["We boarded up the windows, because the storm was approaching.", false], ["Because the storm was approaching we, boarded up the windows.", false], ["Because, the storm was approaching, we boarded up the windows.", false]], "hard", "When a dependent clause comes first, use a comma after it before the independent clause.", ["grammar", "punctuation", "commas", "complex-sentence"]],
+   167→  ],
+   168→  "Point of View": [
+   169→    ["'I walked to the store and bought some milk.' This is written in:", [["First person", true], ["Second person", false], ["Third person", false], ["Third person omniscient", false]], "easy", "'I' indicates first person point of view.", ["reading", "point-of-view"]],
+   170→    ["A story is told using 'he' and follows one character's thoughts, but the narrator is NOT that character. This is:", [["Third person limited", true], ["First person", false], ["Second person", false], ["Third person omniscient", false]], "hard", "Third person limited: narrator uses he/she, follows one character's perspective but is an outside observer.", ["reading", "point-of-view"]],
+   171→  ],
+   172→  "Complete Sentences vs. Fragments": [
+   173→    ["Which of the following is a complete sentence?", [["The dog barked loudly.", true], ["Running down the street.", false], ["Because it was raining.", false], ["Under the bridge.", false]], "easy", "A complete sentence has a subject and a verb and expresses a complete thought.", ["grammar", "sentences"]],
+   174→    ["Which of the following is NOT a fragment?", [["Having studied all night, she felt prepared for the exam.", true], ["Having studied all night.", false], ["Because she had studied all night.", false], ["Studying all night, despite being exhausted.", false]], "hard", "The first option has a complete independent clause ('she felt prepared') after the introductory phrase.", ["grammar", "sentences", "fragments"]],
+   175→  ],
+   176→  "Apostrophes and Quotation Marks": [
+   177→    ["Which sentence shows correct apostrophe use?", [["The dog's tail is wagging.", true], ["The dogs tail is wagging.", false], ["The dogs's tail is wagging.", false], ["The dog its tail is wagging.", false]], "easy", "'Dog's' = possessive singular. The tail belongs to the dog.", ["grammar", "apostrophe"]],
+   178→    ["Which sentence is correct?", [["The Joneses' house is the one on the corner.", true], ["The Jones's house is the one on the corner.", false], ["The Jone's house is the one on the corner.", false], ["The Joneses house is the one on the corner.", false]], "hard", "Joneses = plural of Jones. Joneses' = possessive of plural = correct form for a family named Jones.", ["grammar", "apostrophe", "plural-possessive"]],
+   179→  ],
+   180→  "Finding the Main Idea": [
+   181→    ["'Regular exercise strengthens your heart, improves mood, and helps maintain a healthy weight.' The main idea is:", [["Exercise has multiple health benefits", true], ["You should run every day", false], ["Only heart health matters", false], ["Weight loss requires exercise only", false]], "easy", "The sentence lists several benefits of exercise as the main idea.", ["reading", "main-idea"]],
+   182→    ["Read: 'While social media connects people globally, studies show it increases feelings of loneliness and depression, especially among teenagers. Algorithms designed to maximize engagement often promote extreme content.' What is the main idea?", [["Social media has significant negative mental health effects despite its connectivity benefits", true], ["Algorithms are bad technology", false], ["Teenagers use social media too much", false], ["Global connection is impossible without social media", false]], "hard", "The passage contrasts connectivity benefits with mental health harms - the main idea encompasses both.", ["reading", "main-idea", "critical-thinking"]],
+   183→  ],
+   184→  "Text Structure and Organization": [
+   185→    ["'First, gather your ingredients. Next, mix them together. Finally, bake for 30 minutes.' This is an example of:", [["Sequential/Chronological order", true], ["Compare and contrast", false], ["Cause and effect", false], ["Problem and solution", false]], "easy", "First, Next, Finally = chronological/sequential order.", ["reading", "text-structure"]],
+   186→    ["'Although both cars get good gas mileage, the sedan is more affordable, while the SUV has more cargo space.' This is:", [["Compare and contrast", true], ["Cause and effect", false], ["Sequential order", false], ["Problem and solution", false]], "medium", "Comparing two things (sedan vs SUV) on different features = compare and contrast.", ["reading", "text-structure", "compare-contrast"]],
+   187→  ],
+   188→  "Vocabulary in Context": [
+   189→    ["'The elusive cat hid under the porch every time visitors arrived.' What does 'elusive' mean?", [["Hard to catch or find", true], ["Very friendly", false], ["Large and scary", false], ["Colorful", false]], "easy", "Hiding every time = hard to catch/find = elusive.", ["vocabulary", "context-clues"]],
+   190→    ["'The benevolent donor gave millions to the children's hospital.' What does 'benevolent' mean?", [["Generous and kind", true], ["Wealthy", false], ["Famous", false], ["Careless", false]], "medium", "Giving millions to a hospital = generous and kind = benevolent.", ["vocabulary", "context-clues"]],
+   191→  ],
+   192→
+   193→  // ======================== SOCIAL STUDIES ========================
+   194→  "The Declaration of Independence": [
+   195→    ["When was the Declaration of Independence adopted?", [["1776", true], ["1775", false], ["1783", false], ["1787", false]], "easy", "The Declaration was adopted on July 4, 1776.", ["history", "declaration"]],
+   196→    ["Which Enlightenment philosopher most influenced the Declaration's idea of 'unalienable rights'?", [["John Locke", true], ["Thomas Hobbes", false], ["Jean-Jacques Rousseau", false], ["Montesquieu", false]], "hard", "Locke's 'natural rights' (life, liberty, property) directly inspired Jefferson's 'life, liberty, and the pursuit of happiness'.", ["history", "declaration", "enlightenment"]],
+   197→    ["The Declaration argues that governments get their power from:", [["The consent of the governed", true], ["God", false], ["The military", false], ["Wealthy landowners", false]], "hard", "'Governments are instituted among Men, deriving their just powers from the consent of the governed.'", ["history", "declaration", "social-contract"]],
+   198→  ],
+   199→  "The U.S. Constitution": [
+   200→    ["How many branches of government does the U.S. have?", [["Three", true], ["Two", false], ["Four", false], ["Five", false]], "easy", "Legislative, Executive, and Judicial.", ["civics", "constitution", "branches"]],
+   201→    ["Which amendment abolished slavery?", [["13th Amendment", true], ["12th Amendment", false], ["14th Amendment", false], ["15th Amendment", false]], "hard", "13th (1865) abolished slavery. 14th = equal protection. 15th = voting regardless of race.", ["civics", "constitution", "amendments", "reconstruction"]],
+   202→    ["The 'supremacy clause' (Article VI) establishes that:", [["Federal law overrides conflicting state laws", true], ["The President is supreme over Congress", false], ["State laws override federal laws", false], ["The Supreme Court can create laws", false]], "hard", "Article VI's Supremacy Clause: the Constitution and federal laws are the 'supreme Law of the Land'.", ["civics", "constitution", "supremacy-clause"]],
+   203→  ],
+   204→  "The Civil Rights Movement Overview": [
+   205→    ["Who was a key leader of the Civil Rights Movement known for nonviolent protest?", [["Martin Luther King Jr.", true], ["Malcolm X", false], ["Rosa Parks", false], ["John F. Kennedy", false]], "easy", "MLK led the civil rights movement using nonviolent protest strategies.", ["history", "civil-rights", "MLK"]],
+   206→    ["The doctrine of 'separate but equal' was established by which case?", [["Plessy v. Ferguson (1896)", true], ["Brown v. Board of Education (1954)", false], ["Dred Scott v. Sandford (1857)", false], ["Regents of UC v. Bakke (1978)", false]], "hard", "Plessy v. Ferguson (1896) established 'separate but equal', which Brown v. Board later overturned.", ["history", "civil-rights", "supreme-court"]],
+   207→    ["The 24th Amendment (1964) eliminated:", [["Poll taxes in federal elections", true], ["Literacy tests", false], ["Grandfather clauses", false], ["White primaries", false]], "hard", "The 24th Amendment specifically banned poll taxes, which were used to disenfranchise poor (especially Black) voters.", ["history", "civil-rights", "voting-rights"]],
+   208→  ],
+   209→  "Key Figures: MLK and Rosa Parks": [
+   210→    ["Rosa Parks is known for:", [["Refusing to give up her bus seat", true], ["Leading the March on Washington", false], ["Writing the Civil Rights Act", false], ["Being the first Black president", false]], "easy", "Rosa Parks refused to give up her bus seat in Montgomery, sparking the bus boycott.", ["history", "civil-rights", "rosa-parks"]],
+   211→    ["MLK's 'Letter from Birmingham Jail' defended which strategy?", [["Nonviolent direct action against unjust laws", true], ["Armed self-defense", false], ["Gradual legislative change only", false], ["Economic boycotts as the only tool", false]], "hard", "The letter defended the strategy of nonviolent direct action, explaining why 'wait' meant 'never'.", ["history", "civil-rights", "MLK"]],
+   212→  ],
+   213→  "Legislative Branch: Congress": [
+   214→    ["How many senators does each state have?", [["Two", true], ["Based on population", false], ["One", false], ["Four", false]], "easy", "Each state has 2 senators regardless of population (Great Compromise).", ["civics", "congress", "senate"]],
+   215→    ["A bill passes the House but fails in the Senate. What happens?", [["The bill dies and must start over", true], ["It goes to the President anyway", false], ["The House can override the Senate", false], ["It goes to conference committee automatically", false]], "hard", "Both chambers must pass identical versions. If one rejects it, the bill dies unless a conference committee reconciles differences.", ["civics", "congress", "legislative-process"]],
+   216→  ],
+   217→  "Executive and Judicial Branches": [
+   218→    ["Who is the Commander in Chief of the U.S. military?", [["The President", true], ["The Vice President", false], ["The Secretary of Defense", false], ["The Chairman of the Joint Chiefs", false]], "easy", "The President is the Commander in Chief per Article II of the Constitution.", ["civics", "president"]],
+   219→    ["Which president expanded the executive power through the 'imperial presidency'?", [["Richard Nixon (Watergate era)", true], ["George Washington", false], ["Abraham Lincoln", false], ["Jimmy Carter", false]], "hard", "Nixon's expanded use of executive privilege, impoundment, and domestic spying exemplified 'imperial presidency'.", ["civics", "president", "executive-power"]],
+   220→    ["Which case established that the President is not above the law?", [["United States v. Nixon (1974)", true], ["Marbury v. Madison", false], ["Bush v. Gore", false], ["Clinton v. Jones", false]], "hard", "US v. Nixon forced Nixon to turn over the Watergate tapes, establishing that executive privilege has limits.", ["civics", "judicial-branch", "supreme-court"]],
+   221→  ],
+   222→  "How Elections Work": [
+   223→    ["How many electoral votes are needed to win the presidency?", [["270", true], ["300", false], ["218", false], ["51", false]], "easy", "270 out of 538 electoral votes are needed to win.", ["civics", "elections", "electoral-college"]],
+   224→    ["What happens if no candidate gets 270 electoral votes?", [["The House of Representatives chooses the President", true], ["The Senate chooses the President", false], ["There is a runoff election", false], ["The incumbent stays in office", false]], "hard", "If no majority in Electoral College, the House elects the President (each state delegation gets 1 vote).", ["civics", "elections", "electoral-college", "contingent-election"]],
+   225→  ],
+   226→  "Political Parties and the Two-Party System": [
+   227→    ["The two major political parties in the U.S. are:", [["Democrats and Republicans", true], ["Liberals and Conservatives", false], ["Federalists and Anti-Federalists", false], ["Whigs and Tories", false]], "easy", "Democrats and Republicans are the two major U.S. political parties.", ["civics", "political-parties"]],
+   228→    ["The Federalist Party, one of the first two U.S. parties, was led by:", [["Alexander Hamilton", true], ["Thomas Jefferson", false], ["James Madison", false], ["George Washington", false]], "hard", "Federalists (Hamilton) favored strong central government. Democratic-Republicans (Jefferson) favored states' rights.", ["civics", "political-parties", "history"]],
+   229→    ["What is 'gerrymandering'?", [["Redrawing district boundaries to favor one party", true], ["Voting more than once", false], ["Campaigning in multiple states", false], ["Changing party affiliation", false]], "hard", "Gerrymandering = manipulating electoral district boundaries for political advantage. Named after Governor Gerry (1812).", ["civics", "elections", "gerrymandering"]],
+   230→  ],
+   231→  "Economics Basics": [
+   232→    ["What is inflation?", [["A general increase in prices over time", true], ["A decrease in prices", false], ["When the stock market crashes", false], ["When unemployment is zero", false]], "easy", "Inflation is the rate at which the general level of prices for goods and services rises.", ["economics", "inflation"]],
+   233→    ["What is GDP?", [["Total value of all goods and services produced in a country", true], ["Total government debt", false], ["Total population income", false], ["Total exports minus imports", false]], "medium", "GDP = Gross Domestic Product = total value of goods/services produced.", ["economics", "GDP"]],
+   234→    ["A tax on imported goods is called a:", [["Tariff", true], ["Quota", false], ["Subsidy", false], ["Surplus", false]], "medium", "A tariff is a tax on imports to protect domestic industries.", ["economics", "trade", "tariff"]],
+   235→  ],
+   236→  "World Wars and Global Conflicts": [
+   237→    ["World War I (1914-1918) was triggered by:", [["The assassination of Archduke Franz Ferdinand", true], ["The bombing of Pearl Harbor", false], ["The invasion of Poland", false], ["The Russian Revolution", false]], "easy", "The assassination of Austria-Hungary's Archduke in Sarajevo triggered WWI.", ["history", "WWI", "causes"]],
+   238→    ["The United States entered World War II after:", [["The attack on Pearl Harbor (1941)", true], ["The invasion of France", false], ["The bombing of London", false], ["The fall of Berlin", false]], "easy", "Japan's attack on Pearl Harbor on Dec 7, 1941 brought the U.S. into WWII.", ["history", "WWII", "pearl-harbor"]],
+   239→    ["The Cold War was primarily between:", [["The U.S. and the Soviet Union", true], ["The U.S. and China", false], ["Britain and France", false], ["Germany and Japan", false]], "medium", "The Cold War (1947-1991) was a geopolitical tension between the U.S. (capitalist) and USSR (communist).", ["history", "cold-war"]],
+   240→  ],
+   241→  "Maps, Geography, and Human-Environment Interaction": [
+   242→    ["What does a map scale show?", [["The relationship between distance on the map and real distance", true], ["The compass direction", false], ["The population density", false], ["The climate zones", false]], "easy", "A map scale tells you how map distance relates to actual ground distance.", ["geography", "maps", "scale"]],
+   243→    ["Which type of map shows elevation and terrain features?", [["Topographic map", true], ["Political map", false], ["Climate map", false], ["Population map", false]], "medium", "Topographic maps use contour lines to show elevation and terrain.", ["geography", "maps", "topographic"]],
+   244→  ],
+   245→  "The Bill of Rights": [
+   246→    ["The First Amendment protects:", [["Freedom of religion, speech, press, assembly, and petition", true], ["Right to bear arms", false], ["Protection from unreasonable search", false], ["Right to a fair trial", false]], "easy", "1st Amendment: 5 freedoms - religion, speech, press, assembly, petition.", ["civics", "constitution", "bill-of-rights"]],
+   247→    ["The Second Amendment protects the right to:", [["Bear arms", true], ["Free speech", false], ["Trial by jury", false], ["Privacy", false]], "easy", "2nd Amendment protects the right to keep and bear arms.", ["civics", "constitution", "bill-of-rights"]],
+   248→    ["Which amendment protects against 'cruel and unusual punishment'?", [["Eighth Amendment", true], ["Fifth Amendment", false], ["Sixth Amendment", false], ["Fourth Amendment", false]], "medium", "The 8th Amendment prohibits excessive bail/fines and cruel/unusual punishment.", ["civics", "constitution", "amendments"]],
+   249→  ],
+   250→};
+   251→
