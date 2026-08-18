@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { MIGRATION_SQL } from "@/lib/migration-sql";
 import { EXTRA_QUESTIONS } from "@/lib/extra-questions";
+import { GED_VOCABULARY } from "@/lib/vocab-data";
 
 export const dynamic = "force-dynamic";
 
@@ -49,12 +50,20 @@ export async function GET(request: NextRequest) {
           isSeeding = true;
           try {
             const res = await forceReseedQuestionsBatch();
+            // Also ensure flashcards exist on force reseed
+            const fc = await db.flashcard.count();
+            let flashcardResult: string | undefined;
+            if (fc === 0) {
+              await seedFlashcards();
+              flashcardResult = `seeded ${await db.flashcard.count()} flashcards`;
+            }
             const newTotal = await db.question.count();
             const newNull = await db.question.count({ where: { questionText: { in: [null, ""] as any } } });
             return NextResponse.json({
               status: "reseeded",
               ...diagnostics,
               reseedResult: res,
+              flashcardResult,
               afterReseed: { totalQuestions: newTotal, nullTextQuestions: newNull },
             });
           } finally {
@@ -310,6 +319,15 @@ async function fullSetup() {
     console.log("[setup] Seeding full data...");
     await seedAllData();
   }
+
+  // Always ensure flashcards exist (idempotent)
+  const flashcardCount = await db.flashcard.count();
+  if (flashcardCount === 0) {
+    console.log("[setup] Seeding flashcards...");
+    await seedFlashcards();
+  } else {
+    console.log(`[setup] Flashcards already exist: ${flashcardCount}`);
+  }
 }
 
 async function seedAllData() {
@@ -415,4 +433,40 @@ async function seedAllData() {
   }
 
   console.log(`[setup] Seeded ${qCount} questions, ${aRows.length} answers across ${lessonMap.size} lessons (batch SQL)`);
+
+  // Seed flashcards as part of initial setup
+  await seedFlashcards();
+}
+
+// ==========================================================================
+// FLASHCARD SEEDING — GED vocabulary (idempotent)
+// ==========================================================================
+async function seedFlashcards() {
+  const subjects = await db.subject.findMany({ select: { id: true, code: true } });
+  const codeToId = new Map<string, string>(subjects.map((s) => [s.code, s.id]));
+
+  const fRows: string[] = [];
+  const F_COLS = `"id","subjectId","term","translation","pronunciation","meaning","sortOrder","createdAt","updatedAt"`;
+  let fCount = 0;
+
+  for (const [code, words] of Object.entries(GED_VOCABULARY)) {
+    const subjectId = codeToId.get(code);
+    if (!subjectId) { console.log(`[setup] WARNING: No subject for code: ${code}`); continue; }
+
+    for (let i = 0; i < words.length; i++) {
+      const [term, translation, pronunciation, meaning] = words[i];
+      const fId = genId();
+      fRows.push(
+        `('${fId}','${subjectId}',${esc(term)},${esc(translation)},${esc(pronunciation)},${esc(meaning)},${i},NOW(),NOW())`
+      );
+      fCount++;
+    }
+  }
+
+  // Batch insert (chunked)
+  for (let i = 0; i < fRows.length; i += 50) {
+    await db.$executeRawUnsafe(`INSERT INTO "Flashcard" (${F_COLS}) VALUES ${fRows.slice(i, i + 50).join(",")}`);
+  }
+
+  console.log(`[setup] Seeded ${fCount} flashcards across ${Object.keys(GED_VOCABULARY).length} subjects`);
 }

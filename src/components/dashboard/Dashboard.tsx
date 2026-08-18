@@ -35,6 +35,11 @@ export function Dashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // ★ Ensure DB is seeded (questions + flashcards) on every dashboard load
+  useEffect(() => {
+    fetch("/api/setup").catch(() => {});
+  }, []);
+
   useEffect(() => {
     if (!user) return;
     async function load() {

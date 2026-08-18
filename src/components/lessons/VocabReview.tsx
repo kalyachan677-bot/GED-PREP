@@ -22,7 +22,8 @@ function getRotationOffset(): number {
   const now = new Date();
   const epoch = new Date("2026-01-01").getTime();
   const daysSinceEpoch = Math.floor((now.getTime() - epoch) / (1000 * 60 * 60 * 24));
-  return daysSinceEpoch % 3;
+  // 2-day rotation: day 0-1 = group 0, day 2-3 = group 1, ...
+  return Math.floor(daysSinceEpoch / 2) % 3;
 }
 
 // ── TTS: Speak English words (wait for voices to load) ──
@@ -188,16 +189,19 @@ export function VocabReview({ subjectId, showAll }: { subjectId: string; showAll
   useEffect(() => {
     if (!subjectId) return;
     setLoading(true);
-    fetch(`/api/flashcards/subject?subjectId=${subjectId}&count=8`)
+    fetch(`/api/flashcards/subject?subjectId=${subjectId}&count=10`)
       .then((r) => r.json())
       .then((j) => {
         if (j.data) {
           let flashcards: VocabCard[];
-          if (!showAll && j.data.length > 3) {
+          if (!showAll && j.data.length > 10) {
             const offset = getRotationOffset();
-            const groupSize = Math.ceil(j.data.length / 3);
-            const start = offset * groupSize;
-            flashcards = j.data.slice(start, start + groupSize);
+            const groupSize = 10;
+            const totalGroups = Math.ceil(j.data.length / groupSize);
+            const groupIndex = offset % totalGroups;
+            const start = groupIndex * groupSize;
+            const end = Math.min(start + groupSize, j.data.length);
+            flashcards = j.data.slice(start, end);
           } else {
             flashcards = j.data;
           }

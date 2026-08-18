@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const subjectId = searchParams.get('subjectId')
-    const count = Math.min(Math.max(parseInt(searchParams.get('count') ?? '8', 10) || 8, 1), 20)
+    const count = Math.min(Math.max(parseInt(searchParams.get('count') ?? '20', 10) || 20, 1), 50)
 
     if (!subjectId) {
       return NextResponse.json({ error: 'subjectId is required' }, { status: 400 })
