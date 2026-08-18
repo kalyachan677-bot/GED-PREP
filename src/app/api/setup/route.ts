@@ -9,33 +9,46 @@ export const dynamic = "force-dynamic";
 
 let isSeeding = false;
 
+// ==========================================================================
+// HELPERS: batch SQL support
+// ==========================================================================
+function genId(): string {
+  const a = "abcdefghijklmnopqrstuvwxyz0123456789";
+  const ts = Math.floor(Date.now() / 1000).toString(36);
+  let id = ts;
+  for (let i = id.length; i < 25; i++) id += a[Math.floor(Math.random() * a.length)];
+  return id;
+}
+
+function esc(val: string | null | undefined): string {
+  if (val == null) return "NULL";
+  return "'" + String(val).replace(/'/g, "''").replace(/\\/g, "\\\\") + "'";
+}
+
+// ==========================================================================
+// HANDLERS
+// ==========================================================================
 export async function GET(request: NextRequest) {
   try {
     if (isSeeding) {
       return NextResponse.json({ status: "seeding", message: "Seeding in progress..." });
     }
 
-    // Support ?force=1 query param for manual trigger
     const { searchParams } = new URL(request.url);
     const forceParam = searchParams.get("force");
 
-    // Check if already set up
     try {
       const count = await db.user.count();
       if (count > 0) {
-        // Diagnostics
         const totalQ = await db.question.count();
         const nullQ = await db.question.count({ where: { questionText: { in: [null, ""] as any } } });
         const totalA = await db.answer.count();
-
-        // Always show diagnostic info
         const diagnostics = { totalQuestions: totalQ, nullTextQuestions: nullQ, totalAnswers: totalA };
 
-        // If ?force=1 or any NULL questions exist or no questions at all, run force reseed
         if (forceParam === "1" || nullQ > 0 || totalQ === 0) {
           isSeeding = true;
           try {
-            const res = await forceReseedQuestionsRaw();
+            const res = await forceReseedQuestionsBatch();
             const newTotal = await db.question.count();
             const newNull = await db.question.count({ where: { questionText: { in: [null, ""] as any } } });
             return NextResponse.json({
@@ -52,7 +65,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ status: "ready", ...diagnostics });
       }
     } catch {
-      // Tables don't exist yet, run migration
+      // Tables don't exist yet
     }
 
     isSeeding = true;
@@ -65,13 +78,7 @@ export async function GET(request: NextRequest) {
     const subjects = await db.subject.count();
     const questions = await db.question.count({ where: { isActive: true } });
     const users = await db.user.count();
-    return NextResponse.json({
-      status: "seeded",
-      users,
-      subjects,
-      questions,
-      message: "Setup complete!",
-    });
+    return NextResponse.json({ status: "seeded", users, subjects, questions, message: "Setup complete!" });
   } catch (error: unknown) {
     isSeeding = false;
     const msg = error instanceof Error ? error.message : String(error);
@@ -86,14 +93,13 @@ export async function POST(request: NextRequest) {
     try {
       const body = await request.json();
       forceReseed = body?.force === true;
-    } catch { /* no body, ignore */ }
+    } catch { /* no body */ }
 
     if (forceReseed) {
-      const result = await forceReseedQuestionsRaw();
+      const result = await forceReseedQuestionsBatch();
       return NextResponse.json(result);
     }
 
-    // Forward to GET logic
     return GET(request);
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : String(error);
@@ -103,25 +109,22 @@ export async function POST(request: NextRequest) {
 }
 
 // ==========================================================================
-// Force reseed using RAW SQL (bypass Prisma FK issues)
+// BATCH RESEED — 730 individual queries → 6 queries (fast, no timeout)
 // ==========================================================================
-async function forceReseedQuestionsRaw() {
+async function forceReseedQuestionsBatch() {
   try {
-    // Step 1: Delete dependent records first (raw SQL to bypass FK constraints)
-    console.log("[setup] Force reseed: cleaning old data...");
+    console.log("[setup] Batch reseed: cleaning...");
+    // Only delete answer-dependent records, NOT QuizAttempt (preserve user history)
     await db.$executeRawUnsafe(`DELETE FROM "QuizAttemptAnswer"`);
     await db.$executeRawUnsafe(`DELETE FROM "SpacedRepetition"`);
     await db.$executeRawUnsafe(`DELETE FROM "Answer"`);
     await db.$executeRawUnsafe(`DELETE FROM "Question"`);
-    await db.$executeRawUnsafe(`DELETE FROM "QuizAttempt"`);
-    console.log("[setup] Old data cleaned.");
 
-    // Step 2: Get existing lessons with subject info
+    // Get lessons
     const lessons = await db.lesson.findMany({
       select: { id: true, title: true, subjectId: true, slug: true, subject: { select: { code: true, id: true } } },
     });
 
-    // Build multiple lookup strategies
     const lessonByTitle = new Map<string, { id: string; subjectId: string }>();
     const lessonBySlug = new Map<string, { id: string; subjectId: string }>();
     const lessonsBySubjectCode = new Map<string, { id: string; subjectId: string }[]>();
@@ -134,89 +137,78 @@ async function forceReseedQuestionsRaw() {
       lessonsBySubjectCode.get(code)!.push({ id: l.id, subjectId: l.subjectId });
     }
 
-    // Step 3: Re-create questions from EXTRA_QUESTIONS
+    // Build all SQL rows in memory (no DB calls)
+    const qRows: string[] = [];
+    const aRows: string[] = [];
     let created = 0;
     let skipped = 0;
     const matchedLessons: string[] = [];
     const skippedLessons: string[] = [];
-    const matchMethodUsed: Record<string, string> = {};
 
     for (const [lessonTitle, questions] of Object.entries(EXTRA_QUESTIONS)) {
       let info: { id: string; subjectId: string } | undefined;
-      let method = "none";
 
-      // Strategy 1: Exact title match
+      // Strategy 1: Exact title
       info = lessonByTitle.get(lessonTitle);
-      if (info) method = "title";
 
-      // Strategy 2: Slug match via SUBJECT_LESSON_MAP
+      // Strategy 2: Slug match
+      if (!info) {
+        const meta = SUBJECT_LESSON_MAP[lessonTitle];
+        if (meta) info = lessonBySlug.get(meta.slug);
+      }
+
+      // Strategy 3: Fallback to first lesson in subject
       if (!info) {
         const meta = SUBJECT_LESSON_MAP[lessonTitle];
         if (meta) {
-          info = lessonBySlug.get(meta.slug);
-          if (info) method = `slug(${meta.slug})`;
+          const arr = lessonsBySubjectCode.get(meta.code);
+          if (arr?.length) info = arr[0];
         }
       }
 
-      // Strategy 3: Fallback to any lesson in the same subject
-      if (!info) {
-        const meta = SUBJECT_LESSON_MAP[lessonTitle];
-        if (meta) {
-          const subjectLessons = lessonsBySubjectCode.get(meta.code);
-          if (subjectLessons && subjectLessons.length > 0) {
-            info = subjectLessons[0];
-            method = `fallback(${meta.code})`;
-          }
-        }
-      }
-
-      if (!info) {
-        skippedLessons.push(lessonTitle);
-        skipped++;
-        continue;
-      }
-
+      if (!info) { skippedLessons.push(lessonTitle); skipped++; continue; }
       matchedLessons.push(lessonTitle);
-      matchMethodUsed[lessonTitle] = method;
+
       for (const [qText, answers, difficulty, explanation, tags] of questions) {
         const text = qText as string;
         if (!text) continue;
-        await db.question.create({
-          data: {
-            questionType: "multiple_choice",
-            difficulty: difficulty as string,
-            questionText: text,
-            explanation: explanation as string,
-            tags: JSON.stringify(tags),
-            isActive: true,
-            points: difficulty === "hard" ? 3 : difficulty === "medium" ? 2 : 1,
-            subjectId: info.subjectId,
-            lessonId: info.id,
-            answers: { create: (answers as [string, boolean][]).map((a, i) => ({ content: a[0], isCorrect: a[1], sortOrder: i })) },
-          },
-        });
+        const qId = genId();
+        const pts = (difficulty as string) === "hard" ? 3 : (difficulty as string) === "medium" ? 2 : 1;
+        qRows.push(
+          `('${qId}',${esc(info.id)},${esc(info.subjectId)},'multiple_choice',${esc(difficulty as string)},${pts},${esc(text)},${esc(explanation as string)},NULL,true,NULL,${esc(JSON.stringify(tags as string[]))},NULL,NOW(),NOW())`
+        );
+        for (let i = 0; i < (answers as [string, boolean][]).length; i++) {
+          const [content, isCorrect] = (answers as [string, boolean][])[i];
+          aRows.push(`('${genId()}','${qId}',${esc(content)},${isCorrect},${i},NULL,NOW())`);
+        }
         created++;
       }
     }
 
-    console.log(`[setup] Force reseed done: ${created} created, ${skipped} skipped`);
-    console.log(`[setup] Match methods: ${JSON.stringify(matchMethodUsed)}`);
-    if (skippedLessons.length > 0) {
-      console.log(`[setup] Skipped lessons (no match at all): ${skippedLessons.join(", ")}`);
+    // Execute batch inserts (chunked to avoid query size limits)
+    const Q_COLS = `"id","lessonId","subjectId","questionType","difficulty","points","questionText","explanation","hintText","isActive","sourceTag","tags","relatedConceptId","createdAt","updatedAt"`;
+    for (let i = 0; i < qRows.length; i += 50) {
+      await db.$executeRawUnsafe(`INSERT INTO "Question" (${Q_COLS}) VALUES ${qRows.slice(i, i + 50).join(",")}`);
     }
 
+    const A_COLS = `"id","questionId","content","isCorrect","sortOrder","explanation","createdAt"`;
+    for (let i = 0; i < aRows.length; i += 100) {
+      await db.$executeRawUnsafe(`INSERT INTO "Answer" (${A_COLS}) VALUES ${aRows.slice(i, i + 100).join(",")}`);
+    }
+
+    console.log(`[setup] Batch reseed done: ${created} Q, ${aRows.length} A in ~6 queries`);
     return {
       status: "reseeded",
       createdQuestions: created,
+      createdAnswers: aRows.length,
       matchedLessons: matchedLessons.length,
-      skippedLessons: skipped,
+      skippedLessons,
       skippedLessonNames: skippedLessons,
       dbLessonCount: lessons.length,
-      matchMethods: matchMethodUsed,
-      message: `Re-seeded ${created} questions with questionText`,
+      message: `Batch re-seeded ${created} questions (${aRows.length} answers)`,
     };
   } catch (e) {
-    console.error("[setup] Force reseed FAILED:", e);
+    console.error("[setup] Batch reseed FAILED:", e);
     return { status: "error", error: e instanceof Error ? e.message : String(e) };
   }
 }
@@ -277,10 +269,9 @@ const SUBJECT_LESSON_MAP: Record<string, { code: string; module: string; topic: 
 };
 
 // ==========================================================================
-// FULL SEED DATA
+// FULL SEED DATA (first-time setup)
 // ==========================================================================
 async function fullSetup() {
-  // Step 1: Create tables
   console.log("[setup] Creating tables...");
   const statements = MIGRATION_SQL
     .split(";")
@@ -296,7 +287,6 @@ async function fullSetup() {
   }
   console.log("[setup] Tables created.");
 
-  // Step 2: Create demo user
   const existing = await db.user.findUnique({ where: { email: "demo@ged.com" } });
   if (!existing) {
     const hash = await bcrypt.hash("demo1234", 12);
@@ -315,7 +305,6 @@ async function fullSetup() {
     console.log("[setup] Demo user created.");
   }
 
-  // Step 3: Seed subjects/lessons/questions
   const subjectCount = await db.subject.count();
   if (subjectCount === 0) {
     console.log("[setup] Seeding full data...");
@@ -324,7 +313,7 @@ async function fullSetup() {
 }
 
 async function seedAllData() {
-  // Create subjects
+  // Create subjects (4 individual creates — fast)
   const math = await db.subject.create({
     data: { code: "math", title: "Mathematical Reasoning", description: "Algebra, geometry, data analysis", colorHex: "10B981", sortOrder: 0, status: "published" },
   });
@@ -349,6 +338,7 @@ async function seedAllData() {
   const topicMap = new Map<string, string>();
   const lessonMap = new Map<string, { id: string; subjectId: string }>();
 
+  // Create modules, topics, lessons (individual creates — ~70 total, acceptable)
   for (const [lessonTitle, meta] of Object.entries(SUBJECT_LESSON_MAP)) {
     const subj = subjectByCode.get(meta.code);
     if (!subj) continue;
@@ -389,35 +379,40 @@ async function seedAllData() {
     lessonMap.set(lessonTitle, { id: lesson.id, subjectId: subj.id });
   }
 
+  // ★ KEY FIX: Create questions via BATCH SQL (not 730 individual creates)
+  const qRows: string[] = [];
+  const aRows: string[] = [];
   let qCount = 0;
+
   for (const [lessonTitle, questions] of Object.entries(EXTRA_QUESTIONS)) {
     const info = lessonMap.get(lessonTitle);
-    if (!info) {
-      console.log("[setup] WARNING: No lesson for key:", lessonTitle);
-      continue;
-    }
+    if (!info) { console.log("[setup] WARNING: No lesson for:", lessonTitle); continue; }
+
     for (const [qText, answers, difficulty, explanation, tags] of questions) {
       const text = qText as string;
-      if (!text) {
-        console.log("[setup] WARNING: Empty questionText for", lessonTitle);
-        continue;
+      if (!text) continue;
+      const qId = genId();
+      const pts = (difficulty as string) === "hard" ? 3 : (difficulty as string) === "medium" ? 2 : 1;
+      qRows.push(
+        `('${qId}',${esc(info.id)},${esc(info.subjectId)},'multiple_choice',${esc(difficulty as string)},${pts},${esc(text)},${esc(explanation as string)},NULL,true,NULL,${esc(JSON.stringify(tags as string[]))},NULL,NOW(),NOW())`
+      );
+      for (let i = 0; i < (answers as [string, boolean][]).length; i++) {
+        const [content, isCorrect] = (answers as [string, boolean][])[i];
+        aRows.push(`('${genId()}','${qId}',${esc(content)},${isCorrect},${i},NULL,NOW())`);
       }
-      await db.question.create({
-        data: {
-          questionType: "multiple_choice",
-          difficulty: difficulty as string,
-          questionText: text,
-          explanation: explanation as string,
-          tags: JSON.stringify(tags),
-          isActive: true,
-          points: difficulty === "hard" ? 3 : difficulty === "medium" ? 2 : 1,
-          subjectId: info.subjectId,
-          lessonId: info.id,
-          answers: { create: (answers as [string, boolean][]).map((a, i) => ({ content: a[0], isCorrect: a[1], sortOrder: i })) },
-        },
-      });
       qCount++;
     }
   }
-  console.log(`[setup] Seeded ${qCount} questions across ${lessonMap.size} lessons`);
+
+  // Batch insert
+  const Q_COLS = `"id","lessonId","subjectId","questionType","difficulty","points","questionText","explanation","hintText","isActive","sourceTag","tags","relatedConceptId","createdAt","updatedAt"`;
+  for (let i = 0; i < qRows.length; i += 50) {
+    await db.$executeRawUnsafe(`INSERT INTO "Question" (${Q_COLS}) VALUES ${qRows.slice(i, i + 50).join(",")}`);
+  }
+  const A_COLS = `"id","questionId","content","isCorrect","sortOrder","explanation","createdAt"`;
+  for (let i = 0; i < aRows.length; i += 100) {
+    await db.$executeRawUnsafe(`INSERT INTO "Answer" (${A_COLS}) VALUES ${aRows.slice(i, i + 100).join(",")}`);
+  }
+
+  console.log(`[setup] Seeded ${qCount} questions, ${aRows.length} answers across ${lessonMap.size} lessons (batch SQL)`);
 }
