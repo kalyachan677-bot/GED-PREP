@@ -98,7 +98,9 @@ export function LessonView() {
     try {
       const subjectId = selectedLesson.topic?.module?.subject?.id;
       if (!subjectId) return;
-      const res = await fetch("/api/quiz/start", {
+
+      // Try lesson-level quiz first
+      let res = await fetch("/api/quiz/start", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -108,7 +110,22 @@ export function LessonView() {
           quizType: "lesson_quiz",
         }),
       });
-      const json = await res.json();
+      let json = await res.json();
+
+      // Fallback: if lesson has no questions, use subject-level quiz
+      if (json.error || !json.data?.questions?.length) {
+        res = await fetch("/api/quiz/start", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: user.id,
+            subjectId,
+            quizType: "subject_test",
+          }),
+        });
+        json = await res.json();
+      }
+
       if (json.data?.attempt && Array.isArray(json.data.questions)) {
         startQuiz(json.data.attempt, json.data.questions);
       }
@@ -165,26 +182,24 @@ export function LessonView() {
         ))}
       </div>
 
-      {/* Quiz button */}
-      {selectedLesson.questions && selectedLesson.questions.length > 0 && (
-        <div className="border-t pt-8">
-          <div className="flex items-center gap-2 mb-4">
-            <Brain className="h-5 w-5 text-violet-600" />
-            <h2 className="text-lg font-bold text-slate-800">
-              แบบทดสอบ ({selectedLesson.questions.length} คำถาม)
-            </h2>
-          </div>
-          <Button
-            onClick={handleStartQuiz}
-            className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 shadow-lg shadow-violet-200/50 rounded-xl"
-            size="lg"
-            disabled={startingQuiz}
-          >
-            {startingQuiz && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            เริ่มทำแบบทดสอบ
-          </Button>
+      {/* Quiz button — always visible, uses lesson questions if available, otherwise subject-level */}
+      <div className="border-t pt-8">
+        <div className="flex items-center gap-2 mb-4">
+          <Brain className="h-5 w-5 text-violet-600" />
+          <h2 className="text-lg font-bold text-slate-800">
+            แบบทดสอบ{selectedLesson.questions?.length ? ` (${selectedLesson.questions.length} คำถาม)` : ''}
+          </h2>
         </div>
-      )}
+        <Button
+          onClick={handleStartQuiz}
+          className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 shadow-lg shadow-violet-200/50 rounded-xl"
+          size="lg"
+          disabled={startingQuiz}
+        >
+          {startingQuiz && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          เริ่มทำแบบทดสอบ
+        </Button>
+      </div>
     </div>
   );
 }

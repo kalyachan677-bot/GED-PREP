@@ -23,7 +23,7 @@ function getRotationOffset(): number {
   const epoch = new Date("2026-01-01").getTime();
   const daysSinceEpoch = Math.floor((now.getTime() - epoch) / (1000 * 60 * 60 * 24));
   // 2-day rotation: day 0-1 = group 0, day 2-3 = group 1, ...
-  return Math.floor(daysSinceEpoch / 2) % 3;
+  return Math.floor(daysSinceEpoch / 2) % 4;
 }
 
 // ── TTS: Speak English words (wait for voices to load) ──

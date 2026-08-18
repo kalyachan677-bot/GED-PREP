@@ -46,16 +46,19 @@ export async function GET(request: NextRequest) {
         const totalA = await db.answer.count();
         const diagnostics = { totalQuestions: totalQ, nullTextQuestions: nullQ, totalAnswers: totalA };
 
-        if (forceParam === "1" || nullQ > 0 || totalQ === 0) {
+        // Trigger reseed if: force=1, null questions exist, no questions, or questions too few (< 100)
+        if (forceParam === "1" || nullQ > 0 || totalQ === 0 || totalQ < 100) {
           isSeeding = true;
           try {
             const res = await forceReseedQuestionsBatch();
-            // Also ensure flashcards exist on force reseed
+            // Also ensure flashcards exist on force reseed (reseed if count < 120 = less than 30 per subject)
             const fc = await db.flashcard.count();
             let flashcardResult: string | undefined;
-            if (fc === 0) {
+            if (fc < 120) {
+              await db.$executeRawUnsafe(`DELETE FROM "DailyFlashcardQuizLog"`);
+              await db.$executeRawUnsafe(`DELETE FROM "Flashcard"`);
               await seedFlashcards();
-              flashcardResult = `seeded ${await db.flashcard.count()} flashcards`;
+              flashcardResult = `reseeded ${await db.flashcard.count()} flashcards`;
             }
             const newTotal = await db.question.count();
             const newNull = await db.question.count({ where: { questionText: { in: [null, ""] as any } } });
@@ -320,10 +323,14 @@ async function fullSetup() {
     await seedAllData();
   }
 
-  // Always ensure flashcards exist (idempotent)
+  // Always ensure flashcards exist — reseed if too few (< 120 = less than ~30/subject)
   const flashcardCount = await db.flashcard.count();
-  if (flashcardCount === 0) {
-    console.log("[setup] Seeding flashcards...");
+  if (flashcardCount < 120) {
+    console.log(`[setup] Flashcards too few (${flashcardCount}), reseeding...`);
+    try {
+      await db.$executeRawUnsafe(`DELETE FROM "DailyFlashcardQuizLog"`);
+      await db.$executeRawUnsafe(`DELETE FROM "Flashcard"`);
+    } catch { /* ignore */ }
     await seedFlashcards();
   } else {
     console.log(`[setup] Flashcards already exist: ${flashcardCount}`);
