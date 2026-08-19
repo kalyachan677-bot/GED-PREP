@@ -25,6 +25,15 @@ function esc(val: string | null | undefined): string {
   return "'" + String(val).replace(/'/g, "''").replace(/\\/g, "\\\\") + "'";
 }
 
+const SUBJECT_INFO: Record<string, { code: string; title: string; description: string; colorHex: string }> = {
+  math:    { code: "math", title: "Mathematical Reasoning", description: "Algebra, geometry, data analysis", colorHex: "10B981" },
+  science: { code: "science", title: "Science", description: "Life, physical, and earth & space science", colorHex: "3B82F6" },
+  rla:     { code: "rla", title: "Reasoning Through Language Arts", description: "Reading comprehension, writing, grammar", colorHex: "F59E0B" },
+  ss:      { code: "ss", title: "Social Studies", description: "History, civics, economics, geography", colorHex: "EF4444" },
+};
+
+const VALID_SUBJECTS = ["math", "science", "rla", "ss"];
+
 // ==========================================================================
 // HANDLERS
 // ==========================================================================
@@ -36,6 +45,7 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const forceParam = searchParams.get("force");
+    const subjectParam = searchParams.get("subject");
 
     try {
       const count = await db.user.count();
@@ -45,12 +55,10 @@ export async function GET(request: NextRequest) {
         const totalA = await db.answer.count();
         const diagnostics = { totalQuestions: totalQ, nullTextQuestions: nullQ, totalAnswers: totalA };
 
-        // Trigger reseed if: force=1, null questions exist, no questions, or questions too few (< 100)
         if (forceParam === "1" || nullQ > 0 || totalQ === 0 || totalQ < 100) {
           isSeeding = true;
           try {
             const res = await forceReseedQuestionsBatch();
-            // Also ensure flashcards exist on force reseed (reseed if count < 120 = less than 30 per subject)
             const fc = await db.flashcard.count();
             let flashcardResult: string | undefined;
             if (fc < 120) {
@@ -81,7 +89,17 @@ export async function GET(request: NextRequest) {
 
     isSeeding = true;
     try {
-      await fullSetup();
+      // Phase 1: Create tables + demo user + subjects (always needed on first run)
+      await setupBase();
+
+      // Phase 2: Seed lessons, questions, flashcards
+      // Supports ?subject=math to seed one subject at a time
+      if (subjectParam && VALID_SUBJECTS.includes(subjectParam)) {
+        await seedSubjectData(subjectParam);
+      } else {
+        // Seed all subjects at once using batch SQL (fast)
+        await seedAllDataBatch();
+      }
     } finally {
       isSeeding = false;
     }
@@ -120,18 +138,252 @@ export async function POST(request: NextRequest) {
 }
 
 // ==========================================================================
-// BATCH RESEED — 730 individual queries → 6 queries (fast, no timeout)
+// Phase 1: Base setup (tables, demo user, 4 subjects) — fast
+// ==========================================================================
+async function setupBase() {
+  console.log("[setup] Creating tables...");
+  const statements = MIGRATION_SQL
+    .split(";")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+
+  for (const stmt of statements) {
+    try {
+      await db.$executeRawUnsafe(stmt + ";");
+    } catch (e) {
+      console.log("[setup] SQL ok or skipped:", stmt.substring(0, 80));
+    }
+  }
+  console.log("[setup] Tables created.");
+
+  const existing = await db.user.findUnique({ where: { email: "demo@ged.com" } });
+  if (!existing) {
+    const hash = await bcrypt.hash("demo1234", 12);
+    await db.user.create({
+      data: {
+        email: "demo@ged.com",
+        passwordHash: hash,
+        firstName: "Demo",
+        lastName: "Student",
+        displayName: "Demo Student",
+        role: "student",
+        status: "active",
+        preferredLang: "th",
+      },
+    });
+    console.log("[setup] Demo user created.");
+  }
+
+  // Create 4 subjects via batch SQL
+  const subjectCount = await db.subject.count();
+  if (subjectCount === 0) {
+    const S_COLS = `"id","code","title","description","colorHex","sortOrder","status","createdAt","updatedAt"`;
+    const sRows: string[] = [];
+    for (const [code, info] of Object.entries(SUBJECT_INFO)) {
+      const id = genId();
+      sRows.push(`('${id}',${esc(code)},${esc(info.title)},${esc(info.description)},${esc(info.colorHex)},${VALID_SUBJECTS.indexOf(code)},'published',NOW(),NOW())`);
+    }
+    await db.$executeRawUnsafe(`INSERT INTO "Subject" (${S_COLS}) VALUES ${sRows.join(",")}`);
+    console.log(`[setup] Created ${sRows.length} subjects via batch SQL.`);
+  }
+}
+
+// ==========================================================================
+// Phase 2a: Seed one subject (for ?subject=math usage)
+// ==========================================================================
+async function seedSubjectData(code: string) {
+  const subject = await db.subject.findFirst({ where: { code }, select: { id: true } });
+  if (!subject) throw new Error(`Subject ${code} not found. Run /api/setup first.`);
+
+  // Build lesson map entries for this subject only
+  const entries = Object.entries(SUBJECT_LESSON_MAP).filter(([, m]) => m.code === code);
+  if (entries.length === 0) throw new Error(`No lessons found for subject: ${code}`);
+
+  const moduleMap = new Map<string, string>();
+  const topicMap = new Map<string, string>();
+  const lessonMap = new Map<string, { id: string; subjectId: string }>();
+  let modOrder = 0, topOrder = 0;
+
+  // Collect modules, topics, lessons as batch SQL rows
+  const mRows: string[] = [];
+  const tRows: string[] = [];
+  const lRows: string[] = [];
+
+  for (const [lessonTitle, meta] of entries) {
+    const modKey = meta.code + ":" + meta.module;
+    let moduleId = moduleMap.get(modKey);
+    if (!moduleId) {
+      moduleId = genId();
+      moduleMap.set(modKey, moduleId);
+      mRows.push(`('${moduleId}','${subject.id}',${esc(meta.module)},${modOrder++},'published',NOW(),NOW())`);
+    }
+
+    const topKey = modKey + ":" + meta.topic;
+    let topicId = topicMap.get(topKey);
+    if (!topicId) {
+      topicId = genId();
+      topicMap.set(topKey, topicId);
+      tRows.push(`('${topicId}','${moduleId}',${esc(meta.topic)},${topOrder++},'published',NOW(),NOW())`);
+    }
+
+    const lessonId = genId();
+    lRows.push(`('${lessonId}','${topicId}',${esc(lessonTitle)},${esc(meta.slug)},'text',${esc(JSON.stringify([{ id: "blk_1", block_type: "paragraph", content: "Content for " + lessonTitle }]))},15,0,'published','core_topic',NULL,NOW(),NOW())`);
+    lessonMap.set(lessonTitle, { id: lessonId, subjectId: subject.id });
+  }
+
+  // Batch insert modules, topics, lessons (3 queries)
+  if (mRows.length) {
+    await db.$executeRawUnsafe(`INSERT INTO "Module" ("id","subjectId","title","sortOrder","status","createdAt","updatedAt") VALUES ${mRows.join(",")}`);
+  }
+  if (tRows.length) {
+    await db.$executeRawUnsafe(`INSERT INTO "Topic" ("id","moduleId","title","sortOrder","status","createdAt","updatedAt") VALUES ${tRows.join(",")}`);
+  }
+  if (lRows.length) {
+    await db.$executeRawUnsafe(`INSERT INTO "Lesson" ("id","topicId","title","slug","contentType","bodyContent","durationMinutes","sortOrder","status","lessonType","topicCategoryId","createdAt","updatedAt") VALUES ${lRows.join(",")}`);
+  }
+
+  // Seed questions for this subject
+  const qRows: string[] = [];
+  const aRows: string[] = [];
+  let qCount = 0;
+  for (const [lessonTitle, questions] of Object.entries(EXTRA_QUESTIONS)) {
+    const meta = SUBJECT_LESSON_MAP[lessonTitle];
+    if (!meta || meta.code !== code) continue;
+    const info = lessonMap.get(lessonTitle);
+    if (!info) continue;
+    for (const [qText, answers, difficulty, explanation, tags] of questions) {
+      const text = qText as string;
+      if (!text) continue;
+      const qId = genId();
+      const pts = (difficulty as string) === "hard" ? 3 : (difficulty as string) === "medium" ? 2 : 1;
+      qRows.push(`('${qId}',${esc(info.id)},${esc(info.subjectId)},'multiple_choice',${esc(difficulty as string)},${pts},${esc(text)},${esc(explanation as string)},NULL,true,NULL,${esc(JSON.stringify(tags as string[]))},NULL,NOW(),NOW())`);
+      for (let i = 0; i < (answers as [string, boolean][]).length; i++) {
+        const [content, isCorrect] = (answers as [string, boolean][])[i];
+        aRows.push(`('${genId()}','${qId}',${esc(content)},${isCorrect},${i},NULL,NOW())`);
+      }
+      qCount++;
+    }
+  }
+  const Q_COLS = `"id","lessonId","subjectId","questionType","difficulty","points","questionText","explanation","hintText","isActive","sourceTag","tags","relatedConceptId","createdAt","updatedAt"`;
+  for (let i = 0; i < qRows.length; i += 50) {
+    await db.$executeRawUnsafe(`INSERT INTO "Question" (${Q_COLS}) VALUES ${qRows.slice(i, i + 50).join(",")}`);
+  }
+  const A_COLS = `"id","questionId","content","isCorrect","sortOrder","explanation","createdAt"`;
+  for (let i = 0; i < aRows.length; i += 100) {
+    await db.$executeRawUnsafe(`INSERT INTO "Answer" (${A_COLS}) VALUES ${aRows.slice(i, i + 100).join(",")}`);
+  }
+
+  // Seed flashcards for this subject
+  const words = GED_VOCABULARY[code as keyof typeof GED_VOCABULARY];
+  if (words) {
+    const fRows: string[] = [];
+    const F_COLS = `"id","subjectId","term","translation","pronunciation","meaning","sortOrder","createdAt","updatedAt"`;
+    for (let i = 0; i < words.length; i++) {
+      const [term, translation, pronunciation, meaning] = words[i];
+      fRows.push(`('${genId()}','${subject.id}',${esc(term)},${esc(translation)},${esc(pronunciation)},${esc(meaning)},${i},NOW(),NOW())`);
+    }
+    for (let i = 0; i < fRows.length; i += 50) {
+      await db.$executeRawUnsafe(`INSERT INTO "Flashcard" (${F_COLS}) VALUES ${fRows.slice(i, i + 50).join(",")}`);
+    }
+  }
+
+  console.log(`[setup] Seeded ${code}: ${entries.length} lessons, ${qCount} questions, ${aRows.length} answers, ${words?.length || 0} flashcards`);
+}
+
+// ==========================================================================
+// Phase 2b: Seed ALL subjects at once (batch SQL — ~10 queries total)
+// ==========================================================================
+async function seedAllDataBatch() {
+  const subjects = await db.subject.findMany({ select: { id: true, code: true } });
+  const codeToId = new Map<string, string>(subjects.map((s) => [s.code, s.id]));
+
+  const moduleMap = new Map<string, string>();
+  const topicMap = new Map<string, string>();
+  const lessonMap = new Map<string, { id: string; subjectId: string }>();
+  let modOrder = 0, topOrder = 0;
+
+  const mRows: string[] = [];
+  const tRows: string[] = [];
+  const lRows: string[] = [];
+
+  for (const [lessonTitle, meta] of Object.entries(SUBJECT_LESSON_MAP)) {
+    const subjectId = codeToId.get(meta.code);
+    if (!subjectId) continue;
+
+    const modKey = meta.code + ":" + meta.module;
+    let moduleId = moduleMap.get(modKey);
+    if (!moduleId) {
+      moduleId = genId();
+      moduleMap.set(modKey, moduleId);
+      mRows.push(`('${moduleId}','${subjectId}',${esc(meta.module)},${modOrder++},'published',NOW(),NOW())`);
+    }
+
+    const topKey = modKey + ":" + meta.topic;
+    let topicId = topicMap.get(topKey);
+    if (!topicId) {
+      topicId = genId();
+      topicMap.set(topKey, topicId);
+      tRows.push(`('${topicId}','${moduleId}',${esc(meta.topic)},${topOrder++},'published',NOW(),NOW())`);
+    }
+
+    const lessonId = genId();
+    lRows.push(`('${lessonId}','${topicId}',${esc(lessonTitle)},${esc(meta.slug)},'text',${esc(JSON.stringify([{ id: "blk_1", block_type: "paragraph", content: "Content for " + lessonTitle }]))},15,0,'published','core_topic',NULL,NOW(),NOW())`);
+    lessonMap.set(lessonTitle, { id: lessonId, subjectId });
+  }
+
+  // 3 batch inserts for modules, topics, lessons
+  if (mRows.length) await db.$executeRawUnsafe(`INSERT INTO "Module" ("id","subjectId","title","sortOrder","status","createdAt","updatedAt") VALUES ${mRows.join(",")}`);
+  if (tRows.length) await db.$executeRawUnsafe(`INSERT INTO "Topic" ("id","moduleId","title","sortOrder","status","createdAt","updatedAt") VALUES ${tRows.join(",")}`);
+  if (lRows.length) await db.$executeRawUnsafe(`INSERT INTO "Lesson" ("id","topicId","title","slug","contentType","bodyContent","durationMinutes","sortOrder","status","lessonType","topicCategoryId","createdAt","updatedAt") VALUES ${lRows.join(",")}`);
+
+  // Batch insert questions and answers
+  const qRows: string[] = [];
+  const aRows: string[] = [];
+  let qCount = 0;
+
+  for (const [lessonTitle, questions] of Object.entries(EXTRA_QUESTIONS)) {
+    const info = lessonMap.get(lessonTitle);
+    if (!info) continue;
+    for (const [qText, answers, difficulty, explanation, tags] of questions) {
+      const text = qText as string;
+      if (!text) continue;
+      const qId = genId();
+      const pts = (difficulty as string) === "hard" ? 3 : (difficulty as string) === "medium" ? 2 : 1;
+      qRows.push(`('${qId}',${esc(info.id)},${esc(info.subjectId)},'multiple_choice',${esc(difficulty as string)},${pts},${esc(text)},${esc(explanation as string)},NULL,true,NULL,${esc(JSON.stringify(tags as string[]))},NULL,NOW(),NOW())`);
+      for (let i = 0; i < (answers as [string, boolean][]).length; i++) {
+        const [content, isCorrect] = (answers as [string, boolean][])[i];
+        aRows.push(`('${genId()}','${qId}',${esc(content)},${isCorrect},${i},NULL,NOW())`);
+      }
+      qCount++;
+    }
+  }
+
+  const Q_COLS = `"id","lessonId","subjectId","questionType","difficulty","points","questionText","explanation","hintText","isActive","sourceTag","tags","relatedConceptId","createdAt","updatedAt"`;
+  for (let i = 0; i < qRows.length; i += 50) {
+    await db.$executeRawUnsafe(`INSERT INTO "Question" (${Q_COLS}) VALUES ${qRows.slice(i, i + 50).join(",")}`);
+  }
+  const A_COLS = `"id","questionId","content","isCorrect","sortOrder","explanation","createdAt"`;
+  for (let i = 0; i < aRows.length; i += 100) {
+    await db.$executeRawUnsafe(`INSERT INTO "Answer" (${A_COLS}) VALUES ${aRows.slice(i, i + 100).join(",")}`);
+  }
+
+  console.log(`[setup] Batch seeded: ${mRows.length} modules, ${tRows.length} topics, ${lRows.length} lessons, ${qCount} questions, ${aRows.length} answers`);
+
+  // Seed flashcards
+  await seedFlashcards();
+}
+
+// ==========================================================================
+// BATCH RESEED (questions only — fast, for existing databases)
 // ==========================================================================
 async function forceReseedQuestionsBatch() {
   try {
     console.log("[setup] Batch reseed: cleaning...");
-    // Only delete answer-dependent records, NOT QuizAttempt (preserve user history)
     await db.$executeRawUnsafe(`DELETE FROM "QuizAttemptAnswer"`);
     await db.$executeRawUnsafe(`DELETE FROM "SpacedRepetition"`);
     await db.$executeRawUnsafe(`DELETE FROM "Answer"`);
     await db.$executeRawUnsafe(`DELETE FROM "Question"`);
 
-    // Get lessons
     const lessons = await db.lesson.findMany({
       select: { id: true, title: true, subjectId: true, slug: true, subject: { select: { code: true, id: true } } },
     });
@@ -148,7 +400,6 @@ async function forceReseedQuestionsBatch() {
       lessonsBySubjectCode.get(code)!.push({ id: l.id, subjectId: l.subjectId });
     }
 
-    // Build all SQL rows in memory (no DB calls)
     const qRows: string[] = [];
     const aRows: string[] = [];
     let created = 0;
@@ -158,17 +409,11 @@ async function forceReseedQuestionsBatch() {
 
     for (const [lessonTitle, questions] of Object.entries(EXTRA_QUESTIONS)) {
       let info: { id: string; subjectId: string } | undefined;
-
-      // Strategy 1: Exact title
       info = lessonByTitle.get(lessonTitle);
-
-      // Strategy 2: Slug match
       if (!info) {
         const meta = SUBJECT_LESSON_MAP[lessonTitle];
         if (meta) info = lessonBySlug.get(meta.slug);
       }
-
-      // Strategy 3: Fallback to first lesson in subject
       if (!info) {
         const meta = SUBJECT_LESSON_MAP[lessonTitle];
         if (meta) {
@@ -176,18 +421,14 @@ async function forceReseedQuestionsBatch() {
           if (arr?.length) info = arr[0];
         }
       }
-
       if (!info) { skippedLessons.push(lessonTitle); skipped++; continue; }
       matchedLessons.push(lessonTitle);
-
       for (const [qText, answers, difficulty, explanation, tags] of questions) {
         const text = qText as string;
         if (!text) continue;
         const qId = genId();
         const pts = (difficulty as string) === "hard" ? 3 : (difficulty as string) === "medium" ? 2 : 1;
-        qRows.push(
-          `('${qId}',${esc(info.id)},${esc(info.subjectId)},'multiple_choice',${esc(difficulty as string)},${pts},${esc(text)},${esc(explanation as string)},NULL,true,NULL,${esc(JSON.stringify(tags as string[]))},NULL,NOW(),NOW())`
-        );
+        qRows.push(`('${qId}',${esc(info.id)},${esc(info.subjectId)},'multiple_choice',${esc(difficulty as string)},${pts},${esc(text)},${esc(explanation as string)},NULL,true,NULL,${esc(JSON.stringify(tags as string[]))},NULL,NOW(),NOW())`);
         for (let i = 0; i < (answers as [string, boolean][]).length; i++) {
           const [content, isCorrect] = (answers as [string, boolean][])[i];
           aRows.push(`('${genId()}','${qId}',${esc(content)},${isCorrect},${i},NULL,NOW())`);
@@ -196,18 +437,16 @@ async function forceReseedQuestionsBatch() {
       }
     }
 
-    // Execute batch inserts (chunked to avoid query size limits)
     const Q_COLS = `"id","lessonId","subjectId","questionType","difficulty","points","questionText","explanation","hintText","isActive","sourceTag","tags","relatedConceptId","createdAt","updatedAt"`;
     for (let i = 0; i < qRows.length; i += 50) {
       await db.$executeRawUnsafe(`INSERT INTO "Question" (${Q_COLS}) VALUES ${qRows.slice(i, i + 50).join(",")}`);
     }
-
     const A_COLS = `"id","questionId","content","isCorrect","sortOrder","explanation","createdAt"`;
     for (let i = 0; i < aRows.length; i += 100) {
       await db.$executeRawUnsafe(`INSERT INTO "Answer" (${A_COLS}) VALUES ${aRows.slice(i, i + 100).join(",")}`);
     }
 
-    console.log(`[setup] Batch reseed done: ${created} Q, ${aRows.length} A in ~6 queries`);
+    console.log(`[setup] Batch reseed done: ${created} Q, ${aRows.length} A`);
     return {
       status: "reseeded",
       createdQuestions: created,
@@ -225,7 +464,7 @@ async function forceReseedQuestionsBatch() {
 }
 
 // ==========================================================================
-// Subject mapping for EXTRA_QUESTIONS keys
+// Subject mapping
 // ==========================================================================
 const SUBJECT_LESSON_MAP: Record<string, { code: string; module: string; topic: string; slug: string }> = {
   // MATH
@@ -280,172 +519,7 @@ const SUBJECT_LESSON_MAP: Record<string, { code: string; module: string; topic: 
 };
 
 // ==========================================================================
-// FULL SEED DATA (first-time setup)
-// ==========================================================================
-async function fullSetup() {
-  console.log("[setup] Creating tables...");
-  const statements = MIGRATION_SQL
-    .split(";")
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0);
-
-  for (const stmt of statements) {
-    try {
-      await db.$executeRawUnsafe(stmt + ";");
-    } catch (e) {
-      console.log("[setup] SQL ok or skipped:", stmt.substring(0, 80));
-    }
-  }
-  console.log("[setup] Tables created.");
-
-  const existing = await db.user.findUnique({ where: { email: "demo@ged.com" } });
-  if (!existing) {
-    const hash = await bcrypt.hash("demo1234", 12);
-    await db.user.create({
-      data: {
-        email: "demo@ged.com",
-        passwordHash: hash,
-        firstName: "Demo",
-        lastName: "Student",
-        displayName: "Demo Student",
-        role: "student",
-        status: "active",
-        preferredLang: "th",
-      },
-    });
-    console.log("[setup] Demo user created.");
-  }
-
-  const subjectCount = await db.subject.count();
-  if (subjectCount === 0) {
-    console.log("[setup] Seeding full data...");
-    await seedAllData();
-  }
-
-  // Always ensure flashcards exist — reseed if too few (< 120 = less than ~30/subject)
-  const flashcardCount = await db.flashcard.count();
-  if (flashcardCount < 120) {
-    console.log(`[setup] Flashcards too few (${flashcardCount}), reseeding...`);
-    try {
-      await db.$executeRawUnsafe(`DELETE FROM "DailyFlashcardQuizLog"`);
-      await db.$executeRawUnsafe(`DELETE FROM "Flashcard"`);
-    } catch { /* ignore */ }
-    await seedFlashcards();
-  } else {
-    console.log(`[setup] Flashcards already exist: ${flashcardCount}`);
-  }
-}
-
-async function seedAllData() {
-  // Create subjects (4 individual creates — fast)
-  const math = await db.subject.create({
-    data: { code: "math", title: "Mathematical Reasoning", description: "Algebra, geometry, data analysis", colorHex: "10B981", sortOrder: 0, status: "published" },
-  });
-  const science = await db.subject.create({
-    data: { code: "science", title: "Science", description: "Life, physical, and earth & space science", colorHex: "3B82F6", sortOrder: 1, status: "published" },
-  });
-  const rla = await db.subject.create({
-    data: { code: "rla", title: "Reasoning Through Language Arts", description: "Reading comprehension, writing, grammar", colorHex: "F59E0B", sortOrder: 2, status: "published" },
-  });
-  const ss = await db.subject.create({
-    data: { code: "ss", title: "Social Studies", description: "History, civics, economics, geography", colorHex: "EF4444", sortOrder: 3, status: "published" },
-  });
-
-  const subjectByCode = new Map<string, { id: string }>([
-    ["math", { id: math.id }],
-    ["science", { id: science.id }],
-    ["rla", { id: rla.id }],
-    ["ss", { id: ss.id }],
-  ]);
-
-  const moduleMap = new Map<string, string>();
-  const topicMap = new Map<string, string>();
-  const lessonMap = new Map<string, { id: string; subjectId: string }>();
-
-  // Create modules, topics, lessons (individual creates — ~70 total, acceptable)
-  for (const [lessonTitle, meta] of Object.entries(SUBJECT_LESSON_MAP)) {
-    const subj = subjectByCode.get(meta.code);
-    if (!subj) continue;
-
-    const modKey = meta.code + ":" + meta.module;
-    let moduleId = moduleMap.get(modKey);
-    if (!moduleId) {
-      const mod = await db.module.create({
-        data: { subjectId: subj.id, title: meta.module, sortOrder: moduleMap.size, status: "published" },
-      });
-      moduleId = mod.id;
-      moduleMap.set(modKey, moduleId);
-    }
-
-    const topKey = modKey + ":" + meta.topic;
-    let topicId = topicMap.get(topKey);
-    if (!topicId) {
-      const top = await db.topic.create({
-        data: { moduleId, title: meta.topic, sortOrder: topicMap.size, status: "published" },
-      });
-      topicId = top.id;
-      topicMap.set(topKey, topicId);
-    }
-
-    const lesson = await db.lesson.create({
-      data: {
-        topicId,
-        title: lessonTitle,
-        slug: meta.slug,
-        contentType: "text",
-        bodyContent: JSON.stringify([{ id: "blk_1", block_type: "paragraph", content: "Content for " + lessonTitle }]),
-        durationMinutes: 15,
-        sortOrder: 0,
-        status: "published",
-        lessonType: "core_topic",
-      },
-    });
-    lessonMap.set(lessonTitle, { id: lesson.id, subjectId: subj.id });
-  }
-
-  // ★ KEY FIX: Create questions via BATCH SQL (not 730 individual creates)
-  const qRows: string[] = [];
-  const aRows: string[] = [];
-  let qCount = 0;
-
-  for (const [lessonTitle, questions] of Object.entries(EXTRA_QUESTIONS)) {
-    const info = lessonMap.get(lessonTitle);
-    if (!info) { console.log("[setup] WARNING: No lesson for:", lessonTitle); continue; }
-
-    for (const [qText, answers, difficulty, explanation, tags] of questions) {
-      const text = qText as string;
-      if (!text) continue;
-      const qId = genId();
-      const pts = (difficulty as string) === "hard" ? 3 : (difficulty as string) === "medium" ? 2 : 1;
-      qRows.push(
-        `('${qId}',${esc(info.id)},${esc(info.subjectId)},'multiple_choice',${esc(difficulty as string)},${pts},${esc(text)},${esc(explanation as string)},NULL,true,NULL,${esc(JSON.stringify(tags as string[]))},NULL,NOW(),NOW())`
-      );
-      for (let i = 0; i < (answers as [string, boolean][]).length; i++) {
-        const [content, isCorrect] = (answers as [string, boolean][])[i];
-        aRows.push(`('${genId()}','${qId}',${esc(content)},${isCorrect},${i},NULL,NOW())`);
-      }
-      qCount++;
-    }
-  }
-
-  // Batch insert
-  const Q_COLS = `"id","lessonId","subjectId","questionType","difficulty","points","questionText","explanation","hintText","isActive","sourceTag","tags","relatedConceptId","createdAt","updatedAt"`;
-  for (let i = 0; i < qRows.length; i += 50) {
-    await db.$executeRawUnsafe(`INSERT INTO "Question" (${Q_COLS}) VALUES ${qRows.slice(i, i + 50).join(",")}`);
-  }
-  const A_COLS = `"id","questionId","content","isCorrect","sortOrder","explanation","createdAt"`;
-  for (let i = 0; i < aRows.length; i += 100) {
-    await db.$executeRawUnsafe(`INSERT INTO "Answer" (${A_COLS}) VALUES ${aRows.slice(i, i + 100).join(",")}`);
-  }
-
-  console.log(`[setup] Seeded ${qCount} questions, ${aRows.length} answers across ${lessonMap.size} lessons (batch SQL)`);
-
-  // Seed flashcards as part of initial setup
-  await seedFlashcards();
-}
-
-// ==========================================================================
-// FLASHCARD SEEDING — GED vocabulary (idempotent)
+// FLASHCARD SEEDING
 // ==========================================================================
 async function seedFlashcards() {
   const subjects = await db.subject.findMany({ select: { id: true, code: true } });
@@ -457,22 +531,17 @@ async function seedFlashcards() {
 
   for (const [code, words] of Object.entries(GED_VOCABULARY)) {
     const subjectId = codeToId.get(code);
-    if (!subjectId) { console.log(`[setup] WARNING: No subject for code: ${code}`); continue; }
-
+    if (!subjectId) continue;
     for (let i = 0; i < words.length; i++) {
       const [term, translation, pronunciation, meaning] = words[i];
-      const fId = genId();
-      fRows.push(
-        `('${fId}','${subjectId}',${esc(term)},${esc(translation)},${esc(pronunciation)},${esc(meaning)},${i},NOW(),NOW())`
-      );
+      fRows.push(`('${genId()}','${subjectId}',${esc(term)},${esc(translation)},${esc(pronunciation)},${esc(meaning)},${i},NOW(),NOW())`);
       fCount++;
     }
   }
 
-  // Batch insert (chunked)
   for (let i = 0; i < fRows.length; i += 50) {
     await db.$executeRawUnsafe(`INSERT INTO "Flashcard" (${F_COLS}) VALUES ${fRows.slice(i, i + 50).join(",")}`);
   }
 
-  console.log(`[setup] Seeded ${fCount} flashcards across ${Object.keys(GED_VOCABULARY).length} subjects`);
+  console.log(`[setup] Seeded ${fCount} flashcards`);
 }
