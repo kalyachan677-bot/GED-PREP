@@ -58,6 +58,10 @@ server.log
 
 # Cloudflare artifacts (cancelled migration)
 wrangler.toml
+bun.lock
 
 # One-off scripts
 /scripts/
+
+# Uploads (screenshots, temp images)
+/upload/
