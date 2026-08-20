@@ -1,8 +1,26 @@
 import { create } from "zustand";
 
 // ---------------------------------------------------------------------------
-// Types
+// Background seeding helper (non-blocking, per-subject)
 // ---------------------------------------------------------------------------
+async function seedAllSubjectsInBackground() {
+  const subjects = ["math", "science", "rla", "ss"];
+  for (const code of subjects) {
+    try {
+      const res = await fetch(`/api/setup?subject=${code}`);
+      const data = await res.json();
+      console.log(`[bg-seed] ${code}:`, data.status);
+    } catch {
+      // Silent — seeding is best-effort, don't block the user
+    }
+    // Small delay between subjects to avoid overwhelming serverless
+    await new Promise((r) => setTimeout(r, 1000));
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Types
+//---------------------------------------------------------------------------
 export interface User {
   id: string;
   email: string;
@@ -545,6 +563,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
     let rigorState: RigorDailyState | null = null;
     if (user && typeof window !== "undefined") {
       rigorState = recordDailyLogin(rigorConfig);
+      // Background seed: populate lessons/questions per subject (non-blocking)
+      seedAllSubjectsInBackground();
     }
 
     set({ user, scoreTarget, rigorConfig, showScoreTargetModal, rigorState });

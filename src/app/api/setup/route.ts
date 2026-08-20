@@ -47,13 +47,49 @@ export async function GET(request: NextRequest) {
     const forceParam = searchParams.get("force");
     const subjectParam = searchParams.get("subject");
 
+    // --- Per-subject seeding (called from background seeder after login) ---
+    // Always ensures base, then seeds only the requested subject
+    if (subjectParam && VALID_SUBJECTS.includes(subjectParam)) {
+      isSeeding = true;
+      try {
+        // Ensure tables + demo user + subjects exist first
+        try {
+          const count = await db.user.count();
+          if (count === 0) await setupBase();
+        } catch {
+          await setupBase();
+        }
+
+        // Check if this subject already has lessons
+        const subject = await db.subject.findFirst({ where: { code: subjectParam }, select: { id: true, code: true } });
+        if (!subject) {
+          return NextResponse.json({ status: "error", error: `Subject ${subjectParam} not found` }, { status: 404 });
+        }
+
+        const moduleCount = await db.module.count({ where: { subjectId: subject.id } });
+        if (moduleCount > 0) {
+          // Already seeded — skip
+          return NextResponse.json({ status: "ready", subject: subjectParam, message: "Already seeded" });
+        }
+
+        await seedSubjectData(subjectParam);
+        return NextResponse.json({ status: "seeded", subject: subjectParam, message: `${subjectParam} seeded` });
+      } catch (error: unknown) {
+        const msg = error instanceof Error ? error.message : String(error);
+        console.error(`[setup] Error seeding ${subjectParam}:`, error);
+        return NextResponse.json({ status: "error", error: msg, subject: subjectParam }, { status: 500 });
+      } finally {
+        isSeeding = false;
+      }
+    }
+
+    // --- Full setup / reseed (no subject param) ---
     try {
       const count = await db.user.count();
       if (count > 0) {
         const totalQ = await db.question.count();
         const nullQ = await db.question.count({ where: { questionText: { in: [null, ""] as any } } });
-        const totalA = await db.answer.count();
-        const diagnostics = { totalQuestions: totalQ, nullTextQuestions: nullQ, totalAnswers: totalA };
+        const diagnostics = { totalQuestions: totalQ, nullTextQuestions: nullQ, totalAnswers: await db.answer.count() };
 
         if (forceParam === "1" || nullQ > 0 || totalQ === 0 || totalQ < 100) {
           isSeeding = true;
@@ -84,21 +120,16 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ status: "ready", ...diagnostics });
       }
     } catch {
-      // Tables don't exist yet
+      // Tables don't exist yet — fall through to full setup
     }
 
+    // First-time full setup
     isSeeding = true;
     try {
-      // Phase 1: Create tables + demo user + subjects (always needed on first run)
       await setupBase();
-
-      // Phase 2: Seed lessons, questions, flashcards
-      // Supports ?subject=math to seed one subject at a time
-      if (subjectParam && VALID_SUBJECTS.includes(subjectParam)) {
-        await seedSubjectData(subjectParam);
-      } else {
-        // Seed all subjects at once using batch SQL (fast)
-        await seedAllDataBatch();
+      // Seed each subject one at a time to avoid timeout
+      for (const code of VALID_SUBJECTS) {
+        await seedSubjectData(code);
       }
     } finally {
       isSeeding = false;

@@ -18,31 +18,15 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [setupStatus, setSetupStatus] = useState<string | null>(null);
-
-  // Auto-seed database on first visit
+  // Lightweight init: ensure tables + demo user exist (fast, <5s)
   useEffect(() => {
-    fetch("/api/setup")
+    fetch("/api/setup/init")
       .then((r) => r.json())
       .then((data) => {
-        if (data.status === "seeded") {
-          setSetupStatus("seeded");
-          console.log("[setup] Database seeded successfully");
-        } else if (data.status === "ready") {
-          console.log("[setup] Database already ready:", data);
-        } else if (data.status === "seeding_in_progress") {
-          setSetupStatus("seeding");
-          // Retry after a delay
-          setTimeout(() => {
-            fetch("/api/setup")
-              .then((r) => r.json())
-              .then((d) => {
-                if (d.status === "seeded" || d.status === "ready") setSetupStatus(null);
-              })
-              .catch(() => {});
-          }, 5000);
-        } else if (data.status === "error") {
-          console.error("[setup] Seed error:", data.error);
+        if (data.status === "ready") {
+          console.log("[setup/init] Database ready:", data);
+        } else {
+          console.error("[setup/init] Error:", data);
         }
       })
       .catch(() => {});
