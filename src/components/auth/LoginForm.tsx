@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAppStore } from "@/lib/store";
 import { useText } from "@/lib/ui-texts";
 import { RegisterForm } from "./RegisterForm";
@@ -8,7 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { GraduationCap, Loader2, Eye, EyeOff, Sparkles } from "lucide-react";
+import { GraduationCap, Loader2, Eye, EyeOff, Sparkles, Database, CheckCircle2, AlertCircle, RefreshCw } from "lucide-react";
+
+type InitStatus = "loading" | "ready" | "error";
 
 export function LoginForm() {
   const { setUser, setView } = useAppStore();
@@ -18,19 +20,32 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  // Lightweight init: ensure tables + demo user exist (fast, <5s)
-  useEffect(() => {
-    fetch("/api/setup/init")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.status === "ready") {
-          console.log("[setup/init] Database ready:", data);
-        } else {
-          console.error("[setup/init] Error:", data);
-        }
-      })
-      .catch(() => {});
+  const [initStatus, setInitStatus] = useState<InitStatus>("loading");
+  const [initMsg, setInitMsg] = useState("");
+
+  const runInit = useCallback(async () => {
+    setInitStatus("loading");
+    setInitMsg("");
+    try {
+      const res = await fetch("/api/setup/init");
+      const data = await res.json();
+      if (data.status === "ready") {
+        setInitStatus("ready");
+        setInitMsg(`ผู้ใช้ ${data.users} คน | วิชา ${data.subjects} วิชา`);
+      } else {
+        setInitStatus("error");
+        setInitMsg(data.error || "ไม่สามารถเตรียมฐานข้อมูลได้");
+      }
+    } catch (err) {
+      setInitStatus("error");
+      setInitMsg("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาลองใหม่");
+    }
   }, []);
+
+  // Run init on mount
+  useEffect(() => {
+    runInit();
+  }, [runInit]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -51,11 +66,13 @@ export function LoginForm() {
       setUser(json.data);
       setView("dashboard");
     } catch {
-      setError(tx("errorRetry"));
+      setError("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาลองใหม่");
     } finally {
       setLoading(false);
     }
   }
+
+  const dbReady = initStatus === "ready";
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-100 via-violet-50/30 to-indigo-50/30 p-4">
@@ -73,6 +90,26 @@ export function LoginForm() {
           <h1 className="mt-4 text-2xl font-extrabold text-slate-900 tracking-tight">GED Prep</h1>
           <p className="mt-1 text-sm text-slate-500 font-medium">Smart Learning Platform — {tx("loginSubtitle")}</p>
         </div>
+
+        {/* DB Status Indicator */}
+        <div className={`mb-4 rounded-xl border p-3 text-sm font-medium flex items-center gap-2 ${
+          initStatus === "loading"
+            ? "border-amber-200 bg-amber-50 text-amber-700"
+            : initStatus === "ready"
+            ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+            : "border-rose-200 bg-rose-50 text-rose-700"
+        }`}>
+          {initStatus === "loading" && <><Loader2 className="h-4 w-4 animate-spin" /><Database className="h-4 w-4" /> <span>กำลังเตรียมฐานข้อมูล...</span></>}
+          {initStatus === "ready" && <><CheckCircle2 className="h-4 w-4" /> <span>ฐานข้อมูลพร้อม — {initMsg}</span></>}
+          {initStatus === "error" && <>
+            <AlertCircle className="h-4 w-4" />
+            <span className="flex-1">{initMsg}</span>
+            <button type="button" onClick={runInit} className="ml-auto flex items-center gap-1 text-rose-600 hover:text-rose-800 font-semibold shrink-0">
+              <RefreshCw className="h-3.5 w-3.5" /> ลองใหม่
+            </button>
+          </>}
+        </div>
+
         <Card className="border-0 shadow-2xl shadow-slate-200/50 rounded-2xl">
           <CardHeader className="pb-4 text-center">
             <CardTitle className="text-xl font-bold text-slate-800">{tx("loginTitle")}</CardTitle>
@@ -119,10 +156,11 @@ export function LoginForm() {
               <Button
                 type="submit"
                 className="w-full h-11 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 shadow-lg shadow-violet-200/50 font-semibold"
-                disabled={loading}
+                disabled={loading || !dbReady}
               >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {tx("loginBtn")}
+                {!dbReady && !loading && "รอเตรียมฐานข้อมูล..."}
+                {dbReady && tx("loginBtn")}
               </Button>
               <div className="text-center text-sm">
                 <span className="text-slate-500">{tx("noAccount")}</span>

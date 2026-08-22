@@ -9,16 +9,24 @@ const globalForPrisma = globalThis as unknown as {
 function createPrismaClient(): PrismaClient {
   const url = process.env.DATABASE_URL
 
-  // On Cloudflare Pages (production with a PostgreSQL URL), use the Neon
-  // serverless driver so that Prisma connects over HTTP/WebSocket instead
-  // of raw TCP (which is unavailable in Workers).
-  if (url && (url.startsWith('postgres://') || url.startsWith('postgresql://'))) {
-    const pool = new Pool({ connectionString: url })
-    const adapter = new PrismaNeon(pool)
-    return new PrismaClient({ adapter })
+  if (!url) {
+    console.error('[db] DATABASE_URL is not set! Database features will not work.')
   }
 
-  // Local development — standard Prisma (e.g. SQLite file)
+  // Production: use Neon serverless driver (HTTP/WebSocket) for Vercel serverless
+  if (url && (url.startsWith('postgres://') || url.startsWith('postgresql://'))) {
+    try {
+      const pool = new Pool({ connectionString: url })
+      const adapter = new PrismaNeon(pool)
+      const client = new PrismaClient({ adapter })
+      console.log('[db] Using Neon serverless adapter')
+      return client
+    } catch (e) {
+      console.error('[db] Neon adapter failed, falling back to standard Prisma:', e)
+    }
+  }
+
+  // Fallback: standard Prisma connection
   return new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['error'] : [],
   })
